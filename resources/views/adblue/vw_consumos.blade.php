@@ -19,19 +19,6 @@
     </div>
     <div class="card-body">
         <div class="form-row">
-            <div class="col-lg-10">
-                <center>
-                    <div id="listadoButtons">
-                        <button id="btn_vw_consumocab" type="button" onclick="mostrarformulario(true)" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVO REGISTRO</button>
-                        <button id="btn_modificar_consumocab" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR CONSUMO</button>
-                    </div>
-
-                    <div id="formularioButtons" style="display:none;">
-                        <button id="btn_vw_consumoscab_Guardar" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-save"></i> GUARDAR REGISTROS</button>
-                        <button id="btn_vw_consumoscab_Cancelar" type="button" class="btn btn-xl btn-default" readonly="readonly"><i class="fa fa-arrow-circle-left"></i> REGRESAR</button>
-                    </div> 
-                </center>
-            </div>
             <div class="col-lg-2">
                 <div class="form-group">
                     <label>SELECCIONAR CAPACIDAD:</label>
@@ -43,6 +30,42 @@
                     </select>
 
                 </div>
+            </div>
+            <div class="col-lg-10">
+                <center>
+                    <div id="listadoButtons">
+                        <div class="row">
+                            <div class="col-lg-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fa fa-search"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control text-center text-uppercase">
+                                </div>
+                            </div>
+                            <div class="col-lg-3">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fa fa-search"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control text-center text-uppercase">
+                                </div>
+                            </div>
+                            <div class="col-lg-1">
+                                <button id="btn_vw_consumocab" type="button" class="btn btn-xl btn-danger"><i class="fa fa-plus"></i></button>
+                            </div>
+                            <div class="col-lg-5">
+                                <button id="btn_vw_consumocab" type="button" onclick="mostrarformulario(true)" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVO REGISTRO</button>
+                                <button id="btn_modificar_consumocab" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR CONSUMO</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="formularioButtons" style="display:none;">
+                        <button id="btn_vw_consumoscab_Guardar" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-save"></i> GUARDAR REGISTROS</button>
+                        <button id="btn_vw_consumoscab_Cancelar" type="button" class="btn btn-xl btn-default" readonly="readonly"><i class="fa fa-arrow-circle-left"></i> REGRESAR</button>
+                    </div> 
+                </center>
             </div>
         </div>
         <br>
@@ -93,7 +116,7 @@
                             <th style="width: 10%;">%STOP EN TANQUE</th>
                             <th style="width: 10%;">Q-ABAST.</th>
                             <th style="width: 15%;">OBSERVACIONES</th>
-                            <th style="width: 10%;">INGRESO</th>
+                            <th style="width: 8%;">INGRESO</th>
                             <th style="width: 10%;">SALIDA</th>
                             <th style="width: 10%;">STOP</th>
                             </thead>
@@ -103,7 +126,7 @@
                 </div>
             </form>
             <div style="padding-left: 10px">
-                <button id="btn_vw_rtestacion_Guardar" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-save"></i> GUARDAR REGISTROS</button>
+                <button id="btn_vw_otrosconsumos_Guardar" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-save"></i> GUARDAR REGISTROS</button>
             </div>
         </div>
 
@@ -120,6 +143,7 @@
 <div class="modal fade" id="ModalConsumos">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
+
             <div class="modal-header">
                 <h4 class="modal-title"></h4>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -127,6 +151,44 @@
             </div>
 
             <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+
+                            <div class="input-group">
+                                <h4 id="lbl_cde_vale"> </h4>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+
+                            <div class="input-group">
+                                <h4 id="lbl_cde_placa"></h4>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+
+                            <div class="input-group">
+                                <h4 id="lbl_cde_estacion"></h4>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+
+                            <div class="input-group">
+                                <h4 id="lbl_cde_ruta"></h4>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
                 <div class="card card-danger card-outline">
                     <div class="card-header">
                         <h5 class="m-0">RESUMEN</h5>
@@ -167,7 +229,7 @@
                                 <div class="form-group">
                                     <label>COPILOTO:</label>
 
-                                     <select class="form-control select2" style="width: 100%;" id="txt_cde_copiloto" name="txt_cde_copiloto">
+                                    <select class="form-control select2" style="width: 100%;" id="txt_cde_copiloto" name="txt_cde_copiloto">
                                         @foreach($tripulantes as $tri)
                                         <option value="{{ $tri->tri_id }}"> {{ $tri->tri_nombre }} {{ $tri->tri_apaterno }} {{ $tri->tri_amaterno }} </option>
                                         @endforeach
@@ -229,7 +291,7 @@
 
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label>OBSERVACIONES:</label>
@@ -246,7 +308,7 @@
                         </div>
                     </div>
                 </div>
-                
+
                 <div class="card card-danger card-outline">
                     <div class="card-header">
                         <h5 class="m-0">RESERVA</h5>

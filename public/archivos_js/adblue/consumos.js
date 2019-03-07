@@ -50,8 +50,6 @@ jQuery(document).ready(function($){
         ondblClickRow: function (Id){$('#btn_modificar_consumocab').click();}
     });
     
-     
-       
     $('#tblconsumosdet').setGroupHeaders(
     {
         useColSpanStyle: true,
@@ -74,21 +72,11 @@ jQuery(document).ready(function($){
         $("#tblconsumosdet").jqGrid('setGridWidth', $("#contenedor").width());
     });
     
-    jQuery.fn.preventDoubleSubmission = function() {
-        cambiar_estado_estacion();
-    };
-    
     $(".select2").select2();
 });
 
-//function limpiar_datosEstacion()
-//{
-//    $('#txt_est_descripcion').val('');
-//}
-
 function mostrarformulario(flag)
 {
-    //limpiar_datos();
     if (flag)
     {
         $("#listadoRegistros").hide();
@@ -103,12 +91,14 @@ function mostrarformulario(flag)
         $("#formularioRegistros").hide();
         $("#listadoButtons").show();
         $("#formularioButtons").hide();
+        $("#cbx_consumo_ruta").removeAttr('disabled');
+        $("#btn_generar_consumodet").removeAttr('disabled');
         $("#btn_vw_consumoscab_Guardar").attr('disabled',true);
+        $("#btn_vw_otrosconsumos_Guardar").hide();
     }
 }
 
 jQuery(document).on("click", "#btn_vw_consumoscab_Cancelar", function(){
-    //limpiar_datos();
     mostrarformulario(false);
     $(".filas_consumocab").remove();
 });
@@ -136,9 +126,32 @@ function autocompletar_personas(textbox){
     });
 }
 
-$("#btn_vw_rtestacion_Guardar").hide();
+function autocompletar_estaciones(textbox){
+    $.ajax({
+        type: 'GET',
+        url: 'ruta_estacion/0?busqueda=estaciones',
+        success: function (data) {
+            var $datos = data;
+            $("#" + textbox).autocomplete({
+                source: $datos,
+                focus: function (event, ui) {
+                    $("#" + textbox).val(ui.item.label);
+                    $("#hidden" + textbox).val(ui.item.value);
+                    return false;
+                },
+                select: function (event, ui) {
+                    $("#" + textbox).val(ui.item.label);
+                    $("#hidden" + textbox).val(ui.item.value);
+                    return false;
+                }
+            });
+        }
+    });
+}
+
+var cont=0;
+var detalles=0;
 jQuery(document).on("click", "#btn_generar_consumodet", function(){
-    $("#btn_vw_consumoscab_Guardar").removeAttr('disabled',true);
     rut_id = $("#cbx_consumo_ruta").val();
     $.ajax({
         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
@@ -155,7 +168,54 @@ jQuery(document).on("click", "#btn_generar_consumodet", function(){
             
             if (data[0].rut_descripcion == 'OR') 
             {
-                alert('otras rutas');     
+                $("#btn_vw_consumoscab_Guardar").attr('disabled',true);
+                $(".filas_consumocab").remove();
+                $("#btn_generar_consumodet").attr('disabled',true);
+                $("#cbx_consumo_ruta").attr('disabled',true);
+                
+                html = '<div class="form-row">\n\
+                            <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">\n\
+                                <table id="consumodet" class="table table-striped table-bordered table-condensed table-hover">\n\
+                                   <thead style="background-color:#A9D0F5">\n\
+                                    <th style="width: 5%;"></th>\n\
+                                    <th style="width: 10%;">FECHA</th>\n\
+                                    <th style="width: 5%;">ESTACION</th>\n\
+                                    <th style="width: 15%;">CONDUCTOR</th>\n\
+                                    <th style="width: 15%;">PILOTO</th>\n\
+                                    <th style="width: 10%;">KM</th>\n\
+                                    <th style="width: 10%;">%STOP EN TANQUE</th>\n\
+                                    <th style="width: 10%;">Q-ABAST.</th>\n\
+                                    <th style="width: 15%;">OBSERVACIONES</th>\n\
+                                    <th style="width: 8%;">INGRESO</th>\n\
+                                    <th style="width: 10%;">SALIDA</th>\n\
+                                    <th style="width: 10%;">STOP</th>\n\
+                                    </thead>\n\
+                                    <tbody id="cuerpodet">\n\
+                                        <tr class="filas_consumocab" id="filas_consumocab">\n\
+                                            <td><button type="button" id="agregar_otrasrutas" class="btn btn-success"><i class="fa fa-plus-square"></i></button></td>\n\
+                                            <td><input type="date" name="fecha[]" class="form-control text-uppercase text-center"></td>\n\
+                                            <td><input type="hidden" name="contador[]"><input type="hidden" name="estacion[]" id="hiddenestacion_'+num+'"><input type="text" id="estacion_'+num+'" class="form-control text-uppercase text-center"></td>\n\
+                                            <td><input type="hidden" name="conductor[]" id="hiddenconductor_'+num+'"><input type="text" id="conductor_'+num+'" class="form-control conductor text-uppercase text-center"></td>\n\
+                                            <td><input type="hidden" name="piloto[]" id="hiddenpiloto_'+num+'"><input type="text" id="piloto_'+num+'" class="form-control piloto text-uppercase text-center"></td>\n\
+                                            <td><input type="text" name="km[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="6"></td>\n\
+                                            <td><input type="text" name="xtanque[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                                            <td><input type="text" name="qabast[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                                            <td><input type="text" name="observ[]" class="form-control text-uppercase text-center" maxlength="255"></td>\n\
+                                            <td><input type="text" name="ingreso[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                                            <td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                                            <td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                                        </tr>\n\
+                                    </tbody>\n\
+                                </table>\n\
+                            </div>\n\
+                        </div>';
+                autocompletar_estaciones('estacion_'+num);
+                autocompletar_personas('conductor_'+num);
+                autocompletar_personas('piloto_'+num);
+                $("#consumodet").html(html);
+                cont++;
+                detalles=detalles+1;
+                evaluar();
             }
             else
             {
@@ -171,7 +231,7 @@ jQuery(document).on("click", "#btn_generar_consumodet", function(){
                                     <th style="width: 10%;">%STOP EN TANQUE</th>\n\
                                     <th style="width: 10%;">Q-ABAST.</th>\n\
                                     <th style="width: 15%;">OBSERVACIONES</th>\n\
-                                    <th style="width: 10%;">INGRESO</th>\n\
+                                    <th style="width: 8%;">INGRESO</th>\n\
                                     <th style="width: 10%;">SALIDA</th>\n\
                                     <th style="width: 10%;">STOP</th>\n\
                                     </thead>\n\
@@ -201,6 +261,7 @@ jQuery(document).on("click", "#btn_generar_consumodet", function(){
                     autocompletar_personas('conductor_'+j);
                     autocompletar_personas('piloto_'+j);
                 }
+                $("#btn_vw_consumoscab_Guardar").removeAttr('disabled');
             }
             swal.close();
         },
@@ -211,6 +272,89 @@ jQuery(document).on("click", "#btn_generar_consumodet", function(){
         }
     });
 });
+
+// GUARDAR OTROS CONSUMOS
+
+function evaluar()
+{
+    if (detalles>0)
+    {
+        $("#btn_vw_otrosconsumos_Guardar").show();
+    }
+    else
+    {
+      $("#btn_vw_otrosconsumos_Guardar").hide();
+      cont=0;
+    }
+}
+
+function eliminarDetalle(indice)
+{
+    $("#filas_consumocab_"+indice).remove();
+    detalles=detalles-1;
+    cont++;
+}
+
+jQuery(document).on("click", "#agregar_otrasrutas", function(){
+    var fila='<tr class="filas_consumocab" id="filas_consumocab_'+cont+'">'+
+            '<td><button type="button" class="btn btn-danger" onclick="eliminarDetalle('+cont+')"><i class="fa fa-trash-o"></i></button></td>'+
+            '<td><input type="date" name="fecha[]" class="form-control text-uppercase text-center"></td>'+
+            '<td><input type="hidden" name="contador[]"><input type="hidden" name="estacion[]" id="hiddenestacion_'+cont+'"><input type="text" id="estacion_'+cont+'" class="form-control text-uppercase text-center"></td>'+
+            '<td><input type="hidden" name="conductor[]" id="hiddenconductor_'+cont+'"><input type="text" id="conductor_'+cont+'" class="form-control conductor text-uppercase text-center"></td>'+
+            '<td><input type="hidden" name="piloto[]" id="hiddenpiloto_'+cont+'"><input type="text" id="piloto_'+cont+'" class="form-control piloto text-uppercase text-center"></td>'+
+            '<td><input type="text" name="km[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="6"></td>'+
+            '<td><input type="text" name="xtanque[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>'+
+            '<td><input type="text" name="qabast[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>'+
+            '<td><input type="text" name="observ[]" class="form-control text-uppercase text-center" maxlength="255"></td>'+
+            '<td><input type="text" name="ingreso[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>'+
+            '<td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>'+
+            '<td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>'+
+            '</tr>';
+    autocompletar_estaciones('estacion_'+cont);
+    autocompletar_personas('conductor_'+cont);
+    autocompletar_personas('piloto_'+cont);
+    cont++;
+    detalles=detalles+1;
+    $('#cuerpodet').append(fila);
+});
+
+jQuery(document).on("click", "#btn_vw_otrosconsumos_Guardar", function(){
+    $("#cbx_consumo_ruta").removeAttr('disabled');
+    var form = new FormData($("#FormularioConsumoDetalle")[0]);
+    $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: 'consumo?tipo=1&capacidad='+$('#cbx_capacidad').val(),
+        type: 'POST',
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+        data:form,
+        success: function (data) 
+        {
+            if (data == 1) 
+            {
+                MensajeConfirmacion('EL RESPUESTA FUE ENVIADA CON EXITO');
+                jQuery("#tblconsumosdet").jqGrid('setGridParam', {
+                    url: 'consumo/0?grid=consumos'
+                }).trigger('reloadGrid');
+                $(".filas_consumocab").remove();
+                mostrarformulario(false);
+            }
+            else
+            {
+                MensajeAdvertencia('NO SE PUDO ENVIAR LOS DATOS, OCURRIO UN PROBLEMA');
+                console.log(data);
+            }
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
+});
+
+// GUARDAR CONSUMOS NORMALES
 
 jQuery(document).on("click", "#btn_vw_consumoscab_Guardar", function() {
     
@@ -271,6 +415,10 @@ jQuery(document).on("click", "#btn_modificar_consumocab", function(){
                 Consumo.find('.modal-title').text('EDITAR CONSUMO');
                 Consumo.find('#btn_actualizar_consumo').html('<i class="fa fa-pencil-square-o"></i> MODIFICAR').show();
                 
+                $("#lbl_cde_vale").html("VALE: " + "<b>"+data.nro_vale+"</b>");
+                $("#lbl_cde_placa").html("PLACA: " + "<b>"+data.veh_placa+"</b>");
+                $("#lbl_cde_ruta").html("RUTA: " + "<b>"+data.rut_descripcion+"</b>");
+                $("#lbl_cde_estacion").html("ESTACION: " + "<b>"+data.est_descripcion+"</b>");
                 $("#txt_cde_conductor").val(data.idconductor);
                 $("#txt_cde_copiloto").val(data.idcopiloto);
                 

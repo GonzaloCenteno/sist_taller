@@ -25,7 +25,7 @@ class Consumos_Controller extends Controller
         else
         {
             return view('errors/vw_sin_acceso');
-        }
+        }    
     }
 
     public function show($id, Request $request)
@@ -98,7 +98,7 @@ class Consumos_Controller extends Controller
                     $detalle->cde_salida = $request['cde_salida'];
                     $detalle->cde_stop = $request['cde_stop'];
                     $detalle->cde_usumodificacion = session('id_usuario');
-                    $detalle->cde_fecmodificacion = $request['descripcion'];
+                    $detalle->cde_fecmodificacion = date('d-m-Y');
                     $detalle->save();
                 }
                 $success = 1;
@@ -166,7 +166,7 @@ class Consumos_Controller extends Controller
                     $Tblconsumodetalle_cde->cca_id = $Tblconsumocabecera_cca->cca_id;
                     $Tblconsumodetalle_cde->veh_id = $request['cbx_placa'];
                     $Tblconsumodetalle_cde->rut_id = $request['cbx_consumo_ruta'];
-                    $Tblconsumodetalle_cde->est_id = $request['estacion'][$i];
+                    $Tblconsumodetalle_cde->est_id = isset($request['estacion'][$i]) ? $request['estacion'][$i] : 1;
                     $Tblconsumodetalle_cde->tri_idconductor = isset($request['conductor'][$i]) ? $request['conductor'][$i] : 1;
                     $Tblconsumodetalle_cde->tri_idcopiloto = isset($request['piloto'][$i]) ? $request['piloto'][$i] : 1;
                     $Tblconsumodetalle_cde->cde_kilometros = isset($request['km'][$i]) ? $request['km'][$i] : 0;

@@ -6,7 +6,7 @@ jQuery(document).ready(function($){
     mostrarformulario(false);
     
     jQuery("#tblconsumosdet").jqGrid({
-        url: 'consumo/0?grid=consumos',
+        url: 'consumo/0?grid=consumos&indice=0',
         datatype: 'json', mtype: 'GET',
         height: '470px', autowidth: true,
         toolbarfilter: true,
@@ -47,7 +47,7 @@ jQuery(document).ready(function($){
                 }
             },
         onSelectRow: function (Id){},
-        ondblClickRow: function (Id){$('#btn_modificar_consumocab').click();}
+        ondblClickRow: function (Id){modificar_consumodetalle(Id);}
     });
     
     $('#tblconsumosdet').setGroupHeaders(
@@ -75,6 +75,36 @@ jQuery(document).ready(function($){
     $(".select2").select2();
 });
 
+jQuery(document).on("click", "#btn_vw_consumocab", function(){
+    $.ajax({
+        url: 'consumo/0?datos=traer_estaciones',
+        type: 'GET',
+        beforeSend:function()
+        {            
+            MensajeEspera('CARGANDO INFORMACION');  
+        },
+        success: function(data) 
+        {
+            html="";
+  
+            for(i=0;i<data.length;i++)
+            {
+                html = html+'<option value='+data[i].rut_id+'>'+data[i].estaciones+'</option>';
+            }
+           
+            $("#cbx_consumo_ruta").html(html);
+            $("#cbx_consumo_ruta").change();
+            swal.close();
+            mostrarformulario(true);
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
+});
+
 function mostrarformulario(flag)
 {
     if (flag)
@@ -84,6 +114,7 @@ function mostrarformulario(flag)
         $("#listadoButtons").hide();
         $("#formularioButtons").show();
         $("#form_codigo").focus();
+        $("#btn_vw_consumocab").hide();
     }
     else
     {
@@ -95,6 +126,7 @@ function mostrarformulario(flag)
         $("#btn_generar_consumodet").removeAttr('disabled');
         $("#btn_vw_consumoscab_Guardar").attr('disabled',true);
         $("#btn_vw_otrosconsumos_Guardar").hide();
+        $("#btn_vw_consumocab").show();
     }
 }
 
@@ -393,59 +425,58 @@ jQuery(document).on("click", "#btn_vw_consumoscab_Guardar", function() {
 });
 
 jQuery(document).on("click", "#btn_act_tblconsumos", function(){
+    $("#txt_buscar_nrovale").val('');
+    $("#txt_buscar_placa").val('');
+    $("#txt_buscar_fdesde").val('');
+    $("#txt_buscar_fhasta").val('');
+    
     jQuery("#tblconsumosdet").jqGrid('setGridParam', {
         url: 'consumo/0?grid=consumos'
     }).trigger('reloadGrid');
 });
 
-jQuery(document).on("click", "#btn_modificar_consumocab", function(){
-    cde_id = $('#tblconsumosdet').jqGrid ('getGridParam', 'selrow');
-    if(cde_id){
-        $.ajax({
-            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-            url: 'consumo/'+cde_id+'?show=datos',
-            type: 'GET',
-            beforeSend:function()
-            {            
-                MensajeEspera('RECUPERANDO INFORMACION');  
-            },
-            success: function(data) 
-            {
-                Consumo = $('#ModalConsumos').modal({backdrop: 'static', keyboard: false});
-                Consumo.find('.modal-title').text('EDITAR CONSUMO');
-                Consumo.find('#btn_actualizar_consumo').html('<i class="fa fa-pencil-square-o"></i> MODIFICAR').show();
-                
-                $("#lbl_cde_vale").html("VALE: " + "<b>"+data.nro_vale+"</b>");
-                $("#lbl_cde_placa").html("PLACA: " + "<b>"+data.veh_placa+"</b>");
-                $("#lbl_cde_ruta").html("RUTA: " + "<b>"+data.rut_descripcion+"</b>");
-                $("#lbl_cde_estacion").html("ESTACION: " + "<b>"+data.est_descripcion+"</b>");
-                $("#txt_cde_conductor").val(data.idconductor);
-                $("#txt_cde_copiloto").val(data.idcopiloto);
-                
-                $("#txt_cde_copiloto").change();
-                $("#txt_cde_conductor").change();      
-                
-                $("#txt_cde_fecha").val(data.cde_fecha);
-                $("#txt_cde_km").val(data.cde_kilometros);
-                $("#txt_cde_xtanque").val(data.cde_xtanque);
-                $("#txt_cde_qabast").val(data.cde_qabastecida);
-                $("#txt_cde_observaciones").val(data.cde_observaciones);
-                $("#txt_cde_ingreso").val(data.cde_ingreso);
-                $("#txt_cde_salida").val(data.cde_salida);
-                $("#txt_cde_stop").val(data.cde_stop);
-                swal.close();
-            },
-            error: function(data) {
-                MensajeAdvertencia("hubo un error, Comunicar al Administrador");
-                console.log('error');
-                console.log(data);
-            }
-        });
-    }
-    else{
-        mostraralertasconfoco("NO HAY CONSUMOS SELECCIONADOS","#tblconsumosdet");
-    }
-});
+function modificar_consumodetalle(cde_id){
+    $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: 'consumo/'+cde_id+'?show=datos',
+        type: 'GET',
+        beforeSend:function()
+        {            
+            MensajeEspera('RECUPERANDO INFORMACION');  
+        },
+        success: function(data) 
+        {
+            Consumo = $('#ModalConsumos').modal({backdrop: 'static', keyboard: false});
+            Consumo.find('.modal-title').text('EDITAR CONSUMO');
+            Consumo.find('#btn_actualizar_consumo').html('<i class="fa fa-pencil-square-o"></i> MODIFICAR').show();
+
+            $("#lbl_cde_vale").html("VALE: " + "<b>"+data.nro_vale+"</b>");
+            $("#lbl_cde_placa").html("PLACA: " + "<b>"+data.veh_placa+"</b>");
+            $("#lbl_cde_ruta").html("RUTA: " + "<b>"+data.rut_descripcion+"</b>");
+            $("#lbl_cde_estacion").html("ESTACION: " + "<b>"+data.est_descripcion+"</b>");
+            $("#txt_cde_conductor").val(data.idconductor);
+            $("#txt_cde_copiloto").val(data.idcopiloto);
+
+            $("#txt_cde_copiloto").change();
+            $("#txt_cde_conductor").change();      
+
+            $("#txt_cde_fecha").val(data.cde_fecha);
+            $("#txt_cde_km").val(data.cde_kilometros);
+            $("#txt_cde_xtanque").val(data.cde_xtanque);
+            $("#txt_cde_qabast").val(data.cde_qabastecida);
+            $("#txt_cde_observaciones").val(data.cde_observaciones);
+            $("#txt_cde_ingreso").val(data.cde_ingreso);
+            $("#txt_cde_salida").val(data.cde_salida);
+            $("#txt_cde_stop").val(data.cde_stop);
+            swal.close();
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
+}
 
 jQuery(document).on("click", "#btn_actualizar_consumo", function(){
     cde_id = $('#tblconsumosdet').jqGrid ('getGridParam', 'selrow');
@@ -534,4 +565,10 @@ jQuery(document).on("click", "#btn_actualizar_consumo", function(){
             console.log(data);
         }
     });
+});
+
+jQuery(document).on("click", "#btn_vw_buscar_consumos", function(){
+    jQuery("#tblconsumosdet").jqGrid('setGridParam', {
+        url: 'consumo/0?grid=consumos&indice=1&nrovale='+$("#txt_buscar_nrovale").val()+'&placa='+$("#txt_buscar_placa").val()+'&fdesde='+$("#txt_buscar_fdesde").val()+'&fhasta='+$("#txt_buscar_fhasta").val()
+    }).trigger('reloadGrid');
 });

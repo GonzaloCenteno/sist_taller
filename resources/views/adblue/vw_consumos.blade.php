@@ -16,6 +16,9 @@
             <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
             <button type="button" class="btn btn-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
         </div>
+        <div class="col-lg-2">
+            <button id="btn_vw_consumocab" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVO REGISTRO</button>
+        </div>
     </div>
     <div class="card-body">
         <div class="form-row">
@@ -23,7 +26,7 @@
                 <div class="form-group">
                     <label>SELECCIONAR CAPACIDAD:</label>
 
-                    <select class="form-control select2" style="width: 100%;" id="cbx_capacidad" name="cbx_capacidad">
+                    <select class="form-control" style="width: 100%;" id="cbx_capacidad" name="cbx_capacidad">
                         @foreach($capacidad as $cap)
                         <option value="{{ $cap->cap_val }}"> {{ $cap->cap_val }} </option>
                         @endforeach
@@ -32,43 +35,64 @@
                 </div>
             </div>
             <div class="col-lg-10">
-                <center>
-                    <div id="listadoButtons">
-                        <div class="row">
-                            <div class="col-lg-3">
+                <div id="listadoButtons">
+                    <div class="row">
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                <label>ESCRIBIR N° VALE:</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="fa fa-search"></i></span>
+                                        <span class="input-group-text"><i class="fa fa-tasks"></i></span>
                                     </div>
-                                    <input type="text" class="form-control text-center text-uppercase">
+                                    <input type="text" id="txt_buscar_nrovale" class="form-control text-center text-uppercase">
                                 </div>
-                            </div>
-                            <div class="col-lg-3">
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="fa fa-search"></i></span>
-                                    </div>
-                                    <input type="text" class="form-control text-center text-uppercase">
-                                </div>
-                            </div>
-                            <div class="col-lg-1">
-                                <button id="btn_vw_consumocab" type="button" class="btn btn-xl btn-danger"><i class="fa fa-plus"></i></button>
-                            </div>
-                            <div class="col-lg-5">
-                                <button id="btn_vw_consumocab" type="button" onclick="mostrarformulario(true)" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVO REGISTRO</button>
-                                <button id="btn_modificar_consumocab" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR CONSUMO</button>
                             </div>
                         </div>
+                        <div class="col-lg-2">
+                            <div class="form-group">
+                                <label>ESCRIBIR N° PLACA:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fa fa-th-list"></i></span>
+                                    </div>
+                                    <input type="text" id="txt_buscar_placa" class="form-control text-center text-uppercase">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>FECHA DESDE:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                    </div>
+                                    <input type="date" id="txt_buscar_fdesde" class="form-control text-center text-uppercase">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>FECHA HASTA:</label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                    </div>
+                                    <input type="date" id="txt_buscar_fhasta" class="form-control text-center text-uppercase">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2" style="padding-top: 32px;">
+                            <button id="btn_vw_buscar_consumos" type="button" class="btn btn-xl btn-success" readonly="readonly"><i class="fa fa-search"></i> BUSCAR</button>
+                        </div>
                     </div>
+                </div>
 
-                    <div id="formularioButtons" style="display:none;">
-                        <button id="btn_vw_consumoscab_Guardar" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-save"></i> GUARDAR REGISTROS</button>
-                        <button id="btn_vw_consumoscab_Cancelar" type="button" class="btn btn-xl btn-default" readonly="readonly"><i class="fa fa-arrow-circle-left"></i> REGRESAR</button>
-                    </div> 
-                </center>
+                <div id="formularioButtons" style="display:none; padding-top: 32px;">
+                    <button id="btn_vw_consumoscab_Guardar" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-save"></i> GUARDAR REGISTROS</button>
+                    <button id="btn_vw_consumoscab_Cancelar" type="button" class="btn btn-xl btn-default" readonly="readonly"><i class="fa fa-arrow-circle-left"></i> REGRESAR</button>
+                </div> 
             </div>
         </div>
-        <br>
 
         <div class="col-xs-12 center-block" id="formularioRegistros" style="display: none;">
             <form id="FormularioConsumoDetalle" name="FormularioConsumoDetalle" method="post" enctype="multipart/form-data">
@@ -79,9 +103,6 @@
                             <label>SELECCIONAR UNA RUTA:</label>
 
                             <select class="form-control select2" style="width: 100%;" id="cbx_consumo_ruta" name="cbx_consumo_ruta">
-                                @foreach($estaciones as $est)
-                                <option value="{{ $est->rut_id }}"> {{ $est->estaciones }} </option>
-                                @endforeach
                             </select>
 
                         </div>

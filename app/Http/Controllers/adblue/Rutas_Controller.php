@@ -158,7 +158,7 @@ class Rutas_Controller extends Controller
             $Lista->rows[$Index]['cell'] = array(
                 trim($Datos->rut_id),
                 trim($Datos->rut_descripcion),
-                trim($Datos->ruta_fecregistro),
+                trim($Datos->rut_fecregistro),
                 $nuevo
             );
         }

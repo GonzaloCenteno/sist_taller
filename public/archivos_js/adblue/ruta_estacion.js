@@ -8,24 +8,30 @@ jQuery(document).ready(function($){
     jQuery("#tblrutaestacion").jqGrid({
         url: 'ruta_estacion/0?grid=rutas',
         datatype: 'json', mtype: 'GET',
-        height: '470px', autowidth: true,
-        colNames: ['ID', 'DESCRIPCION','FECHA REGISTRO','ESTADO'],
+        height: '550px', autowidth: true,
+        colNames: ['ID', 'DESCRIPCION','FECHA REGISTRO'],
         rowNum: 100, sortname: 'rut_id', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblruta" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - LISTA DE RUTAS -', align: "center",
         colModel: [
             {name: 'rut_id', index: 'rut_id', align: 'left',width: 10, hidden:true},
             {name: 'rut_descripcion', index: 'rut_descripcion', align: 'left', width: 60},
-            {name: 'rut_fecregistro', index: 'rut_fecregistro', align: 'center', width: 15},
-            {name: 'rut_estado', index: 'rut_estado', align: 'center', width: 10}
+            {name: 'rut_fecregistro', index: 'rut_fecregistro', align: 'center', width: 25}
         ],
         loadonce : true,
         subGrid: true,
         subGridRowExpanded: showChildGrid,
         subGridOptions : {
-                reloadOnExpand :false,
-                selectOnExpand : true 
-            },
+            reloadOnExpand :false,
+            selectOnExpand : true 
+        },
+        gridComplete: function () {
+            var idarray = jQuery('#tblrutaestacion').jqGrid('getDataIDs');
+            if (idarray.length > 0) {
+            var firstid = jQuery('#tblrutaestacion').jqGrid('getDataIDs')[0];
+                $("#tblrutaestacion").setSelection(firstid);    
+            }
+        },
         onSelectRow: function (Id){},
-        ondblClickRow: function (Id){$('#btn_vw_rtestacion_Editar').click();}
+        ondblClickRow: function (Id){$("#btn_vw_rtestacion_Modificar").click();}
     });
     
     $(window).on('resize.jqGrid', function () {
@@ -62,18 +68,12 @@ function showChildGrid(parentRowID, parentRowKey) {
         loadonce: true,
         autowidth: true,
         height: '100%',
+        ondblClickRow: function (Id){modificar_rtestacion(Id);}
     });
-
 }
-
-//function limpiar_datosEstacion()
-//{
-//    $('#txt_est_descripcion').val('');
-//}
 
 function mostrarformulario(flag)
 {
-    //limpiar_datos();
     if (flag)
     {
         $("#listadoRegistros").hide();
@@ -89,13 +89,15 @@ function mostrarformulario(flag)
         $("#listadoButtons").show();
         $("#formularioButtons").hide();
         $("#formularioButtonsEditar").hide();
+        detalles=0;
     }
 }
 
-jQuery(document).on("click", "#btn_vw_equipos_Cancelar", function(){
-    //limpiar_datos();
+jQuery(document).on("click", "#btn_vw_rtestacion_Cancelar", function(){
+    $(".filas").remove();
+    $("#btn_vw_rtestacion_Guardar").hide();
     mostrarformulario(false);
-})
+});
 
 function autocompletar_estaciones(textbox){
     $.ajax({
@@ -120,6 +122,56 @@ function autocompletar_estaciones(textbox){
     });
 }
 
+jQuery(document).on("click", "#btn_vw_rtestacion_Nuevo", function(){
+    rut_id = $('#tblrutaestacion').jqGrid ('getGridParam', 'selrow');
+    if (rut_id) 
+    {
+        ruta = $('#tblrutaestacion').jqGrid ('getCell', rut_id, 'rut_descripcion');
+        $.ajax({
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+            url: 'ruta_estacion/'+rut_id+'?show=datos',
+            type: 'GET',
+            beforeSend:function()
+            {            
+                MensajeEspera('RECUPERANDO INFORMACION');  
+            },
+            success: function(data) 
+            {
+                html = "";
+                if (data == 0) 
+                {
+                    $(".filas").remove();
+                }
+                else
+                {
+                    for(i=0;i<data.length;i++)
+                    {
+                        html = html+'<tr class="filas" id="fila">\n\
+                            <td></td>\n\
+                            <td><input type="hidden" name="nro_filas_c[]"><input type="hidden" name="estaciones_c[]" id="hiddenestacion_' + data[i].rte_id + '"><input type="text" id="estacion_' + data[i].rte_id + '" disabled="" class="form-control text-uppercase text-center" value="'+data[i].est_descripcion+'"></td>\n\
+                            <td><input type="text" name="consumo_c[]" value="'+data[i].rte_consumo+'" class="form-control text-center" disabled="" onkeypress="return soloNumeroTab(event);"></td>\n\
+                            </tr>';
+                        $("#cuerpo_rtestaciones").html(html);
+                    }
+                }
+                $("#lbl_rte_ruta_create").attr('id_ruta',rut_id);
+                $("#lbl_rte_ruta_create").html('<b>RUTA SELECCIONADA: '+ruta+'</b>');
+                swal.close();
+                mostrarformulario(true);
+            },
+            error: function(data) {
+                MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+                console.log('error');
+                console.log(data);
+            }
+        });
+    }
+    else
+    {
+        mostraralertasconfoco("NO HAY RUTAS SELECCIONADAS","#tblrutaestacion");
+    }
+});
+
 var cont=0;
 var detalles=0;
 $("#btn_vw_rtestacion_Guardar").hide();
@@ -133,7 +185,7 @@ jQuery(document).on("click", "#btn_generar_estaciones", function(){
     autocompletar_estaciones('estacion_'+cont);
     cont++;
     detalles=detalles+1;
-    $('#detalles').append(fila);
+    $('#cuerpo_rtestaciones').append(fila);
     evaluar();
 });
 
@@ -145,8 +197,8 @@ function evaluar()
     }
     else
     {
-      $("#btn_vw_rtestacion_Guardar").hide();
-      cont=0;
+        $("#btn_vw_rtestacion_Guardar").hide();
+        cont=0;
     }
 }
  
@@ -156,14 +208,13 @@ function eliminarDetalle(indice)
     detalles=detalles-1;
     cont++;
     evaluar();
-    //item_retirado();
 }
 
-jQuery(document).on("click", "#btn_vw_rtestacion_Guardar", function() {
+jQuery(document).on("click", "#btn_vw_rtestacion_Guardar", function(){
     var form = new FormData($("#FormularioRtesaciones")[0]);
     $.ajax({
         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-        url: 'ruta_estacion?tipo=1',
+        url: 'ruta_estacion?tipo=1&id_ruta='+$("#lbl_rte_ruta_create").attr('id_ruta'),
         type: 'POST',
         dataType: 'json',
         data: form,
@@ -201,56 +252,109 @@ jQuery(document).on("click", "#btn_act_tblruta", function(){
     }).trigger('reloadGrid');
 });
 
-jQuery(document).on("click", "#btn_vw_rtestacion_Editar", function(){
-    rut_id = $('#tblrutaestacion').jqGrid ('getGridParam', 'selrow');
-    if(rut_id){
-        $.ajax({
-            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-            url: 'ruta_estacion/'+rut_id+'?show=datos',
-            type: 'GET',
-            beforeSend:function()
-            {            
-                MensajeEspera('RECUPERANDO INFORMACION');  
-            },
-            success: function(data) 
+function modificar_rtestacion(rte_id)
+{
+    $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: 'ruta_estacion/'+rte_id+'?show=estaciones',
+        type: 'GET',
+        beforeSend:function()
+        {            
+            MensajeEspera('RECUPERANDO INFORMACION');  
+        },
+        success: function(data) 
+        {
+            Estaciones = $('#ModalRutaEstacion').modal({backdrop: 'static', keyboard: false});
+            Estaciones.find('.modal-title').text('EDITAR ESTACION');
+            Estaciones.find('#btn_actualizar_rtestacion').html('<i class="fa fa-pencil-square-o"></i> MODIFICAR').show();
+            
+            $("#lbl_rte_ruta").attr('rte_id',data[0].rte_id);
+            $("#lbl_rte_ruta").html("RUTA: " + "<b>"+data[0].rut_descripcion+"</b>");
+            $("#txt_rte_consumo").val(data[0].rte_consumo);
+            $("#txt_rte_estacion").val(data[0].est_id);
+            $("#txt_rte_estacion").change();   
+            swal.close();
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
+}
+
+jQuery(document).on("click", "#btn_actualizar_rtestacion", function(){
+    if ($('#txt_rte_consumo').val() == '') {
+        mostraralertasconfoco('* EL CAMPO CONSUMO ES OBLIGATORIO...', '#txt_rte_consumo');
+        return false;
+    }
+    $.ajax({
+        url: 'ruta_estacion/'+$("#lbl_rte_ruta").attr('rte_id')+'/edit',
+        type: 'GET',
+        data:
+        {
+            estacion:$('#txt_rte_estacion').val(),
+            consumo:$('#txt_rte_consumo').val(),
+            tipo:1
+        },
+        beforeSend:function()
+        {            
+            MensajeEspera('ENVIANDO INFORMACION');  
+        },
+        success: function(data) 
+        {
+            if (data == 1) 
             {
-                html="";
-                if (data == 0) 
-                {
-                    mostraralertasconfoco("LA RUTA NO TIENE ESTACIONES ASIGNADAS");
-                }
-                else
-                {
-                    $("#listadoRegistros").hide();
-                    $("#formularioRegistros").show();
-                    $("#listadoButtons").hide();
-                    $("#formularioButtonsEditar").show();
-                    
-                    //$("#cbx_rutas").text('teto');
-                    $("#cbx_rutas").val(rut_id);
-                    $("#cbx_rutas").attr('disabled',true);
-                    
-                    for(i=0;i<data.length;i++)
-                    {
-                        html = html+'<tr class="filas" id="fila">\n\
-                            <td><button type="button" class="btn btn-danger btn-xl" onclick="eliminar('+data[i].rte_id+')">X</button></td>\n\
-                            <td><input type="hidden" name="nro_filas[]"><input type="hidden" name="estaciones[]" id="hiddenestacion_' + data[i].rte_id + '"><input type="text" id="estacion_' + data[i].rte_id + '" disabled="" class="form-control text-uppercase text-center" value="'+data[i].est_descripcion+'"></td>\n\
-                            <td><input type="text" name="consumo[]" value="'+data[i].rte_consumo+'" class="form-control text-center" onkeypress="return soloNumeroTab(event);"></td>\n\
-                            </tr>';
-                        $("#detalles").html(html);
-                    }
-                    swal.close();
-                    console.log(data);
-                }
-            },
-            error: function(data) {
-                MensajeAdvertencia("hubo un error, Comunicar al Administrador");
-                console.log('error');
+                MensajeConfirmacion('SE ACTUALIZO EL REGISTRO CON EXITO');
+                jQuery("#tblrutaestacion").jqGrid('setGridParam', {
+                    url: 'ruta_estacion/0?grid=rutas'
+                }).trigger('reloadGrid');
+                $('#btn_cerrar_modal').click();
+            }
+            else
+            {
+                MensajeAdvertencia('NO SE PUDO ENVIAR LA RESPUESTA');
                 console.log(data);
             }
-        });
-    }
-    else{
-        mostraralertasconfoco("NO HAY RUTAS SELECCIONADAS","#tblrutaestacion");
-    }
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
 });
+
+function cambiar_est_rte(rte_id,rut_id,estado)
+{
+    $.ajax({
+        url: 'ruta_estacion/'+rte_id+'/edit',
+        type: 'GET',
+        data:
+        {
+            estado: estado,
+            tipo:2
+        },
+       
+        success: function(data) 
+        {
+            if (data == 1) 
+            {
+                MensajeConfirmacion("CAMBIO DE ESTADO EXITOSO");
+                jQuery("#tblrutaestacion_"+rut_id).jqGrid('setGridParam', {
+                    url: 'ruta_estacion/0?grid=ruta_estaciones&rut_id='+rut_id
+                }).trigger('reloadGrid');
+            }
+            else
+            {
+                MensajeAdvertencia('OCURRIO UN PROBLEMA AL ENVIAR LA INFORMACION');
+                console.log(data);
+            }
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
+}

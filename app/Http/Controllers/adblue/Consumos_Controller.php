@@ -16,11 +16,11 @@ class Consumos_Controller extends Controller
         {
             $menu_registro = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',1]])->orderBy('menu_id','asc')->get();
             $menu_dashboard = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',2]])->orderBy('menu_id','asc')->get();
-            $estaciones = DB::table('taller.vw_estaciones')->get();
+            //$estaciones = DB::table('taller.vw_estaciones')->get();
             $capacidad = DB::table('taller.tblcapacidad_cap')->orderby('cap_id','asc')->get();
             $placas = DB::table('taller.tblvehiculos_veh')->get();
             $tripulantes = DB::table('taller.tbltripulantes_tri')->select('tri_id','tri_nombre','tri_apaterno','tri_amaterno')->get();
-            return view('adblue/vw_consumos',compact('menu_registro','menu_dashboard','estaciones','capacidad','placas','tripulantes'));
+            return view('adblue/vw_consumos',compact('menu_registro','menu_dashboard','capacidad','placas','tripulantes'));
         }
         else
         {
@@ -50,6 +50,10 @@ class Consumos_Controller extends Controller
             if($request['busqueda']=='personas')
             {
                 return $this->autocompletar_personas($request);
+            }
+            if($request['datos']=='traer_estaciones')
+            {
+                return $this->traer_datos_estaciones($request);
             }
         }
     }
@@ -141,8 +145,14 @@ class Consumos_Controller extends Controller
     
     public function recuperar_datos_crutas($rut_id, Request $request)
     {
-        $rutas = DB::table('taller.vw_rutas_estaciones')->where('rut_id',$rut_id)->get();
+        $rutas = DB::table('taller.vw_ruta_estacion')->where('rut_id',$rut_id)->get();
         return $rutas;
+    }
+    
+    public function traer_datos_estaciones(Request $request)
+    {
+        $estaciones = DB::table('taller.vw_estaciones')->get();
+        return $estaciones;
     }
 
     public function crear_datos_consumos(Request $request)
@@ -213,9 +223,60 @@ class Consumos_Controller extends Controller
         if ($start < 0) {
             $start = 0;
         }
+        
+        if ($request['indice'] == 0) 
+        {
+            $totalg = DB::table('taller.vw_consumos')->select(DB::raw('count(*) as total'))->get();
+            $sql = DB::table('taller.vw_consumos')->orderBy($sidx, $sord)->limit($limit)->offset($start)->get();
+        }
+        else
+        {
+            if(isset($request["nrovale"]))
+            {
+                $vale = trim($request['nrovale']);
+            }
+            else
+            {
+                $vale = "";
+            }
+            if(isset($request["placa"]))
+            {
+                $placa = strtoupper(trim($request['placa']));
+            }    
+            else
+            {
+                $placa = "";
+            }
+            if(isset($request["fdesde"]) && isset($request["fhasta"]))
+            {
+                $fdesde = $request['fdesde'];
+                $fhasta = $request['fhasta'];
+            }    
+            else
+            {
+                $fdesde = "";
+                $fhasta = "";
+            }
+            
+            $where="WHERE 1=1";
+            if($vale!='')
+            {
+                $where.= " AND nro_vale LIKE '%$vale%'";
+            }
+                    
+            if($placa!='')
+            {
+                $where.= " AND veh_placa LIKE '%$placa%'";
+            }
+            
+            if($fdesde!='' && $fhasta!='')
+            {
+                $where.= " AND cde_fecha between '$fdesde' and '$fhasta'";
+            }
 
-        $totalg = DB::table('taller.vw_consumos')->select(DB::raw('count(*) as total'))->get();
-        $sql = DB::table('taller.vw_consumos')->orderBy($sidx, $sord)->limit($limit)->offset($start)->get();
+            $totalg = DB::select("select count(*) as total from taller.vw_consumos ".$where);
+            $sql = DB::select("select * from taller.vw_consumos ".$where." order by ".$sidx." ".$sord." limit ".$limit." offset ".$start);
+        }
 
         $total_pages = 0;
         if (!$sidx) {

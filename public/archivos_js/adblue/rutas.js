@@ -6,7 +6,7 @@ jQuery(document).ready(function($){
     jQuery("#tblrutas").jqGrid({
         url: 'ruta/0?grid=rutas',
         datatype: 'json', mtype: 'GET',
-        height: '470px', autowidth: true,
+        height: '512px', autowidth: true,
         toolbarfilter: true,
         sortable:false,
         colNames: ['ID', 'DESCRIPCION','FECHA REGISTRO','ESTADO'],

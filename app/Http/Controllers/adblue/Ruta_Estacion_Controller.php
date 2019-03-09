@@ -21,8 +21,8 @@ class Ruta_Estacion_Controller extends Controller
         {
             $menu_registro = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',1]])->orderBy('menu_id','asc')->get();
             $menu_dashboard = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',2]])->orderBy('menu_id','asc')->get();
-            $rutas = DB::table('taller.tblrutas_rut')->get();
-            return view('adblue/vw_ruta_estacion',compact('menu_registro','menu_dashboard','rutas'));
+            $estaciones = DB::table('taller.tblestaciones_est')->where('est_estado',1)->get();
+            return view('adblue/vw_ruta_estacion',compact('menu_registro','menu_dashboard','estaciones'));
         }
         else
         {
@@ -37,6 +37,10 @@ class Ruta_Estacion_Controller extends Controller
             if ($request['show'] == 'datos') 
             {
                 return $this->recuperar_datos_rutaestacion($id, $request);
+            }
+            if ($request['show'] == 'estaciones') 
+            {
+                return $this->recuperar_datos_estaciones($id, $request);
             }
         }
         else
@@ -58,7 +62,7 @@ class Ruta_Estacion_Controller extends Controller
     
     public function autocompletar_estaciones(Request $request)
     {
-        $Consulta = DB::table('taller.tblestaciones_est')->get();
+        $Consulta = DB::table('taller.tblestaciones_est')->where('est_estado',1)->get();
         $todo = array();
         foreach ($Consulta as $Datos) {
             $Lista = new \stdClass();
@@ -74,9 +78,16 @@ class Ruta_Estacion_Controller extends Controller
         
     }
 
-    public function edit($est_id,Request $request)
+    public function edit($rte_id,Request $request)
     {
-        
+        if ($request['tipo'] == 1) 
+        {
+            return $this->editar_rte_estacion($rte_id, $request);
+        }
+        if ($request['tipo'] == 2) 
+        {
+            return $this->modificar_rte_estado($rte_id, $request);
+        }
     }
 
     public function destroy(Request $request)
@@ -90,15 +101,11 @@ class Ruta_Estacion_Controller extends Controller
         {
             return $this->crear_datos_ruta_estacion($request);
         }
-//        if($request['tipo'] == 2)
-//        {
-//            return $this->modificar_datos_ruta_estacion($request);
-//        }
     }
     
     public function recuperar_datos_rutaestacion($rut_id,Request $request)
     {
-        $ruta_estacion = DB::table('taller.vw_rutas_estaciones')->where('rut_id',$rut_id)->get();
+        $ruta_estacion = DB::table('taller.vw_rutas_estaciones')->where([['rte_estado',1],['rut_id',$rut_id]])->get();
         if ($ruta_estacion->count() > 0) 
         {
             return $ruta_estacion;
@@ -107,6 +114,12 @@ class Ruta_Estacion_Controller extends Controller
         {
             return 0;
         }
+    }
+    
+    public function recuperar_datos_estaciones($rte_id,Request $request)
+    {
+        $estacion = DB::table('taller.vw_rutas_estaciones')->where('rte_id',$rte_id)->get();
+        return $estacion;
     }
     
     public function crear_tabla_rutas(Request $request)
@@ -121,8 +134,8 @@ class Ruta_Estacion_Controller extends Controller
             $start = 0;
         }
 
-        $totalg = DB::table('taller.tblrutas_rut')->select(DB::raw('count(*) as total'))->get();
-        $sql = DB::table('taller.tblrutas_rut')->orderBy($sidx, $sord)->limit($limit)->offset($start)->get();
+        $totalg = DB::table('taller.tblrutas_rut')->select(DB::raw('count(*) as total'))->where('rut_estado',1)->get();
+        $sql = DB::table('taller.tblrutas_rut')->where('rut_estado',1)->orderBy($sidx, $sord)->limit($limit)->offset($start)->get();
 
         $total_pages = 0;
         if (!$sidx) {
@@ -140,17 +153,11 @@ class Ruta_Estacion_Controller extends Controller
         $Lista->total = $total_pages;
         $Lista->records = $count;
         foreach ($sql as $Index => $Datos) {
-            $Lista->rows[$Index]['id'] = $Datos->rut_id;
-            if ($Datos->rut_estado == 1) {
-                $nuevo = '<button class="btn btn-xl btn-success" type="button" onclick="cambiar_estado_estacion('.trim($Datos->rut_id).',0)"><i class="fa fa-check"></i> ACTIVO</button>';
-            }else{
-                $nuevo = '<button class="btn btn-xl btn-danger" type="button" onclick="cambiar_estado_estacion('.trim($Datos->rut_id).',1)"><i class="fa fa-times"></i> INACTIVO</button>'; 
-            }            
+            $Lista->rows[$Index]['id'] = $Datos->rut_id;           
             $Lista->rows[$Index]['cell'] = array(
                 trim($Datos->rut_id),
                 trim($Datos->rut_descripcion),
-                trim($Datos->rut_fecregistro),
-                $nuevo
+                trim($Datos->rut_fecregistro)
             );
         }
         return response()->json($Lista);
@@ -189,9 +196,9 @@ class Ruta_Estacion_Controller extends Controller
         foreach ($sql as $Index => $Datos) {
             $Lista->rows[$Index]['id'] = $Datos->rte_id;
             if ($Datos->rte_estado == 1) {
-                $nuevo = '<button class="btn btn-xl btn-success" type="button"><i class="fa fa-check"></i> ACTIVO</button>';
+                $nuevo = '<button class="btn btn-xl btn-success" onClick="cambiar_est_rte('.trim($Datos->rte_id).','.$Datos->rut_id.',0)" type="button"><i class="fa fa-check"></i> ACTIVO</button>';
             }else{
-                $nuevo = '<button class="btn btn-xl btn-danger" type="button"><i class="fa fa-times"></i> INACTIVO</button>'; 
+                $nuevo = '<button class="btn btn-xl btn-danger" onClick="cambiar_est_rte('.trim($Datos->rte_id).','.$Datos->rut_id.',1)" type="button"><i class="fa fa-times"></i> INACTIVO</button>'; 
             }            
             $Lista->rows[$Index]['cell'] = array(
                 trim($Datos->rte_id),
@@ -217,10 +224,10 @@ class Ruta_Estacion_Controller extends Controller
                 for($i=0; $i<$filas; $i++)
                 {
                     $this->TblRutasestacion_Rte()->insert([
-                        'rut_id' => $request['cbx_rutas'],
+                        'rut_id' => $request['id_ruta'],
                         'est_id' => $request['estaciones'][$i],
                         'rte_consumo' => $request['consumo'][$i],
-                        'rte_fecregistro' => date('m-d-Y'),
+                        'rte_fecregistro' => date('Y-m-d'),
                         'rte_anio' => date('Y'),
                     ]);
                 }
@@ -241,6 +248,71 @@ class Ruta_Estacion_Controller extends Controller
         {
             return $error;
         }      
+    }
+    
+    public function editar_rte_estacion($rte_id, Request $request)
+    {
+        if($request->ajax())
+        {
+            $error = null;
+
+            DB::beginTransaction();
+            try{
+                $this->TblRutasestacion_Rte()->recuperar($rte_id)->update([
+                    'est_id' => $request['estacion'],
+                    'rte_consumo' => isset($request['consumo']) ? $request['consumo'] : 0,
+                    'rte_usumodificacion' => session('id_usuario'),
+                    'rte_fecmodificacion' => date('Y-m-d'),
+                ]);
+                $success = 1;
+                DB::commit();
+            } catch (\Exception $ex) {
+                $success = 2;
+                $error = $ex->getMessage();
+                DB::rollback();
+            }
+        }
+
+        if ($success == 1) 
+        {
+            return $success;
+        }
+        else
+        {
+            return $error;
+        }  
+    }
+    
+    public function modificar_rte_estado($rte_id, Request $request)
+    {
+        if($request->ajax())
+        {
+            $error = null;
+
+            DB::beginTransaction();
+            try{
+                $this->TblRutasestacion_Rte()->recuperar($rte_id)->update([
+                    'rte_estado' => $request['estado'],
+                    'rte_usumodificacion' => session('id_usuario'),
+                    'rte_fecmodificacion' => date('Y-m-d'),
+                ]);
+                $success = 1;
+                DB::commit();
+            } catch (\Exception $ex) {
+                $success = 2;
+                $error = $ex->getMessage();
+                DB::rollback();
+            }
+        }
+
+        if ($success == 1) 
+        {
+            return $success;
+        }
+        else
+        {
+            return $error;
+        }  
     }
     
 }

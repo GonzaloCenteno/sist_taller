@@ -16,8 +16,9 @@
             <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
             <button type="button" class="btn btn-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
         </div>
-        <div class="col-lg-2">
-            <button id="btn_vw_consumocab" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVO REGISTRO</button>
+        <div class="col-lg-6">
+            <button id="btn_vw_nuevo_consumo_or" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVAS RUTAS</button>
+            <button id="btn_vw_consumocab" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS CONSUMOS</button>
         </div>
     </div>
     <div class="card-body">
@@ -389,6 +390,235 @@
 
             <div class="modal-footer">
                 <button type="button" id="btn_actualizar_consumo" class="btn btn-warning btn-xl"></button>
+                <button type="button" id="btn_cerrar_modal" class="btn btn-danger btn-xl" data-dismiss="modal"><i class="fa fa-times-rectangle-o"></i> CERRAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalNuevaRuta">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">X</span></button>
+            </div>
+
+            <div class="modal-body ui-front">
+                <div class="card card-danger card-outline">
+                    <div class="card-header">
+                        <h5 class="m-0">DATOS</h5>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>VALE:</label>
+
+                                    <div class="input-group">
+                                        <input type="hidden" id="txt_new_cca_id" name="txt_new_cca_id" class="modal_new">
+                                        <input type="text" id="txt_new_nrovale" name="txt_new_nrovale" class="form-control text-center text-uppercase">
+                                        <div class="input-group-prepend">
+                                            <button class="btn btn-success"><i class="fa fa-search"></i></button>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label>ESTACION:</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa fa-tasks"></i></span>
+                                        </div>
+                                        <input type="hidden" id="hiddentxt_new_estacion" name="hidden_txt_new_estacion" class="modal_new">
+                                        <input type="text" id="txt_new_estacion" class="form-control text-center text-uppercase modal_new">
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card card-danger card-outline">
+                    <div class="card-header">
+                        <h5 class="m-0">RESUMEN</h5>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>FECHA:</label>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                        </div>
+                                        <input type="date" id="txt_new_fecha" name="txt_new_fecha" class="form-control text-center text-uppercase modal_new">
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>CONDUCTOR:</label>
+
+                                    <input type="hidden" id="hiddentxt_new_conductor" name="hidden_txt_new_conductor" class="modal_new">
+                                    <input type="text" id="txt_new_conductor" class="form-control text-center text-uppercase modal_new">
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>COPILOTO:</label>
+
+                                    <input type="hidden" id="hiddentxt_new_copiloto" name="hidden_txt_new_copiloto" class="modal_new">
+                                    <input type="text" id="txt_new_copiloto" class="form-control text-center text-uppercase modal_new">
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-danger card-outline">
+                    <div class="card-header">
+                        <h5 class="m-0">COMSUMOS</h5>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>KILOMETROS:</label>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa fa-tasks"></i></span>
+                                        </div>
+                                        <input type="text" id="txt_new_kilometros" name="txt_new_kilometros" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="6">
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>% STOP EN TANQUE:</label>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa fa-percent"></i></span>
+                                        </div>
+                                        <input type="text" id="txt_new_xtanque" name="txt_new_xtanque" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="8">
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>Q - ABAST:</label>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa fa-tasks"></i></span>
+                                        </div>
+                                        <input type="text" id="txt_new_qabast" name="txt_new_qabast" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="8">
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label>OBSERVACIONES:</label>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa fa-th-list"></i></span>
+                                        </div>
+                                        <input type="text" id="txt_new_observaciones" name="txt_new_observaciones" class="form-control text-center text-uppercase modal_new" maxlength="255">
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-danger card-outline">
+                    <div class="card-header">
+                        <h5 class="m-0">RESERVA</h5>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>INGRESO:</label>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa fa-gear"></i></span>
+                                        </div>
+                                        <input type="text" id="txt_new_ingreso" name="txt_new_ingreso" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="8">
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>SALIDA:</label>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa fa-gear"></i></span>
+                                        </div>
+                                        <input type="text" id="txt_new_salida" name="txt_new_salida" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="8">
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label>STOP:</label>
+
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="fa fa-gear"></i></span>
+                                        </div>
+                                        <input type="text" id="txt_cde_stop" name="txt_cde_stop" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="8">
+                                    </div>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btn_crear_nueva_ruta" class="btn btn-success btn-xl"></button>
                 <button type="button" id="btn_cerrar_modal" class="btn btn-danger btn-xl" data-dismiss="modal"><i class="fa fa-times-rectangle-o"></i> CERRAR</button>
             </div>
         </div>

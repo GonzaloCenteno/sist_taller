@@ -39,7 +39,7 @@ class Consumos_Controller extends Controller
             if($request['show'] == 'generar_consumos')
             {
                 return $this->recuperar_datos_crutas($id, $request);
-            }
+            }     
         }
         else
         {
@@ -54,6 +54,10 @@ class Consumos_Controller extends Controller
             if($request['datos']=='traer_estaciones')
             {
                 return $this->traer_datos_estaciones($request);
+            }
+            if($request['datos'] == 'datos_nrovale')
+            {
+                return $this->recuperar_datos_nrovale($request);
             }
         }
     }
@@ -102,7 +106,7 @@ class Consumos_Controller extends Controller
                     $detalle->cde_salida = $request['cde_salida'];
                     $detalle->cde_stop = $request['cde_stop'];
                     $detalle->cde_usumodificacion = session('id_usuario');
-                    $detalle->cde_fecmodificacion = date('d-m-Y');
+                    $detalle->cde_fecmodificacion = date('Y-m-d H:i:s');
                     $detalle->save();
                 }
                 $success = 1;
@@ -154,6 +158,19 @@ class Consumos_Controller extends Controller
         $estaciones = DB::table('taller.vw_estaciones')->get();
         return $estaciones;
     }
+    
+    public function recuperar_datos_nrovale(Request $request)
+    {
+        $nrovale = DB::table('taller.vw_consumos')->select('cca_id','rut_descripcion')->where('cca_nrovale',$request['nrovale'])->orderBy('cde_id','DESC')->take(1)->first();
+        if ($nrovale) 
+        {
+            return response()->json($nrovale);
+        }
+        else
+        {
+            return 0;
+        }
+    }
 
     public function crear_datos_consumos(Request $request)
     {
@@ -163,8 +180,18 @@ class Consumos_Controller extends Controller
 
             DB::beginTransaction();
             try{
+                $consulta = DB::table('taller.tblconsumocabecera_cca')->orderBy('cca_id','DESC')->take(1)->first();
+                if ($consulta) 
+                {
+                    $nrovale = $consulta->cca_nrovale + 1;
+                }
+                else
+                {
+                    $nrovale = 1;
+                }
                 $Tblconsumocabecera_cca = new Tblconsumocabecera_cca;
-                $Tblconsumocabecera_cca->cca_fecregistro = date('d-m-Y');
+                $Tblconsumocabecera_cca->cca_nrovale = $nrovale;
+                $Tblconsumocabecera_cca->cca_fecregistro = date('Y-m-d H:i:s');
                 $Tblconsumocabecera_cca->save();
 
                 $filas = count($request['contador']);
@@ -189,7 +216,7 @@ class Consumos_Controller extends Controller
                     $Tblconsumodetalle_cde->cde_ingreso = isset($request['ingreso'][$i]) ? round($request['ingreso'][$i],3) : 0.0;
                     $Tblconsumodetalle_cde->cde_salida = isset($request['salida'][$i]) ? round($request['salida'][$i],3) : 0.0;
                     $Tblconsumodetalle_cde->cde_stop = isset($request['stop'][$i]) ? round($request['stop'][$i],3) : 0.0;
-                    $Tblconsumodetalle_cde->cde_fecregistro = date('d-m-Y');
+                    $Tblconsumodetalle_cde->cde_fecregistro = date('Y-m-d H:i:s');
                     $Tblconsumodetalle_cde->cde_anio = date('Y');
                     $Tblconsumodetalle_cde->save();
                 }

@@ -15,7 +15,8 @@ class CreateTallerTblconsumocabeceraCca extends Migration
     {
         Schema::create('taller.tblconsumocabecera_cca', function (Blueprint $table) {
             $table->increments('cca_id')->comment('ID DE REGISTRO Y NUMERO DE VALE CONSUMO');
-            $table->date('cca_fecregistro')->comment('FECHA REGISTRO CABECERA');
+            $table->integer('cca_nrovale')->unique()->comment('NUMERO DE VALE');
+            $table->timestampTz('cca_fecregistro')->comment('FECHA REGISTRO CABECERA');
             $table->smallInteger('cca_estado')->default(1)->comment('ESTADO DE LA CABECERA CONSUMO');
         });
 

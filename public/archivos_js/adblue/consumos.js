@@ -115,6 +115,7 @@ function mostrarformulario(flag)
         $("#formularioButtons").show();
         $("#form_codigo").focus();
         $("#btn_vw_consumocab").hide();
+        $("#btn_vw_nuevo_consumo_or").hide();
     }
     else
     {
@@ -127,6 +128,7 @@ function mostrarformulario(flag)
         $("#btn_vw_consumoscab_Guardar").attr('disabled',true);
         $("#btn_vw_otrosconsumos_Guardar").hide();
         $("#btn_vw_consumocab").show();
+        $("#btn_vw_nuevo_consumo_or").show();
     }
 }
 
@@ -143,6 +145,7 @@ function autocompletar_personas(textbox){
             var $datos = data;
             $("#" + textbox).autocomplete({
                 source: $datos,
+                minLength: 3,
                 focus: function (event, ui) {
                     $("#" + textbox).val(ui.item.label);
                     $("#hidden" + textbox).val(ui.item.value);
@@ -164,7 +167,7 @@ function autocompletar_estaciones(textbox){
         url: 'ruta_estacion/0?busqueda=estaciones',
         success: function (data) {
             var $datos = data;
-            $("#" + textbox).autocomplete({
+            $("#" + textbox).autocomplete({   
                 source: $datos,
                 focus: function (event, ui) {
                     $("#" + textbox).val(ui.item.label);
@@ -198,104 +201,112 @@ jQuery(document).on("click", "#btn_generar_consumodet", function(){
             var num = 0;
             html="";
             
-            if (data[0].rut_descripcion == 'OR') 
+            if (data == "") 
             {
-                $("#btn_vw_consumoscab_Guardar").attr('disabled',true);
-                $(".filas_consumocab").remove();
-                $("#btn_generar_consumodet").attr('disabled',true);
-                $("#cbx_consumo_ruta").attr('disabled',true);
-                
-                html = '<div class="form-row">\n\
-                            <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">\n\
-                                <table id="consumodet" class="table table-striped table-bordered table-condensed table-hover">\n\
-                                   <thead style="background-color:#A9D0F5">\n\
-                                    <th style="width: 5%;"></th>\n\
-                                    <th style="width: 10%;">FECHA</th>\n\
-                                    <th style="width: 5%;">ESTACION</th>\n\
-                                    <th style="width: 15%;">CONDUCTOR</th>\n\
-                                    <th style="width: 15%;">PILOTO</th>\n\
-                                    <th style="width: 10%;">KM</th>\n\
-                                    <th style="width: 10%;">%STOP EN TANQUE</th>\n\
-                                    <th style="width: 10%;">Q-ABAST.</th>\n\
-                                    <th style="width: 15%;">OBSERVACIONES</th>\n\
-                                    <th style="width: 8%;">INGRESO</th>\n\
-                                    <th style="width: 10%;">SALIDA</th>\n\
-                                    <th style="width: 10%;">STOP</th>\n\
-                                    </thead>\n\
-                                    <tbody id="cuerpodet">\n\
-                                        <tr class="filas_consumocab" id="filas_consumocab">\n\
-                                            <td><button type="button" id="agregar_otrasrutas" class="btn btn-success"><i class="fa fa-plus-square"></i></button></td>\n\
-                                            <td><input type="date" name="fecha[]" class="form-control text-uppercase text-center"></td>\n\
-                                            <td><input type="hidden" name="contador[]"><input type="hidden" name="estacion[]" id="hiddenestacion_'+num+'"><input type="text" id="estacion_'+num+'" class="form-control text-uppercase text-center"></td>\n\
-                                            <td><input type="hidden" name="conductor[]" id="hiddenconductor_'+num+'"><input type="text" id="conductor_'+num+'" class="form-control conductor text-uppercase text-center"></td>\n\
-                                            <td><input type="hidden" name="piloto[]" id="hiddenpiloto_'+num+'"><input type="text" id="piloto_'+num+'" class="form-control piloto text-uppercase text-center"></td>\n\
-                                            <td><input type="text" name="km[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="6"></td>\n\
-                                            <td><input type="text" name="xtanque[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                                            <td><input type="text" name="qabast[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                                            <td><input type="text" name="observ[]" class="form-control text-uppercase text-center" maxlength="255"></td>\n\
-                                            <td><input type="text" name="ingreso[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                                            <td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                                            <td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                                        </tr>\n\
-                                    </tbody>\n\
-                                </table>\n\
-                            </div>\n\
-                        </div>';
-                autocompletar_estaciones('estacion_'+num);
-                autocompletar_personas('conductor_'+num);
-                autocompletar_personas('piloto_'+num);
-                $("#consumodet").html(html);
-                cont++;
-                detalles=detalles+1;
-                evaluar();
+                mostraralertasconfoco('LA RUTA FUE INACTIVADA');
             }
             else
             {
-                html = '<div class="form-row">\n\
-                            <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">\n\
-                                <table id="consumodet" class="table table-striped table-bordered table-condensed table-hover">\n\
-                                   <thead style="background-color:#A9D0F5">\n\
-                                    <th style="width: 10%;">FECHA</th>\n\
-                                    <th style="width: 5%;">ESTACION</th>\n\
-                                    <th style="width: 15%;">CONDUCTOR</th>\n\
-                                    <th style="width: 15%;">PILOTO</th>\n\
-                                    <th style="width: 10%;">KM</th>\n\
-                                    <th style="width: 10%;">%STOP EN TANQUE</th>\n\
-                                    <th style="width: 10%;">Q-ABAST.</th>\n\
-                                    <th style="width: 15%;">OBSERVACIONES</th>\n\
-                                    <th style="width: 8%;">INGRESO</th>\n\
-                                    <th style="width: 10%;">SALIDA</th>\n\
-                                    <th style="width: 10%;">STOP</th>\n\
-                                    </thead>\n\
-                                </table>\n\
-                            </div>\n\
-                        </div>';
-                for(i=1;i<data.length;i++)
+                if (data[0].rut_descripcion == 'OR') 
                 {
-                    num++;
-                    html = html+'<tr class="filas_consumocab" id="filas_consumocab">\n\
-                        <td><input type="date" name="fecha[]" class="form-control text-uppercase text-center"></td>\n\
-                        <td><input type="hidden" name="contador[]"><input type="hidden" name="estacion[]" value="'+data[i].est_id+'"><label>'+data[i].est_descripcion+'</label></td>\n\
-                        <td><input type="hidden" name="conductor[]" id="hiddenconductor_'+num+'"><input type="text" id="conductor_'+num+'" class="form-control conductor text-uppercase text-center"></td>\n\
-                        <td><input type="hidden" name="piloto[]" id="hiddenpiloto_'+num+'"><input type="text" id="piloto_'+num+'" class="form-control piloto text-uppercase text-center"></td>\n\
-                        <td><input type="text" name="km[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="6"></td>\n\
-                        <td><input type="text" name="xtanque[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                        <td><input type="text" name="qabast[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                        <td><input type="text" name="observ[]" class="form-control text-uppercase text-center" maxlength="255"></td>\n\
-                        <td><input type="text" name="ingreso[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                        <td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                        <td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                        </tr>';
+                    $("#btn_vw_consumoscab_Guardar").attr('disabled',true);
+                    $(".filas_consumocab").remove();
+                    $("#btn_generar_consumodet").attr('disabled',true);
+                    $("#cbx_consumo_ruta").attr('disabled',true);
+
+                    html = '<div class="form-row">\n\
+                                <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">\n\
+                                    <table id="consumodet" class="table table-striped table-bordered table-condensed table-hover">\n\
+                                       <thead style="background-color:#A9D0F5">\n\
+                                        <th style="width: 5%;"></th>\n\
+                                        <th style="width: 10%;">FECHA</th>\n\
+                                        <th style="width: 5%;">ESTACION</th>\n\
+                                        <th style="width: 15%;">CONDUCTOR</th>\n\
+                                        <th style="width: 15%;">PILOTO</th>\n\
+                                        <th style="width: 10%;">KM</th>\n\
+                                        <th style="width: 10%;">%STOP EN TANQUE</th>\n\
+                                        <th style="width: 10%;">Q-ABAST.</th>\n\
+                                        <th style="width: 15%;">OBSERVACIONES</th>\n\
+                                        <th style="width: 8%;">INGRESO</th>\n\
+                                        <th style="width: 10%;">SALIDA</th>\n\
+                                        <th style="width: 10%;">STOP</th>\n\
+                                        </thead>\n\
+                                        <tbody id="cuerpodet">\n\
+                                            <tr class="filas_consumocab" id="filas_consumocab">\n\
+                                                <td><button type="button" id="agregar_otrasrutas" class="btn btn-success"><i class="fa fa-plus-square"></i></button></td>\n\
+                                                <td><input type="date" name="fecha[]" class="form-control text-uppercase text-center"></td>\n\
+                                                <td><input type="hidden" name="contador[]"><input type="hidden" name="estacion[]" id="hiddenestacion_'+num+'"><input type="text" id="estacion_'+num+'" class="form-control text-uppercase text-center"></td>\n\
+                                                <td><input type="hidden" name="conductor[]" id="hiddenconductor_'+num+'"><input type="text" id="conductor_'+num+'" class="form-control conductor text-uppercase text-center"></td>\n\
+                                                <td><input type="hidden" name="piloto[]" id="hiddenpiloto_'+num+'"><input type="text" id="piloto_'+num+'" class="form-control piloto text-uppercase text-center"></td>\n\
+                                                <td><input type="text" name="km[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="6"></td>\n\
+                                                <td><input type="text" name="xtanque[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                                                <td><input type="text" name="qabast[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                                                <td><input type="text" name="observ[]" class="form-control text-uppercase text-center" maxlength="255"></td>\n\
+                                                <td><input type="text" name="ingreso[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                                                <td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                                                <td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                                            </tr>\n\
+                                        </tbody>\n\
+                                    </table>\n\
+                                </div>\n\
+                            </div>';
+                    autocompletar_estaciones('estacion_'+num);
+                    autocompletar_personas('conductor_'+num);
+                    autocompletar_personas('piloto_'+num);
                     $("#consumodet").html(html);
+                    cont++;
+                    detalles=detalles+1;
+                    evaluar();
+                    swal.close();
                 }
-                for(j=1;j<=num;j++)
+                else
                 {
-                    autocompletar_personas('conductor_'+j);
-                    autocompletar_personas('piloto_'+j);
+                    html = '<div class="form-row">\n\
+                                <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">\n\
+                                    <table id="consumodet" class="table table-striped table-bordered table-condensed table-hover">\n\
+                                       <thead style="background-color:#A9D0F5">\n\
+                                        <th style="width: 10%;">FECHA</th>\n\
+                                        <th style="width: 5%;">ESTACION</th>\n\
+                                        <th style="width: 15%;">CONDUCTOR</th>\n\
+                                        <th style="width: 15%;">PILOTO</th>\n\
+                                        <th style="width: 10%;">KM</th>\n\
+                                        <th style="width: 10%;">%STOP EN TANQUE</th>\n\
+                                        <th style="width: 10%;">Q-ABAST.</th>\n\
+                                        <th style="width: 15%;">OBSERVACIONES</th>\n\
+                                        <th style="width: 8%;">INGRESO</th>\n\
+                                        <th style="width: 10%;">SALIDA</th>\n\
+                                        <th style="width: 10%;">STOP</th>\n\
+                                        </thead>\n\
+                                    </table>\n\
+                                </div>\n\
+                            </div>';
+                    for(i=1;i<data.length;i++)
+                    {
+                        num++;
+                        html = html+'<tr class="filas_consumocab" id="filas_consumocab">\n\
+                            <td><input type="date" name="fecha[]" class="form-control text-uppercase text-center"></td>\n\
+                            <td><input type="hidden" name="contador[]"><input type="hidden" name="estacion[]" value="'+data[i].est_id+'"><label>'+data[i].est_descripcion+'</label></td>\n\
+                            <td><input type="hidden" name="conductor[]" id="hiddenconductor_'+num+'"><input type="text" id="conductor_'+num+'" class="form-control conductor text-uppercase text-center"></td>\n\
+                            <td><input type="hidden" name="piloto[]" id="hiddenpiloto_'+num+'"><input type="text" id="piloto_'+num+'" class="form-control piloto text-uppercase text-center"></td>\n\
+                            <td><input type="text" name="km[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="6"></td>\n\
+                            <td><input type="text" name="xtanque[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                            <td><input type="text" name="qabast[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                            <td><input type="text" name="observ[]" class="form-control text-uppercase text-center" maxlength="255"></td>\n\
+                            <td><input type="text" name="ingreso[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                            <td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                            <td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                            </tr>';
+                        $("#consumodet").html(html);
+                    }
+                    for(j=1;j<=num;j++)
+                    {
+                        autocompletar_personas('conductor_'+j);
+                        autocompletar_personas('piloto_'+j);
+                    }
+                    $("#btn_vw_consumoscab_Guardar").removeAttr('disabled');
+                    swal.close();
                 }
-                $("#btn_vw_consumoscab_Guardar").removeAttr('disabled');
             }
-            swal.close();
         },
         error: function(data) {
             MensajeAdvertencia("hubo un error, Comunicar al Administrador");
@@ -571,4 +582,72 @@ jQuery(document).on("click", "#btn_vw_buscar_consumos", function(){
     jQuery("#tblconsumosdet").jqGrid('setGridParam', {
         url: 'consumo/0?grid=consumos&indice=1&nrovale='+$("#txt_buscar_nrovale").val()+'&placa='+$("#txt_buscar_placa").val()+'&fdesde='+$("#txt_buscar_fdesde").val()+'&fhasta='+$("#txt_buscar_fhasta").val()
     }).trigger('reloadGrid');
+});
+
+jQuery(document).on("click", "#btn_vw_nuevo_consumo_or", function(){
+    RutaConsumo = $('#ModalNuevaRuta').modal({backdrop: 'static', keyboard: false});
+    RutaConsumo.find('.modal-title').text('NUEVA RUTA');
+    RutaConsumo.find('#btn_crear_nueva_ruta').html('<i class="fa fa-sign-in"></i> AGREGAR NUEVO').show();
+    
+    $('.modal_new').attr('disabled',true);
+    $('.modal_new').val('');
+    $("#txt_new_nrovale").val('');
+    setTimeout(function (){
+        $('#txt_new_nrovale').focus();
+    }, 200);
+});
+
+$("#txt_new_nrovale").keypress(function (e) {
+    if (e.which == 13) {
+        fn_buscar_nrovale();
+    }
+});
+
+function fn_buscar_nrovale()
+{
+    $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: 'consumo/0?datos=datos_nrovale',
+        type: 'GET',
+        data:
+        {
+            nrovale:$("#txt_new_nrovale").val(),
+        },
+        beforeSend:function()
+        {            
+            MensajeEspera('RECUPERANDO INFORMACION');  
+        },
+        success: function(data) 
+        {
+            if (data.rut_descripcion == 'OR') 
+            {
+                $('.modal_new').removeAttr('disabled');
+                autocompletar_estaciones('txt_new_estacion');
+                autocompletar_personas('txt_new_conductor');
+                autocompletar_personas('txt_new_copiloto');
+                swal.close();
+            }
+            else if(data == 0)
+            {
+                mostraralertasconfoco('EL NUMERO DE VALE NO EXISTE');
+                $('.modal_new').attr('disabled',true);
+                $('.modal_new').val('');
+            }
+            else
+            {
+                mostraralertasconfoco('EL NUMERO DE VALE NO ES "OR" ');
+                $('.modal_new').attr('disabled',true);
+                $('.modal_new').val('');
+            }
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
+}
+
+jQuery(document).on("click", "#btn_crear_nueva_ruta", function(){
+   alert('se guardo'); 
 });

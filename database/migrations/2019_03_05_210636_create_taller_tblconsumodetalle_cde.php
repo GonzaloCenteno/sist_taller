@@ -32,7 +32,7 @@ class CreateTallerTblconsumodetalleCde extends Migration
             $table->decimal ('cde_ingreso',7,3)->nullable()->default(0.0)->comment('CANTIDAD DE INGRESO');
             $table->decimal ('cde_salida',7,3)->nullable()->default(0.0)->comment('CANTIDAD DE SALIDA');
             $table->decimal ('cde_stop',7,3)->nullable()->default(0.0)->comment('CANTIDAD STOP');
-            $table->date('cde_fecregistro')->comment('FECHA REGISTRO');
+            $table->timestampTz('cde_fecregistro')->comment('FECHA REGISTRO');
             $table->date('cde_fecmodificacion')->nullable()->comment('FECHA ACTUALIZACION');
             $table->string('cde_usumodificacion',100)->default('-')->nullable()->comment('ULTIMO USUARIO QUE MODIFICO');
             $table->smallInteger('cde_estado')->default(1)->comment('ESTADO DEL DETALLE CONSUMO');

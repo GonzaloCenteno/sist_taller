@@ -77,7 +77,51 @@ class Consumos_Controller extends Controller
 
     public function create(Request $request)
     {
-        
+        if($request->ajax())
+        {
+            $error = null;
+
+            DB::beginTransaction();
+            try{
+                $Tblconsumodetalle_cde = new Tblconsumodetalle_cde;
+                $Tblconsumodetalle_cde->cde_fecha = $request['cde_fecha'];
+                $Tblconsumodetalle_cde->cca_id = $request['cca_id'];
+                $Tblconsumodetalle_cde->veh_id = $request['veh_id'];
+                $Tblconsumodetalle_cde->rut_id = $request['rut_id'];
+                $Tblconsumodetalle_cde->est_id = $request['est_id'];
+                $Tblconsumodetalle_cde->tri_idconductor = $request['tri_idconductor'];
+                $Tblconsumodetalle_cde->tri_idcopiloto = $request['tri_idcopiloto'];
+                $Tblconsumodetalle_cde->cde_kilometros = $request['cde_kilometros'];
+                $Tblconsumodetalle_cde->cde_xtanque = $request['cde_xtanque'];
+                $Tblconsumodetalle_cde->cde_qlttanque = round($request['capacidad'] * ($request['cde_xtanque']/100),3);
+                $Tblconsumodetalle_cde->cde_xconsumida = 100 - $request['cde_xtanque'];
+                $Tblconsumodetalle_cde->cde_qltconsumida = round($request['capacidad'] * ($Tblconsumodetalle_cde->cde_xconsumida/100),3);
+                $Tblconsumodetalle_cde->cde_qabastecida = $request['cde_qabastecida'];
+                $Tblconsumodetalle_cde->cde_observaciones = $request['cde_observaciones'];
+                $Tblconsumodetalle_cde->cde_ingreso = $request['cde_ingreso'];
+                $Tblconsumodetalle_cde->cde_salida = $request['cde_salida'];
+                $Tblconsumodetalle_cde->cde_stop = $request['cde_stop'];
+                $Tblconsumodetalle_cde->cde_fecregistro = date('Y-m-d H:i:s');
+                $Tblconsumodetalle_cde->cde_anio = date('Y');
+                $Tblconsumodetalle_cde->save();
+                
+                $success = 1;
+                DB::commit();
+            } catch (\Exception $ex) {
+                $success = 2;
+                $error = $ex->getMessage();
+                DB::rollback();
+            }
+        }
+
+        if ($success == 1) 
+        {
+            return $success;
+        }
+        else
+        {
+            return $error;
+        } 
     }
 
     public function edit($cde_id,Request $request)
@@ -161,7 +205,7 @@ class Consumos_Controller extends Controller
     
     public function recuperar_datos_nrovale(Request $request)
     {
-        $nrovale = DB::table('taller.vw_consumos')->select('cca_id','rut_descripcion')->where('cca_nrovale',$request['nrovale'])->orderBy('cde_id','DESC')->take(1)->first();
+        $nrovale = DB::table('taller.vw_consumos')->select('cca_id','rut_descripcion','rut_id','veh_id')->where('cca_nrovale',$request['nrovale'])->orderBy('cde_id','DESC')->take(1)->first();
         if ($nrovale) 
         {
             return response()->json($nrovale);

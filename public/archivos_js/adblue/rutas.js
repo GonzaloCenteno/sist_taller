@@ -192,6 +192,7 @@ jQuery(document).on("click", "#btn_actualizar_ruta", function() {
 function cambiar_estado_ruta(rut_id,estado)
 {
     $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         url: 'ruta/'+rut_id+'/edit',
         type: 'GET',
         data:

@@ -422,9 +422,11 @@
 
                                     <div class="input-group">
                                         <input type="hidden" id="txt_new_cca_id" name="txt_new_cca_id" class="modal_new">
+                                        <input type="hidden" id="txt_new_veh_id" name="txt_new_veh_placa" class="modal_new">
+                                        <input type="hidden" id="txt_new_rut_id" name="txt_new_rut_id" class="modal_new">
                                         <input type="text" id="txt_new_nrovale" name="txt_new_nrovale" class="form-control text-center text-uppercase">
                                         <div class="input-group-prepend">
-                                            <button class="btn btn-success"><i class="fa fa-search"></i></button>
+                                            <button onclick="fn_buscar_nrovale();" class="btn btn-success"><i class="fa fa-search"></i></button>
                                         </div>
                                     </div>
 
@@ -618,7 +620,7 @@
             </div>
 
             <div class="modal-footer">
-                <button type="button" id="btn_crear_nueva_ruta" class="btn btn-success btn-xl"></button>
+                <button type="button" id="btn_crear_nueva_ruta" class="btn btn-success btn-xl modal_new"></button>
                 <button type="button" id="btn_cerrar_modal" class="btn btn-danger btn-xl" data-dismiss="modal"><i class="fa fa-times-rectangle-o"></i> CERRAR</button>
             </div>
         </div>

@@ -17,7 +17,7 @@
             <button type="button" class="btn btn-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
         </div>
     </div>
-    <div class="card-body">
+    <div class="card-body" id="contenedors">
         <div class="col-lg-12">
             <center>
                 <button id="btn_nueva_ruta" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> CREAR RUTA</button>

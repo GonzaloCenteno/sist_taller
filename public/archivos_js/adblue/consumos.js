@@ -605,6 +605,11 @@ $("#txt_new_nrovale").keypress(function (e) {
 
 function fn_buscar_nrovale()
 {
+    if ($('#txt_new_nrovale').val() == '') {
+        mostraralertasconfoco('* EL CAMPO NUMERO VALE NO PUEDE ESTAR EN BLANCO...', '#txt_new_nrovale');
+        return false;
+    }
+    
     $.ajax({
         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
         url: 'consumo/0?datos=datos_nrovale',
@@ -625,6 +630,9 @@ function fn_buscar_nrovale()
                 autocompletar_estaciones('txt_new_estacion');
                 autocompletar_personas('txt_new_conductor');
                 autocompletar_personas('txt_new_copiloto');
+                $("#txt_new_cca_id").val(data.cca_id);
+                $("#txt_new_veh_id").val(data.veh_id);
+                $("#txt_new_rut_id").val(data.rut_id);
                 swal.close();
             }
             else if(data == 0)
@@ -649,5 +657,57 @@ function fn_buscar_nrovale()
 }
 
 jQuery(document).on("click", "#btn_crear_nueva_ruta", function(){
-   alert('se guardo'); 
+    var now = new Date();
+    var fecha = now.getFullYear() + '-' + now.getMonth() + '-' + now.getDate();
+    $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: 'consumo/create',
+        type: 'GET',
+        data:
+        {
+            cde_fecha:$('#txt_new_fecha').val() || fecha,
+            cca_id:$('#txt_new_cca_id').val(),
+            veh_id:$('#txt_new_veh_id').val(),
+            rut_id:$('#txt_new_rut_id').val(),
+            est_id:$('#hiddentxt_new_estacion').val() || 1,
+            tri_idconductor:$('#hiddentxt_new_conductor').val() || 1,
+            tri_idcopiloto:$('#hiddentxt_new_copiloto').val() || 1,
+            cde_kilometros:$('#txt_new_kilometros').val() || 0,
+            cde_xtanque:$('#txt_new_xtanque').val() || 0,
+            cde_qabastecida:$('#txt_new_qabast').val() || 0.0,
+            cde_observaciones:$('#txt_new_observaciones').val() || '-',
+            cde_ingreso:$('#txt_new_ingreso').val() || 0.0,
+            cde_salida:$('#txt_new_salida').val() || 0.0,
+            cde_stop:$('#txt_cde_stop').val() || 0.0,
+            capacidad:$('#cbx_capacidad').val()
+        },
+        beforeSend:function()
+        {            
+            MensajeEspera('ENVIANDO INFORMACION');  
+        },
+        success: function(data) 
+        {
+            if (data == 1) 
+            {
+                MensajeConfirmacion('SE AGREGO EL REGISTRO CON EXITO');
+                jQuery("#tblconsumosdet").jqGrid('setGridParam', {
+                    url: 'consumo/0?grid=consumos'
+                }).trigger('reloadGrid');
+                $('.modal_new').attr('disabled',true);
+                $('.modal_new').val('');
+                $("#txt_new_nrovale").val('');
+                $("#txt_new_nrovale").focus();
+            }
+            else
+            {
+                MensajeAdvertencia('NO SE PUDO ENVIAR LA RESPUESTA');
+                console.log(data);
+            }
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
 });

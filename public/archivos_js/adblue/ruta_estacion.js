@@ -34,15 +34,22 @@ jQuery(document).ready(function($){
         ondblClickRow: function (Id){$("#btn_vw_rtestacion_Modificar").click();}
     });
     
-    $(window).on('resize.jqGrid', function () {
-        $("#tblrutaestacion").jqGrid('setGridWidth', $("#contenedor").width());
-    });
-    
     jQuery.fn.preventDoubleSubmission = function() {
         cambiar_estado_estacion();
     };
     
     $(".select2").select2();
+});
+
+jQuery(document).on("click", "#menu_push", function(){    
+    if ($("#body_push").hasClass('sidebar-mini sidebar-collapse')) 
+    {
+        $("#tblrutaestacion").jqGrid('setGridWidth', 1520);
+    }
+    else
+    {
+        $("#tblrutaestacion").jqGrid('setGridWidth', 1327);
+    } 
 });
 
 function showChildGrid(parentRowID, parentRowKey) {

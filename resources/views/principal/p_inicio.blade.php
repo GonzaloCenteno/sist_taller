@@ -35,10 +35,11 @@
         <link href="{{ asset('css/smartadmin-production.min.css') }}" rel="stylesheet">
         
         <link href="{{ asset('css/ui.jqgrid.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/ui.jqgrid-bootstrap4.css') }}" rel="stylesheet">
         <link href="{{ asset('css/sweetalert2.css') }}" rel="stylesheet"> 
         <link href="{{ asset('plugins/select2/select2.min.css') }}" rel="stylesheet">
     </head>
-    <body class="hold-transition sidebar-mini">
+    <body class="hold-transition sidebar-mini" id="body_push">
         <div class="wrapper">
 
             <!-- Navbar -->
@@ -46,7 +47,7 @@
                 <!-- Left navbar links -->
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link" data-widget="pushmenu" href="#"><i class="fa fa-bars"></i></a>
+                        <a class="nav-link" data-widget="pushmenu" href="#" id="menu_push"><i class="fa fa-bars"></i></a>
                     </li>
                 </ul>
 

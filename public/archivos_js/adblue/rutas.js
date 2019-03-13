@@ -29,15 +29,22 @@ jQuery(document).ready(function($){
         onSelectRow: function (Id){},
         ondblClickRow: function (Id){$('#btn_modificar_ruta').click();}
     });
-    
-    $(window).on('resize.jqGrid', function () {
-        $("#tblrutas").jqGrid('setGridWidth', $("#contenedor").width());
-    });
-    
+     
     jQuery.fn.preventDoubleSubmission = function() {
         cambiar_estado_ruta();
     };
     
+});
+
+jQuery(document).on("click", "#menu_push", function(){    
+    if ($("#body_push").hasClass('sidebar-mini sidebar-collapse')) 
+    {
+        $("#tblrutas").jqGrid('setGridWidth', 1520);
+    }
+    else
+    {
+        $("#tblrutas").jqGrid('setGridWidth', 1327);
+    } 
 });
 
 function limpiar_datosRuta()

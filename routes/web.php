@@ -30,4 +30,5 @@ Route::group(['namespace' => 'adblue'], function()
     Route::resource('ruta', 'Rutas_Controller');
     Route::resource('ruta_estacion', 'Ruta_Estacion_Controller');
     Route::resource('consumo', 'Consumos_Controller');
+    Route::resource('control', 'Control_Controller');
 });

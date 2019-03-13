@@ -97,7 +97,7 @@ class Consumos_Controller extends Controller
                 $Tblconsumodetalle_cde->cde_xconsumida = 100 - $request['cde_xtanque'];
                 $Tblconsumodetalle_cde->cde_qltconsumida = round($request['capacidad'] * ($Tblconsumodetalle_cde->cde_xconsumida/100),3);
                 $Tblconsumodetalle_cde->cde_qabastecida = $request['cde_qabastecida'];
-                $Tblconsumodetalle_cde->cde_observaciones = $request['cde_observaciones'];
+                $Tblconsumodetalle_cde->cde_observaciones = strtoupper($request['cde_observaciones']);
                 $Tblconsumodetalle_cde->cde_ingreso = $request['cde_ingreso'];
                 $Tblconsumodetalle_cde->cde_salida = $request['cde_salida'];
                 $Tblconsumodetalle_cde->cde_stop = $request['cde_stop'];

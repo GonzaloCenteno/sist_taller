@@ -8,7 +8,7 @@ jQuery(document).ready(function($){
     jQuery("#tblconsumosdet").jqGrid({
         url: 'consumo/0?grid=consumos&indice=0',
         datatype: 'json', mtype: 'GET',
-        height: '470px', autowidth: true,
+        height: '415px', autowidth: true,
         toolbarfilter: true,
         sortable:false,
         shrinkToFit: false,
@@ -68,11 +68,18 @@ jQuery(document).ready(function($){
             .jqGrid("setFrozenColumns")
             .trigger("reloadGrid", [{ current: true}]);
     
-    $(window).on('resize.jqGrid', function () {
-        $("#tblconsumosdet").jqGrid('setGridWidth', $("#contenedor").width());
-    });
-    
     $(".select2").select2();
+});
+
+jQuery(document).on("click", "#menu_push", function(){    
+    if ($("#body_push").hasClass('sidebar-mini sidebar-collapse')) 
+    {
+        $("#tblconsumosdet").jqGrid('setGridWidth', 1520);
+    }
+    else
+    {
+        $("#tblconsumosdet").jqGrid('setGridWidth', 1327);
+    } 
 });
 
 jQuery(document).on("click", "#btn_vw_consumocab", function(){

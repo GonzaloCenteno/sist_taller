@@ -152,7 +152,6 @@
             </div>
         </div>
 
-        <br>
         <div class="form-group col-md-12" id="listadoRegistros">
             <div class="form-group col-md-12" id="contenedor">
                 <table id="tblconsumosdet"></table>

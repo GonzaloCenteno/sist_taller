@@ -30,14 +30,21 @@ jQuery(document).ready(function($){
         ondblClickRow: function (Id){$('#btn_modificar_estacion').click();}
     });
     
-    $(window).on('resize.jqGrid', function () {
-        $("#tblestaciones").jqGrid('setGridWidth', $("#contenedor").width());
-    });
-    
     jQuery.fn.preventDoubleSubmission = function() {
         cambiar_estado_estacion();
     };
     
+});
+
+jQuery(document).on("click", "#menu_push", function(){    
+    if ($("#body_push").hasClass('sidebar-mini sidebar-collapse')) 
+    {
+        $("#tblestaciones").jqGrid('setGridWidth', 1520);
+    }
+    else
+    {
+        $("#tblestaciones").jqGrid('setGridWidth', 1327);
+    } 
 });
 
 function limpiar_datosEstacion()

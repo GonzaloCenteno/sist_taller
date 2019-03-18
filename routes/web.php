@@ -31,4 +31,6 @@ Route::group(['namespace' => 'adblue'], function()
     Route::resource('ruta_estacion', 'Ruta_Estacion_Controller');
     Route::resource('consumo', 'Consumos_Controller');
     Route::resource('control', 'Control_Controller');
+    Route::get('control_diario','Control_Controller@abrir_rep_control_diario')->name('control_diario');
+    Route::get('control_abastecimiento','Control_Controller@abrir_rep_control_abast')->name('control_abastecimiento');
 });

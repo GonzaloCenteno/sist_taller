@@ -214,7 +214,7 @@ jQuery(document).on("click", "#btn_generar_consumodet", function(){
             }
             else
             {
-                if (data[0].rut_descripcion == 'OR') 
+                if (data[0].rut_descripcion == 'OTR') 
                 {
                     $("#btn_vw_consumoscab_Guardar").attr('disabled',true);
                     $(".filas_consumocab").remove();

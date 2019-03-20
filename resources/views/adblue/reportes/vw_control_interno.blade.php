@@ -39,7 +39,7 @@
 
         <div class="lado3" style="height: 435px; margin-bottom: 20px;">
             @foreach($meses as $mes)
-                <h2>{{ $mes->mes_descripcion }}</h2> 
+                <h2>{{ strtoupper($mes->mes_descripcion) }}</h2> 
                 <table border="0" cellspacing="0" cellpadding="0" style="margin-bottom:20px; margin-top: 0px;  font-size: 1.4em;">
                     <thead>
                         <tr >
@@ -52,8 +52,7 @@
                             <th style="width: 15%;">CANTIDAD</th>
                             <th rowspan="2" style="width: 15%;">TOTAL INGREO MENSUAL</th>
                             <th rowspan="2" style="width: 15%;">TOTAL SALIDA MENSUAL</th>
-                            <th rowspan="2" style="width: 15%;">EXISTENCIA</th>
-                            
+                            <th rowspan="2" style="width: 15%;">EXISTENCIA</th>   
                         </tr>
                     </thead>
                     <thead>
@@ -71,7 +70,6 @@
                         <?php $control = DB::table('taller.tblcontrol_con')->where(DB::raw("TO_CHAR(con_fecregistro,'MM')"),$mes->mes)->orderBy('con_fecregistro','asc')->get(); ?>
                         @foreach ($control as $con)
                             <?php $detalle = DB::table('taller.tblconsumodetalle_cde')->select('cde_fecha', 'cde_qabastecida','est_id','cde_estado')->where([['est_id',1],['cde_fecha','>',$con->con_fecinicio],['cde_fecha','<=',$con->con_fecfin],['cde_estado',1]])->orderBy('cde_fecha','asc')->get(); ?>
-                            
                             @foreach ($detalle as $det)
                             <tr>
                                 <td></td>
@@ -81,6 +79,10 @@
                                 <td></td>
                                 <td></td>
                                 <td></td>
+                                
+                                <td style="border-bottom: 0px;border-top: 0px;"></td>
+                                <td style="border-bottom: 0px;border-top: 0px;"></td>
+                                <td style="border-bottom: 0px;border-top: 0px;"></td>
                             </tr>
                             @endforeach
                             <tr>
@@ -91,6 +93,10 @@
                                 <td style="text-align: center;">{{ $con->con_totsalida }}</td>
                                 <td style="text-align: center;">{{ $con->con_stop }}</td>
                                 <td style="text-align: center;">{{ $con->con_cantidad }}</td>
+                                
+                                <td style="border-bottom: 0px;border-top: 0px;"></td>
+                                <td style="border-bottom: 0px;border-top: 0px;"></td>
+                                <td style="border-bottom: 0px;border-top: 0px;"></td>
                             </tr>
                         @endforeach
                     </tbody>

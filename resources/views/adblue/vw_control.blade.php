@@ -47,6 +47,8 @@
                         <div class="dropdown-divider"></div>
                         <a href="{{ route('control_abastecimiento') }}" class="btn btn-xl" target="_blank"> CONTROL ABASTECIMIENTOS DE ADBLUE POR CIUDAD</a>
                         <div class="dropdown-divider"></div>
+                        <a href="{{ route('control_abast_xplaca') }}" class="btn btn-xl" target="_blank"> CONTROL ABASTECIMIENTOS DE ADBLUE POR PLACA</a>
+                        <div class="dropdown-divider"></div>
                     </div>
                 </div>
                 

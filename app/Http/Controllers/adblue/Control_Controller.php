@@ -113,7 +113,7 @@ class Control_Controller extends Controller
         if ($request->session()->has('id_usuario') && session('menu_rol') == 6)
         {
             //$control = DB::table('taller.tblcontrol_con')->orderBy('con_id','asc')->get();
-            $meses = DB::select("select CASE WHEN mes='01' THEN 'ENERO' WHEN mes='02' THEN 'FEBRERO' WHEN mes='03' THEN 'MARZO' WHEN mes='04' THEN 'ABRIL' WHEN mes='05' THEN 'MAYO' WHEN mes='06' THEN 'JUNIO' WHEN mes='07' THEN 'JULIO' WHEN mes='08' THEN 'AGOSTO' WHEN mes='09' THEN 'SEPTIEMBRE' WHEN mes='10' THEN 'OCTUBRE' WHEN mes='11' THEN 'NOVIEMBRE' WHEN mes='12' THEN 'DICIEMBRE' ELSE 'OTRO' END as mes_descripcion,* from taller.vw_rep_ctrl_diario_adblue order by mes asc");
+            $meses = DB::select("select * from taller.vw_rep_ctrl_diario_adblue order by mes asc");
             if(count($meses) > 0)
             {
                 $view = \View::make('adblue.reportes.vw_control_interno',compact('meses'))->render();
@@ -136,13 +136,36 @@ class Control_Controller extends Controller
     {
         if ($request->session()->has('id_usuario') && session('menu_rol') == 6)
         {
-            $meses = DB::select("select mes,CASE WHEN mes='01' THEN 'ENERO' WHEN mes='02' THEN 'FEBRERO' WHEN mes='03' THEN 'MARZO' WHEN mes='04' THEN 'ABRIL' WHEN mes='05' THEN 'MAYO' WHEN mes='06' THEN 'JUNIO' WHEN mes='07' THEN 'JULIO' WHEN mes='08' THEN 'AGOSTO' WHEN mes='09' THEN 'SEPTIEMBRE' WHEN mes='10' THEN 'OCTUBRE' WHEN mes='11' THEN 'NOVIEMBRE' WHEN mes='12' THEN 'DICIEMBRE' ELSE 'OTRO' END as mes_descripcion,count(est_id) as tot_nroviajes, sum(cde_qabastecida) as tot_qabastecida from taller.vw_rep_ctrl_abastecimiento group by mes");
+            $meses = DB::select("select mes,mes_descripcion,count(est_id) as tot_nroviajes, sum(cde_qabastecida) as tot_qabastecida from taller.vw_rep_ctrl_abastecimiento group by mes,mes_descripcion order by mes");
             if (count($meses) > 0) 
             {
                 $view = \View::make('adblue.reportes.vw_control_abastecimiento',compact('meses'))->render();
                 $pdf = \App::make('dompdf.wrapper');
                 $pdf->loadHTML($view)->setPaper('a4');
                 return $pdf->stream("CONTROL ABASTECIMIENTO".".pdf");
+            }
+            else
+            {
+                return "NO SE ENCONTRARON DATOS";
+            }
+        }
+        else
+        {
+            return view('errors/vw_sin_acceso');
+        }  
+    }
+    
+    public function abrir_rep_control_abast_xplaca(Request $request)
+    {
+        if ($request->session()->has('id_usuario') && session('menu_rol') == 6)
+        {
+            $meses = DB::select("select distinct est_descripcion,mes,TO_CHAR(cde_fecha,'YYYY') as anio,mes_descripcion from taller.vw_rep_ctrl_abast_irizar group by est_descripcion,cde_fecha,mes,mes_descripcion order by est_descripcion asc");
+            if (count($meses) > 0) 
+            {
+                $view = \View::make('adblue.reportes.vw_control_abast_xplaca',compact('meses'))->render();
+                $pdf = \App::make('dompdf.wrapper');
+                $pdf->loadHTML($view)->setPaper('a4');
+                return $pdf->stream("CONTROL IRIZAR".".pdf");
             }
             else
             {

@@ -39,7 +39,7 @@
 
         <div class="lado3" style="height: 435px; margin-bottom: 20px;">
             @foreach($meses as $mes)
-                <h2>{{ $mes->mes_descripcion }}</h2> 
+                <h2>{{ strtoupper($mes->mes_descripcion) }}</h2> 
                 <table border="0" cellspacing="0" cellpadding="0" style="margin-bottom:20px; margin-top: 0px;  font-size: 1.4em;">
                     <thead>
                         <tr>
@@ -49,7 +49,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                    <?php $control = DB::select("select est_descripcion,count(est_id) as viajes,sum(cde_qabastecida)::numeric(7,3) as qabast,mes from taller.vw_rep_ctrl_abastecimiento where mes = '$mes->mes' group by mes,est_descripcion"); ?>    
+                    <?php $control = DB::select("select est_descripcion,count(est_id) as viajes,sum(cde_qabastecida)::numeric(7,3) as qabast,mes from taller.vw_rep_ctrl_abastecimiento where mes = '$mes->mes' group by mes,est_descripcion order by est_descripcion"); ?>    
                     @foreach($control as $con)
                         <tr>
                             <td style="text-align: center;">{{ $con->est_descripcion }}</td>

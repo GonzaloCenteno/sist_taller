@@ -22,11 +22,6 @@
         <link href="{{ asset('plugins/morris/morris.css') }}" rel="stylesheet">
         <!-- jvectormap -->
         <link href="{{ asset('plugins/jvectormap/jquery-jvectormap-1.2.2.css') }}" rel="stylesheet">
-        <!-- Date Picker -->
-        <link href="{{ asset('plugins/datepicker/datepicker3.css') }}" rel="stylesheet">
-        <!-- Daterange picker -->
-        <link href="{{ asset('plugins/daterangepicker/daterangepicker-bs3.css') }}" rel="stylesheet">
-        <!-- bootstrap wysihtml5 - text editor -->
         <link href="{{ asset('plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css') }}" rel="stylesheet">
         <!-- Google Font: Source Sans Pro -->
         <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
@@ -189,10 +184,6 @@
         <script type="text/javascript" src="{{ asset('plugins/sparkline/jquery.sparkline.min.js') }}"></script>
         <!-- jQuery Knob Chart -->
         <script type="text/javascript" src="{{ asset('plugins/knob/jquery.knob.js') }}"></script>
-        <!-- daterangepicker -->
-        <script type="text/javascript" src="{{ asset('plugins/daterangepicker/daterangepicker.js') }}"></script>
-        <!-- datepicker -->
-        <script type="text/javascript" src="{{ asset('plugins/datepicker/bootstrap-datepicker.js') }}"></script>
         <!-- Bootstrap WYSIHTML5 -->
         <script type="text/javascript" src="{{ asset('plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.all.min.js') }}"></script>
         <!-- Slimscroll -->

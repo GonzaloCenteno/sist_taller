@@ -69,6 +69,30 @@ jQuery(document).ready(function($){
             .trigger("reloadGrid", [{ current: true}]);
     
     $(".select2").select2();
+    
+    $(document).on("focus", ".otro", function(){
+        $(this).datepicker({ minDate: new Date(),dateFormat: 'dd-mm-yy',showAnim: 'clip' });
+        
+        $.datepicker.regional['es'] = {
+        closeText: 'Cerrar',
+        prevText: '<<',
+        nextText: '>>',
+        currentText: 'Hoy',
+        monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+        dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+        dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+        dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+        weekHeader: 'Sm',
+        dateFormat: 'dd/mm/yy',
+        firstDay: 1,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''
+        };
+        $.datepicker.setDefaults($.datepicker.regional['es']);
+    });
+
 });
 
 jQuery(document).on("click", "#menu_push", function(){    
@@ -241,7 +265,7 @@ jQuery(document).on("click", "#btn_generar_consumodet", function(){
                                         <tbody id="cuerpodet">\n\
                                             <tr class="filas_consumocab" id="filas_consumocab">\n\
                                                 <td><button type="button" id="agregar_otrasrutas" class="btn btn-success"><i class="fa fa-plus-square"></i></button></td>\n\
-                                                <td><input type="date" name="fecha[]" class="form-control text-uppercase text-center"></td>\n\
+                                                <td><input type="text" name="fecha[]" class="form-control text-uppercase text-center otro" readonly="readonly"></td>\n\
                                                 <td><input type="hidden" name="contador[]"><input type="hidden" name="estacion[]" id="hiddenestacion_'+num+'"><input type="text" id="estacion_'+num+'" class="form-control text-uppercase text-center"></td>\n\
                                                 <td><input type="hidden" name="conductor[]" id="hiddenconductor_'+num+'"><input type="text" id="conductor_'+num+'" class="form-control conductor text-uppercase text-center"></td>\n\
                                                 <td><input type="hidden" name="piloto[]" id="hiddenpiloto_'+num+'"><input type="text" id="piloto_'+num+'" class="form-control piloto text-uppercase text-center"></td>\n\
@@ -291,7 +315,7 @@ jQuery(document).on("click", "#btn_generar_consumodet", function(){
                     {
                         num++;
                         html = html+'<tr class="filas_consumocab" id="filas_consumocab">\n\
-                            <td><input type="date" name="fecha[]" class="form-control text-uppercase text-center"></td>\n\
+                            <td><input type="text" name="fecha[]" class="form-control text-uppercase text-center otro" readonly="readonly"></td>\n\
                             <td><input type="hidden" name="contador[]"><input type="hidden" name="estacion[]" value="'+data[i].est_id+'"><label>'+data[i].est_descripcion+'</label></td>\n\
                             <td><input type="hidden" name="conductor[]" id="hiddenconductor_'+num+'"><input type="text" id="conductor_'+num+'" class="form-control conductor text-uppercase text-center"></td>\n\
                             <td><input type="hidden" name="piloto[]" id="hiddenpiloto_'+num+'"><input type="text" id="piloto_'+num+'" class="form-control piloto text-uppercase text-center"></td>\n\
@@ -348,7 +372,7 @@ function eliminarDetalle(indice)
 jQuery(document).on("click", "#agregar_otrasrutas", function(){
     var fila='<tr class="filas_consumocab" id="filas_consumocab_'+cont+'">'+
             '<td><button type="button" class="btn btn-danger" onclick="eliminarDetalle('+cont+')"><i class="fa fa-trash-o"></i></button></td>'+
-            '<td><input type="date" name="fecha[]" class="form-control text-uppercase text-center"></td>'+
+            '<td><input type="text" name="fecha[]" class="form-control text-uppercase text-center otro" readonly="readonly"></td>'+
             '<td><input type="hidden" name="contador[]"><input type="hidden" name="estacion[]" id="hiddenestacion_'+cont+'"><input type="text" id="estacion_'+cont+'" class="form-control text-uppercase text-center"></td>'+
             '<td><input type="hidden" name="conductor[]" id="hiddenconductor_'+cont+'"><input type="text" id="conductor_'+cont+'" class="form-control conductor text-uppercase text-center"></td>'+
             '<td><input type="hidden" name="piloto[]" id="hiddenpiloto_'+cont+'"><input type="text" id="piloto_'+cont+'" class="form-control piloto text-uppercase text-center"></td>'+
@@ -631,7 +655,7 @@ function fn_buscar_nrovale()
         },
         success: function(data) 
         {
-            if (data.rut_descripcion == 'OR') 
+            if (data.rut_descripcion == 'OTR') 
             {
                 $('.modal_new').removeAttr('disabled');
                 autocompletar_estaciones('txt_new_estacion');

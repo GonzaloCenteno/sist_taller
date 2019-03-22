@@ -2,10 +2,9 @@
 
 @section('content')
 <style>
-    /*.modal-lg { 
-        max-width: 75% !important;
-        padding-left: 50px;
-    }    */
+    .clsDatePicker {
+    z-index: 100000 !important;
+}
 </style>
 <br>
 <div class="card card-danger card-outline">
@@ -227,7 +226,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-calendar"></i></span>
                                         </div>
-                                        <input type="date" id="txt_cde_fecha" class="form-control text-center text-uppercase">
+                                        <input type="text" id="txt_cde_fecha" readonly="readonly" class="form-control text-center text-uppercase clsDatePicker otro">
                                     </div>
 
                                 </div>
@@ -465,7 +464,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-calendar"></i></span>
                                         </div>
-                                        <input type="date" id="txt_new_fecha" name="txt_new_fecha" class="form-control text-center text-uppercase modal_new">
+                                        <input type="text" id="txt_new_fecha" name="txt_new_fecha" class="form-control text-center text-uppercase modal_new clsDatePicker otro" readonly="readonly">
                                     </div>
 
                                 </div>

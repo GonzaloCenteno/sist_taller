@@ -332,7 +332,7 @@ class Consumos_Controller extends Controller
             $where="WHERE 1=1";
             if($vale!='')
             {
-                $where.= " AND nro_vale LIKE '%$vale%'";
+                $where.= " AND cca_nrovale = '$vale'";
             }
                     
             if($placa!='')

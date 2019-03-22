@@ -85,7 +85,7 @@ class RutasSeeder extends Seeder
                 'rut_fecregistro' => date('d-m-Y'),
             ],
             [
-                'rut_descripcion' => 'OR',
+                'rut_descripcion' => 'OTR',
                 'rut_fecregistro' => date('d-m-Y'),
             ]
         ]);

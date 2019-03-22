@@ -34,6 +34,52 @@ jQuery(document).on("click", "#menu_push", function () {
     }
 });
 
+function autocompletar_estaciones(textbox){
+    $.ajax({
+        type: 'GET',
+        url: 'ruta_estacion/0?busqueda=estaciones',
+        success: function (data) {
+            var $datos = data;
+            $("#" + textbox).autocomplete({   
+                source: $datos,
+                focus: function (event, ui) {
+                    $("#" + textbox).val(ui.item.label);
+                    $("#hidden" + textbox).val(ui.item.value);
+                    return false;
+                },
+                select: function (event, ui) {
+                    $("#" + textbox).val(ui.item.label);
+                    $("#hidden" + textbox).val(ui.item.value);
+                    return false;
+                }
+            });
+        }
+    });
+}
+
+function autocompletar_placas(textbox){
+    $.ajax({
+        type: 'GET',
+        url: 'control/0?busqueda=placas',
+        success: function (data) {
+            var $datos = data;
+            $("#" + textbox).autocomplete({   
+                source: $datos,
+                focus: function (event, ui) {
+                    $("#" + textbox).val(ui.item.label);
+                    $("#hidden" + textbox).val(ui.item.value);
+                    return false;
+                },
+                select: function (event, ui) {
+                    $("#" + textbox).val(ui.item.label);
+                    $("#hidden" + textbox).val(ui.item.value);
+                    return false;
+                }
+            });
+        }
+    });
+}
+
 jQuery(document).on("click", "#btn_nuevo_control", function () {
     if ($('#txt_cingreso').val() == '') {
         mostraralertasconfoco('* EL CAMPO CANTIDAD ES OBLIGATORIO...', '#txt_cingreso');
@@ -103,4 +149,35 @@ jQuery(document).on("click", "#btn_act_tblcontrol", function () {
     jQuery("#tblcontrol").jqGrid('setGridParam', {
         url: 'control/0?grid=control'
     }).trigger('reloadGrid');
+});
+
+function limpiar_datos_rep_abastecimiento()
+{
+    $(".modal_rep").val('');
+}
+
+jQuery(document).on("click", "#btn_ctr_abastecimiento", function(){
+    limpiar_datos_rep_abastecimiento();
+    Abastecimiento = $('#ModalRepCtrlAbast').modal({backdrop: 'static', keyboard: false});
+    Abastecimiento.find('.modal-title').text('CONTROL DE ABASTECIMIENTO DE ADBLUE');
+    Abastecimiento.find('#btn_abrir_reporte').html('<i class="fa fa-sign-in"></i> ABRIR REPORTE').show();
+    setTimeout(function (){
+        $('#mdl_txt_estacion').focus();
+    }, 200);
+    autocompletar_estaciones('mdl_txt_estacion');
+    autocompletar_placas('mdl_txt_placa');
+});
+
+jQuery(document).on("click", "#btn_abrir_reporte", function(){
+    if ($('#hiddenmdl_txt_estacion').val() == '') {
+        mostraralertasconfoco('* EL CAMPO ESTACION ES OBLIGATORIO...', '#mdl_txt_estacion');
+        return false;
+    }
+    
+    if ($('#hiddenmdl_txt_placa').val() == '') {
+        mostraralertasconfoco('* EL CAMPO PLACA ES OBLIGATORIO...', '#mdl_txt_placa');
+        return false;
+    }
+    
+    window.open('control_abast_xplaca/'+$("#hiddenmdl_txt_estacion").val()+'/'+$("#hiddenmdl_txt_placa").val());
 });

@@ -28,16 +28,17 @@ class Control_Controller extends Controller
     {
         if ($id > 0) 
         {
-            if ($request['show'] == 'datos') 
-            {
-                return $this->recuperar_datos_estaciones($id);
-            }
+            
         }
         else
         {
             if($request['grid'] == 'control')
             {
                 return $this->crear_tabla_control($request);
+            }
+            if($request['busqueda'] == 'placas')
+            {
+                return $this->autocompletar_placas($request);
             }
         }
     }
@@ -62,6 +63,19 @@ class Control_Controller extends Controller
     public function store(Request $request)
     {
        
+    }
+    
+    public function autocompletar_placas(Request $request)
+    {
+        $Consulta = DB::table('taller.tblvehiculos_veh')->get();
+        $todo = array();
+        foreach ($Consulta as $Datos) {
+            $Lista = new \stdClass();
+            $Lista->value = $Datos->veh_id;
+            $Lista->label = strtoupper(trim($Datos->veh_placa));
+            array_push($todo, $Lista);
+        }
+        return response()->json($todo);
     }
     
     public function crear_tabla_control(Request $request)
@@ -141,7 +155,7 @@ class Control_Controller extends Controller
             {
                 $view = \View::make('adblue.reportes.vw_control_abastecimiento',compact('meses'))->render();
                 $pdf = \App::make('dompdf.wrapper');
-                $pdf->loadHTML($view)->setPaper('a4');
+                $pdf->loadHTML($view)->setPaper('a3','landscape');
                 return $pdf->stream("CONTROL ABASTECIMIENTO".".pdf");
             }
             else
@@ -155,16 +169,17 @@ class Control_Controller extends Controller
         }  
     }
     
-    public function abrir_rep_control_abast_xplaca(Request $request)
+    public function abrir_rep_control_abast_xplaca($est_id,$veh_id, Request $request)
     {
         if ($request->session()->has('id_usuario') && session('menu_rol') == 6)
         {
-            $meses = DB::select("select distinct est_descripcion,mes,TO_CHAR(cde_fecha,'YYYY') as anio,mes_descripcion from taller.vw_rep_ctrl_abast_irizar group by est_descripcion,cde_fecha,mes,mes_descripcion order by est_descripcion asc");
-            if (count($meses) > 0) 
+            $meses = DB::select("select distinct veh_id,est_descripcion,mes,TO_CHAR(cde_fecha,'YYYY') as anio,mes_descripcion from taller.vw_rep_ctrl_abast_irizar where est_id = $est_id and veh_id = $veh_id group by veh_id,est_descripcion,cde_fecha,mes,mes_descripcion order by est_descripcion asc");
+            $totales = DB::table('taller.vw_consumos')->select(DB::raw('SUM(cde_qabastecida) as sum_qabastecida,count(veh_id) count_vehid'))->where([['est_id',$est_id],['veh_id',$veh_id]])->get();
+            if (count($meses) > 0 && $totales->count() > 0) 
             {
-                $view = \View::make('adblue.reportes.vw_control_abast_xplaca',compact('meses'))->render();
+                $view = \View::make('adblue.reportes.vw_control_abast_xplaca',compact('meses','totales'))->render();
                 $pdf = \App::make('dompdf.wrapper');
-                $pdf->loadHTML($view)->setPaper('a4');
+                $pdf->loadHTML($view)->setPaper('a3','landscape');
                 return $pdf->stream("CONTROL IRIZAR".".pdf");
             }
             else

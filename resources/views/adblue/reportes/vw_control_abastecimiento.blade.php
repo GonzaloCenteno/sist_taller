@@ -36,16 +36,22 @@
         <div class="subasunto" style=" margin-bottom:5px; text-align: left; padding-left: 30px;font-size:0.7em;"> 
             <br>
         </div>
-
-        <div class="lado3" style="height: 435px; margin-bottom: 20px;">
-            @foreach($meses as $mes)
-                <h2>{{ strtoupper($mes->mes_descripcion) }}</h2> 
-                <table border="0" cellspacing="0" cellpadding="0" style="margin-bottom:20px; margin-top: 0px;  font-size: 1.4em;">
+        
+        <table border="0" width="120%" cellpadding="5" cellspacing="5" style="height: 200px;"> 
+            <tr> 
+                @foreach($meses as $mes)
+                <td width="10%" style="border: inset 0pt;">      
+                <table border="0" cellspacing="0" cellpadding="0" style="font-size: 1.4em; float: right;clear: both;">
                     <thead>
                         <tr>
-                            <th style="width: 25%;">DESTINO</th>
-                            <th style="width: 20%;">N° VIAJES</th>
-                            <th style="width: 20%;">Q-ABAST.</th>
+                            <th colspan="3" style="width: 10%;">{{ strtoupper($mes->mes_descripcion) }}</th>
+                        </tr>
+                    </thead>
+                    <thead>
+                        <tr>
+                            <th>DESTINO</th>
+                            <th>N° VIAJES</th>
+                            <th>Q-ABAST.</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -64,8 +70,10 @@
                         <td style="text-align: center;"><b>{{ $mes->tot_qabastecida }}</b></td>
                     </tr>
                 </table>
-            @endforeach
-        </div>
+                </td> 
+                @endforeach
+            </tr> 
+        </table>
     </body>
 
 </html>

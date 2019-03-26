@@ -220,6 +220,11 @@ class Rutas_Controller extends Controller
                 $this->TblRutas_Rut()->recuperar($rut_id)->update([
                     'rut_estado' => $request['estado'],
                 ]);
+                DB::table('taller.tblrutasestacion_rte')->where('rut_id',$rut_id)->update([
+                        'rte_estado' => $request['estado'],
+                        'rte_usumodificacion' => session('id_usuario'),
+                        'rte_fecmodificacion' => date('d-m-Y'),
+                    ]);
                 $success = 1;
                 DB::commit();
             } catch (\Exception $ex) {

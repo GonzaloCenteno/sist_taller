@@ -71,7 +71,7 @@ jQuery(document).ready(function($){
     $(".select2").select2();
     
     $(document).on("focus", ".otro", function(){
-        $(this).datepicker({ minDate: new Date(),dateFormat: 'dd-mm-yy',showAnim: 'clip' });
+        $(this).datepicker({ minDate: -5,dateFormat: 'dd-mm-yy',showAnim: 'clip' });
         
         $.datepicker.regional['es'] = {
         closeText: 'Cerrar',

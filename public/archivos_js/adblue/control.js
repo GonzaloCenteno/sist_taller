@@ -10,14 +10,14 @@ jQuery(document).ready(function ($) {
         toolbarfilter: true,
         sortable: false,
         colNames: ['ID', 'FECHA', 'INGRESO', 'TOTAL SALIDA', 'STOP', 'CANTIDAD EN LITROS'],
-        rowNum: 20, sortname: 'con_id', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblcontrol" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - CONTROL DIARIO DE ADBLUE AREQUIPA LITROS -', align: "center",
+        rowNum: 20, sortname: 'xcon_id', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblcontrol" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - CONTROL DIARIO DE ADBLUE AREQUIPA LITROS -', align: "center",
         colModel: [
-            {name: 'con_id', index: 'con_id', align: 'left', width: 10, hidden: true},
-            {name: 'con_fecregistro', index: 'con_fecregistro', align: 'center', width: 15, formatter: 'date', formatoptions: {srcformat: 'Y-m-d', newformat: 'd/m/Y'}},
-            {name: 'con_ingreso', index: 'con_ingreso', align: 'center', width: 15},
-            {name: 'con_totsalida', index: 'con_totsalida', align: 'center', width: 15},
-            {name: 'con_stop', index: 'con_stop', align: 'center', width: 15},
-            {name: 'con_cantidad', index: 'con_cantidad', align: 'center', width: 15, classes: 'column_red'}
+            {name: 'xcon_id', index: 'xcon_id', align: 'left', width: 10, hidden: true},
+            {name: 'xcon_fecregistro', index: 'xcon_fecregistro', align: 'center', width: 15, formatter: 'date', formatoptions: {srcformat: 'Y-m-d', newformat: 'd/m/Y'}},
+            {name: 'xcon_ingreso', index: 'xcon_ingreso', align: 'center', width: 15},
+            {name: 'xcon_totsalida', index: 'xcon_totsalida', align: 'center', width: 15},
+            {name: 'xcon_stop', index: 'xcon_stop', align: 'center', width: 15},
+            {name: 'xcon_cantidad', index: 'xcon_cantidad', align: 'center', width: 15, classes: 'column_red'}
         ],
         pager: '#paginador_tblcontrol',
         rowList: [10, 20, 30, 40, 50]
@@ -114,27 +114,22 @@ function generar_control()
         url: 'control/create',
         type: 'GET',
         data:
-                {
-                    cantidad: $('#txt_cingreso').val()
-                },
+        {
+            cantidad: $('#txt_cingreso').val()
+        },
         beforeSend: function ()
         {
             MensajeEspera('ENVIANDO INFORMACION');
         },
         success: function (data)
         {
-            if (data[0].control_total_salida1 == 'OK')
+            if (data[0].control_salida == 'OK')
             {
                 MensajeConfirmacion('SE GENERO EL CONTROL CON EXITO');
                 $("#txt_cingreso").val('');
                 jQuery("#tblcontrol").jqGrid('setGridParam', {
                     url: 'control/0?grid=control'
                 }).trigger('reloadGrid');
-            } else
-            {
-                MensajeAdvertencia(data[0].control_total_salida1);
-                $("#txt_cingreso").val('');
-                console.log(data);
             }
         },
         error: function (data) {

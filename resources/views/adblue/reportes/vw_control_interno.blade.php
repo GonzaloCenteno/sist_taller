@@ -67,9 +67,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php $control = DB::table('taller.tblcontrol_con')->where(DB::raw("TO_CHAR(con_fecregistro,'MM')"),$mes->mes)->orderBy('con_fecregistro','asc')->get(); ?>
+                        <?php $control = DB::select("select * from taller.fn_control_total_salida() where TO_CHAR(xcon_fecregistro,'MM') = '$mes->mes' order by xcon_fecregistro asc"); ?>
                         @foreach ($control as $con)
-                            <?php $detalle = DB::table('taller.tblconsumodetalle_cde')->select('cde_fecha', 'cde_qabastecida','est_id','cde_estado')->where([['est_id',1],['cde_fecha','>',$con->con_fecinicio],['cde_fecha','<=',$con->con_fecfin],['cde_estado',1]])->orderBy('cde_fecha','asc')->get(); ?>
+                            <?php $detalle = DB::table('taller.tblconsumodetalle_cde')->select('cde_fecha', 'cde_qabastecida','est_id','cde_estado')->where([['est_id',1],['cde_fecha','>=',$con->xcon_fecinicio],['cde_fecha','<=',$con->xcon_fecfin],['cde_estado',1]])->orderBy('cde_fecha','asc')->get(); ?>
                             @foreach ($detalle as $det)
                             <tr>
                                 <td></td>
@@ -86,13 +86,13 @@
                             </tr>
                             @endforeach
                             <tr>
-                                <td style="text-align: center;">{{ \Carbon\Carbon::parse($con->con_fecregistro)->format('d/m/Y') }}</td>
+                                <td style="text-align: center;">{{ \Carbon\Carbon::parse($con->xcon_fecregistro)->format('d/m/Y') }}</td>
                                 <td></td>
-                                <td style="text-align: center;">{{ $con->con_ingreso }}</td>
+                                <td style="text-align: center;">{{ $con->xcon_ingreso }}</td>
                                 <td></td>
-                                <td style="text-align: center;">{{ $con->con_totsalida }}</td>
-                                <td style="text-align: center;">{{ $con->con_stop }}</td>
-                                <td style="text-align: center;">{{ $con->con_cantidad }}</td>
+                                <td style="text-align: center;">{{ $con->xcon_totsalida }}</td>
+                                <td style="text-align: center;">{{ $con->xcon_stop }}</td>
+                                <td style="text-align: center;">{{ $con->xcon_cantidad }}</td>
                                 
                                 <td style="border-bottom: 0px;border-top: 0px;"></td>
                                 <td style="border-bottom: 0px;border-top: 0px;"></td>

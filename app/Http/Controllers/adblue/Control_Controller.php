@@ -45,8 +45,7 @@ class Control_Controller extends Controller
 
     public function create(Request $request)
     {
-        //$function = DB::select("select taller.control_total_salida(1,".$request['cantidad'].",'".$request['fecha_inicio']."','".$request['fecha_fin']."')");
-        $function = DB::select("select taller.control_total_salida1(1,".round($request['cantidad'],3).")");
+        $function = DB::select("select taller.control_salida(1,".round($request['cantidad'],3).")");
         return $function;
     }
 
@@ -90,8 +89,11 @@ class Control_Controller extends Controller
             $start = 0;
         }
 
-        $totalg = DB::table('taller.tblcontrol_con')->select(DB::raw('count(*) as total'))->get();
-        $sql = DB::table('taller.tblcontrol_con')->orderBy($sidx, $sord)->limit($limit)->offset($start)->get();
+        //$totalg = DB::table('taller.tblcontrol_con')->select(DB::raw('count(*) as total'))->get();
+        //$sql = DB::table('taller.tblcontrol_con')->orderBy($sidx, $sord)->limit($limit)->offset($start)->get();
+        
+        $totalg = DB::select("select count(*) as total from taller.fn_control_total_salida()");
+        $sql = DB::select("select * from taller.fn_control_total_salida() order by ".$sidx." ".$sord." limit ".$limit." offset ".$start);
 
         $total_pages = 0;
         if (!$sidx) {
@@ -109,14 +111,14 @@ class Control_Controller extends Controller
         $Lista->total = $total_pages;
         $Lista->records = $count;
         foreach ($sql as $Index => $Datos) {
-            $Lista->rows[$Index]['id'] = $Datos->con_id;           
+            $Lista->rows[$Index]['id'] = $Datos->xcon_id;           
             $Lista->rows[$Index]['cell'] = array(
-                trim($Datos->con_id),
-                trim($Datos->con_fecregistro),
-                trim($Datos->con_ingreso),
-                trim($Datos->con_totsalida),
-                trim($Datos->con_stop),
-                trim($Datos->con_cantidad)
+                trim($Datos->xcon_id),
+                trim($Datos->xcon_fecregistro),
+                trim($Datos->xcon_ingreso),
+                trim($Datos->xcon_totsalida),
+                trim($Datos->xcon_stop),
+                trim($Datos->xcon_cantidad)
             );
         }
         return response()->json($Lista);

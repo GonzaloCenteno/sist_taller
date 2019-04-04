@@ -8,15 +8,16 @@ jQuery(document).ready(function($){
     jQuery("#tblrutaestacion").jqGrid({
         url: 'ruta_estacion/0?grid=rutas',
         datatype: 'json', mtype: 'GET',
-        height: '550px', autowidth: true,
+        height: '512px', autowidth: true,
         colNames: ['ID', 'DESCRIPCION','FECHA REGISTRO'],
-        rowNum: 100, sortname: 'rut_id', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblruta" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - LISTA DE RUTAS -', align: "center",
+        rowNum: 30, sortname: 'rut_id', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblruta" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - LISTA DE RUTAS -', align: "center",
         colModel: [
             {name: 'rut_id', index: 'rut_id', align: 'left',width: 10, hidden:true},
             {name: 'rut_descripcion', index: 'rut_descripcion', align: 'left', width: 60},
             {name: 'rut_fecregistro', index: 'rut_fecregistro', align: 'center', width: 25}
         ],
-        loadonce : true,
+        pager: '#paginador_tblrutaestacion',
+        rowList: [10, 20, 30, 40, 50],
         subGrid: true,
         subGridRowExpanded: showChildGrid,
         subGridOptions : {

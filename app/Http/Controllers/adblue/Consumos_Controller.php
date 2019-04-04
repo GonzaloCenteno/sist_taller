@@ -103,6 +103,7 @@ class Consumos_Controller extends Controller
                 $Tblconsumodetalle_cde->cde_stop = $request['cde_stop'];
                 $Tblconsumodetalle_cde->cde_fecregistro = date('Y-m-d H:i:s');
                 $Tblconsumodetalle_cde->cde_anio = date('Y');
+                $Tblconsumodetalle_cde->cde_consumo = 0.0;
                 $Tblconsumodetalle_cde->save();
                 
                 $success = 1;
@@ -262,6 +263,7 @@ class Consumos_Controller extends Controller
                     $Tblconsumodetalle_cde->cde_stop = isset($request['stop'][$i]) ? round($request['stop'][$i],3) : 0.0;
                     $Tblconsumodetalle_cde->cde_fecregistro = date('Y-m-d H:i:s');
                     $Tblconsumodetalle_cde->cde_anio = date('Y');
+                    $Tblconsumodetalle_cde->cde_consumo = isset($request['consumo'][$i]) ? round($request['consumo'][$i],3) : 0.0;
                     $Tblconsumodetalle_cde->save();
                 }
                 $success = 1; 

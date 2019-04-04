@@ -325,7 +325,7 @@ jQuery(document).on("click", "#btn_generar_consumodet", function(){
                             <td><input type="text" name="observ[]" class="form-control text-uppercase text-center" maxlength="255"></td>\n\
                             <td><input type="text" name="ingreso[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
                             <td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                            <td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                            <td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"><input type="hidden" name="consumo[]" value="'+data[i].rte_consumo+'"></td>\n\
                             </tr>';
                         $("#consumodet").html(html);
                     }
@@ -674,7 +674,7 @@ function fn_buscar_nrovale()
             }
             else
             {
-                mostraralertasconfoco('EL NUMERO DE VALE NO ES "OR" ');
+                mostraralertasconfoco('EL NUMERO DE VALE NO ES "OTR" ');
                 $('.modal_new').attr('disabled',true);
                 $('.modal_new').val('');
             }

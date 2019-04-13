@@ -3,9 +3,11 @@
 @section('content')
 <style>
 
-    .column_red {
-        background-color: #c83839;
-    }
+    th.ui-th-column div{
+    white-space:normal !important;
+    height:auto !important;
+    padding:2px;
+}
 
 </style>
 <br>

@@ -84,13 +84,10 @@ class Control_Controller extends Controller
         $limit = $_GET['rows'];
         $sidx = $_GET['sidx'];
         $sord = $_GET['sord'];
-        $start = ($limit * $page) - $limit; // do not put $limit*($page - 1)  
+        $start = ($limit * $page) - $limit;  
         if ($start < 0) {
             $start = 0;
         }
-
-        //$totalg = DB::table('taller.tblcontrol_con')->select(DB::raw('count(*) as total'))->get();
-        //$sql = DB::table('taller.tblcontrol_con')->orderBy($sidx, $sord)->limit($limit)->offset($start)->get();
         
         $totalg = DB::select("select count(*) as total from taller.fn_control_total_salida()");
         $sql = DB::select("select * from taller.fn_control_total_salida() order by ".$sidx." ".$sord." limit ".$limit." offset ".$start);
@@ -176,13 +173,59 @@ class Control_Controller extends Controller
         if ($request->session()->has('id_usuario') && session('menu_rol') == 6)
         {
             $meses = DB::select("select distinct veh_id,est_descripcion,mes,TO_CHAR(cde_fecha,'YYYY') as anio,mes_descripcion from taller.vw_rep_ctrl_abast_irizar where est_id = $est_id and veh_id = $veh_id group by veh_id,est_descripcion,cde_fecha,mes,mes_descripcion order by est_descripcion asc");
-            $totales = DB::table('taller.vw_consumos')->select(DB::raw('SUM(cde_qabastecida) as sum_qabastecida,count(veh_id) count_vehid'))->where([['est_id',$est_id],['veh_id',$veh_id]])->get();
+            $totales = DB::table('taller.vw_consumos')->select(DB::raw('SUM(cde_qabastecida) as sum_qabastecida,count(veh_id) as count_vehid'))->where([['est_id',$est_id],['veh_id',$veh_id]])->get();
+            
+            $datos = DB::table('taller.vw_rep_ctrl_abast_irizar')->select(DB::raw('distinct rut_id,rut_descripcion'))->where([['est_id',$est_id],['veh_id',$veh_id]])->orderBy('rut_id','asc')->get();
+            //dd($datos);
+            $enteros='';
+            foreach ($datos as $value_1){
+                $enteros .=  $value_1->rut_descripcion.' INT,';
+            }
+            $var = trim($enteros,',');
+            
+            $numeric='';
+            foreach ($datos as $value_2){
+                $numeric .=  $value_2->rut_descripcion.' numeric,';
+            }
+            $var_1 = trim($numeric,',');
+            
+            $count = $datos->count();
+            
             if (count($meses) > 0 && $totales->count() > 0) 
             {
-                $view = \View::make('adblue.reportes.vw_control_abast_xplaca',compact('meses','totales'))->render();
+                $view = \View::make('adblue.reportes.vw_control_abast_xplaca',compact('meses','totales','datos','var','var_1','count'))->render();
                 $pdf = \App::make('dompdf.wrapper');
                 $pdf->loadHTML($view)->setPaper('a3','landscape');
                 return $pdf->stream("CONTROL IRIZAR".".pdf");
+            }
+            else
+            {
+                return "NO SE ENCONTRARON DATOS";
+            }
+        }
+        else
+        {
+            return view('errors/vw_sin_acceso');
+        }  
+    }
+    
+    public function abrir_rep_control_consumo($anio,$mes, Request $request)
+    {
+        if ($request->session()->has('id_usuario') && session('menu_rol') == 6)
+        {
+            $placas = DB::select("select xcde_placa,round(avg(xcde_consumo_real),3) as consumo,round(avg(xcde_kilometraje),3) as kg,round(avg(xcde_rendimiento),3) as rendimiento from taller.control_consumo() 
+                                    where extract(month from xcde_fecha) = $mes and extract(year from xcde_fecha) = $anio group by xcde_placa order by xcde_placa asc");
+            $rutas = DB::select("select xcde_ruta,round(avg(xcde_consumo_real),3) as consumo,round(avg(xcde_kilometraje),3) as kg,round(avg(xcde_rendimiento),3) as rendimiento from taller.control_consumo() 
+                                    where extract(month from xcde_fecha) = $mes and extract(year from xcde_fecha) = $anio group by xcde_ruta order by xcde_ruta asc");
+            setlocale(LC_TIME, 'es');
+            $fecha = \DateTime::createFromFormat('!m', $mes);
+            $mes = strftime("%B", $fecha->getTimestamp());
+            if (count($placas) > 0 && count($rutas) > 0) 
+            {
+                $view = \View::make('adblue.reportes.vw_control_consumos',compact('placas','rutas','mes'))->render();
+                $pdf = \App::make('dompdf.wrapper');
+                $pdf->loadHTML($view)->setPaper('a4','landscape');
+                return $pdf->stream("CONTROL CONSUMO".".pdf");
             }
             else
             {

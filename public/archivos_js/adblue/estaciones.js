@@ -39,11 +39,17 @@ jQuery(document).ready(function($){
 jQuery(document).on("click", "#menu_push", function(){    
     if ($("#body_push").hasClass('sidebar-mini sidebar-collapse')) 
     {
-        $("#tblestaciones").jqGrid('setGridWidth', 1520);
+        setTimeout(function (){
+            var width = $('#contenedor').width();
+            $('#tblestaciones').setGridWidth(width);
+        }, 300);
     }
     else
     {
-        $("#tblestaciones").jqGrid('setGridWidth', 1327);
+       setTimeout(function (){
+            var width = $('#contenedor').width();
+            $('#tblestaciones').setGridWidth(width);
+       }, 300);
     } 
 });
 

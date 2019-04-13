@@ -12,13 +12,13 @@ jQuery(document).ready(function ($) {
     jQuery("#tblcontrol_consumo").jqGrid({
         url: 'control_consumo/0?grid=control_consumo&mes='+mes+'&anio='+anio,
         datatype: 'json', mtype: 'GET',
-        height: '500px', autowidth: true,
+        height: '435px', autowidth: true,
         toolbarfilter: true,
         sortable: false,
         shrinkToFit: false,
         forceFit:true,  
         scroll: false,
-        colNames: ['CCA_ID', 'CDE_ID', 'FECHA', 'PLACA', 'CONDUCTOR', 'COPILOTO', 'RUTA', 'Q - ABAST.', 'CONSUMO REAL', 'CONSUMO DESEADO', 'AHORRO - EXCESO','MONTO OPTIMO','AHORRO EXCESO GRAL','AHORRO POR VIAJE','EXCESO POR VIAJE','KM.I','KM.F','KILOMETRAJE','RENDIMIENTO'],
+        colNames: ['CCA_ID', 'CDE_ID', 'FECHA', 'PLACA', 'CONDUCTOR', 'COPILOTO', 'RUTA', 'Q - ABAST.', 'TOTAL CONSUMO REAL', 'TOTAL CONSUMO DESEADO', 'AH. - EX. CONSUMO TOTAL','MONTO OPTIMO ABASTECER','AHORRO EXCESO GRAL','AHORRO POR VIAJE','EXCESO POR VIAJE','KM.I','KM.F','KILOMETRAJE','RENDIMIENTO KM/GL'],
         rowNum: 20, sortname: 'xcde_placa', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblcontrol_consumo" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - CONTROL CONSUMO AREQUIPA -', align: "center",
         colModel: [
             {name: 'xcca_id', index: 'xcca_id', align: 'left', width: 10, hidden: true,frozen:true},
@@ -112,7 +112,7 @@ function mostrar_estaciones(parentRowID, parentRowKey) {
             {name: 'cde_qabastecida', index: 'cde_qabastecida', align: 'center', width: 20}
         ],
         loadonce: true,
-        autowidth: true,
+        width: 1300,
         height: '100%',
         loadComplete: function (data) {
             console.log(data);
@@ -127,14 +127,21 @@ function mostrar_estaciones(parentRowID, parentRowKey) {
     });
 }
 
-jQuery(document).on("click", "#menu_push", function () {
-    if ($("#body_push").hasClass('sidebar-mini sidebar-collapse'))
+jQuery(document).on("click", "#menu_push", function(){    
+    if ($("#body_push").hasClass('sidebar-mini sidebar-collapse')) 
     {
-        $("#tblcontrol_consumo").jqGrid('setGridWidth', 1520);
-    } else
-    {
-        $("#tblcontrol_consumo").jqGrid('setGridWidth', 1327);
+        setTimeout(function (){
+            var width = $('#contenedor').width();
+            $('#tblcontrol_consumo').setGridWidth(width);
+        }, 300);
     }
+    else
+    {
+       setTimeout(function (){
+            var width = $('#contenedor').width();
+            $('#tblcontrol_consumo').setGridWidth(width);
+       }, 300);
+    } 
 });
 
 jQuery(document).on("click", "#btn_act_tblcontrol_consumo", function(){

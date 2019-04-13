@@ -33,6 +33,39 @@
         <link href="{{ asset('css/ui.jqgrid-bootstrap4.css') }}" rel="stylesheet">
         <link href="{{ asset('css/sweetalert2.css') }}" rel="stylesheet"> 
         <link href="{{ asset('plugins/select2/select2.min.css') }}" rel="stylesheet">
+        
+        <style>
+            .ui-jqgrid {
+                /*display: flex;*/
+                flex-direction: column;
+                flex:1 1 auto;
+                width:auto !important;
+              }
+              .ui-jqgrid > .ui-jqgrid-view
+              {
+                display:flex;
+                flex:1 1 auto;
+                flex-direction:column;
+                overflow:auto;
+                width:auto !important;
+              }
+
+               .ui-jqgrid > .ui-jqgrid-view,
+               .ui-jqgrid > .ui-jqgrid-view > .ui-jqgrid-bdiv {
+                    flex:1 1 auto;
+                    width: auto !important;
+              }
+
+              .ui-jqgrid > .ui-jqgrid-pager,
+              .ui-jqgrid > .ui-jqgrid-view > .ui-jqgrid-hdiv {
+                  flex: 0 1 auto;
+                width: auto !important;
+              }
+              /* enable scrollbar */
+              .ui-jqgrid-bdiv {
+                  overflow: auto
+              }
+        </style>
     </head>
     <body class="hold-transition sidebar-mini" id="body_push">
         <div class="wrapper">

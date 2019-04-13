@@ -8,7 +8,7 @@ jQuery(document).ready(function($){
     jQuery("#tblconsumosdet").jqGrid({
         url: 'consumo/0?grid=consumos&indice=0',
         datatype: 'json', mtype: 'GET',
-        height: '415px', autowidth: true,
+        height: '380px', autowidth: true,
         toolbarfilter: true,
         sortable:false,
         shrinkToFit: false,
@@ -22,8 +22,8 @@ jQuery(document).ready(function($){
             {name: 'cca_id', index: 'cca_id', align: 'center', width: 70,hidden:true,frozen:true},
             {name: 'nro_vale', index: 'nro_vale', align: 'center', width: 55,frozen:true},
             {name: 'veh_placa', index: 'veh_placa', align: 'center', width: 80,frozen:true},
-            {name: 'rut_descripcion', index: 'rut_descripcion', align: 'left', width: 70},
-            {name: 'est_descripcion', index: 'est_descripcion', align: 'left', width: 90},
+            {name: 'rut_descripcion', index: 'rut_descripcion', align: 'center', width: 70},
+            {name: 'est_descripcion', index: 'est_descripcion', align: 'left', width: 110},
             {name: 'conductor', index: 'conductor', align: 'left', width: 350},
             {name: 'copiloto', index: 'copiloto', align: 'left', width: 350},
             {name: 'cde_kilometros', index: 'cde_kilometros', align: 'center', width: 70},
@@ -98,11 +98,17 @@ jQuery(document).ready(function($){
 jQuery(document).on("click", "#menu_push", function(){    
     if ($("#body_push").hasClass('sidebar-mini sidebar-collapse')) 
     {
-        $("#tblconsumosdet").jqGrid('setGridWidth', 1520);
+        setTimeout(function (){
+            var width = $('#contenedor').width();
+            $('#tblconsumosdet').setGridWidth(width);
+        }, 300);
     }
     else
     {
-        $("#tblconsumosdet").jqGrid('setGridWidth', 1327);
+       setTimeout(function (){
+            var width = $('#contenedor').width();
+            $('#tblconsumosdet').setGridWidth(width);
+       }, 300);
     } 
 });
 
@@ -145,8 +151,7 @@ function mostrarformulario(flag)
         $("#listadoButtons").hide();
         $("#formularioButtons").show();
         $("#form_codigo").focus();
-        $("#btn_vw_consumocab").hide();
-        $("#btn_vw_nuevo_consumo_or").hide();
+        $("#cabecera_consumo").hide();
     }
     else
     {
@@ -158,8 +163,7 @@ function mostrarformulario(flag)
         $("#btn_generar_consumodet").removeAttr('disabled');
         $("#btn_vw_consumoscab_Guardar").attr('disabled',true);
         $("#btn_vw_otrosconsumos_Guardar").hide();
-        $("#btn_vw_consumocab").show();
-        $("#btn_vw_nuevo_consumo_or").show();
+        $("#cabecera_consumo").show();
     }
 }
 
@@ -471,6 +475,8 @@ jQuery(document).on("click", "#btn_act_tblconsumos", function(){
     $("#txt_buscar_placa").val('');
     $("#txt_buscar_fdesde").val('');
     $("#txt_buscar_fhasta").val('');
+    $("#txt_buscar_ruta").val('');
+    $("#txt_buscar_estacion").val('');
     
     jQuery("#tblconsumosdet").jqGrid('setGridParam', {
         url: 'consumo/0?grid=consumos'
@@ -611,7 +617,7 @@ jQuery(document).on("click", "#btn_actualizar_consumo", function(){
 
 jQuery(document).on("click", "#btn_vw_buscar_consumos", function(){
     jQuery("#tblconsumosdet").jqGrid('setGridParam', {
-        url: 'consumo/0?grid=consumos&indice=1&nrovale='+$("#txt_buscar_nrovale").val()+'&placa='+$("#txt_buscar_placa").val()+'&fdesde='+$("#txt_buscar_fdesde").val()+'&fhasta='+$("#txt_buscar_fhasta").val()
+        url: 'consumo/0?grid=consumos&indice=1&nrovale='+$("#txt_buscar_nrovale").val()+'&placa='+$("#txt_buscar_placa").val()+'&fdesde='+$("#txt_buscar_fdesde").val()+'&fhasta='+$("#txt_buscar_fhasta").val()+'&ruta='+$("#txt_buscar_ruta").val()+'&estacion='+$("#txt_buscar_estacion").val()
     }).trigger('reloadGrid');
 });
 

@@ -17,7 +17,7 @@ class Consumos_Controller extends Controller
             $menu_registro = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',1]])->orderBy('menu_id','asc')->get();
             $menu_dashboard = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',2]])->orderBy('menu_id','asc')->get();
             //$estaciones = DB::table('taller.vw_estaciones')->get();
-            $capacidad = DB::table('taller.tblcapacidad_cap')->orderby('cap_id','asc')->get();
+            $capacidad = DB::table('taller.tblcapacidad_cap')->where('cap_estado',1)->orderby('cap_id','asc')->get();
             $placas = DB::table('taller.tblvehiculos_veh')->get();
             $tripulantes = DB::table('taller.tbltripulantes_tri')->select('tri_id','tri_nombre','tri_apaterno','tri_amaterno')->get();
             return view('adblue/vw_consumos',compact('menu_registro','menu_dashboard','capacidad','placas','tripulantes'));
@@ -104,6 +104,7 @@ class Consumos_Controller extends Controller
                 $Tblconsumodetalle_cde->cde_fecregistro = date('Y-m-d H:i:s');
                 $Tblconsumodetalle_cde->cde_anio = date('Y');
                 $Tblconsumodetalle_cde->cde_consumo = 0.0;
+                $Tblconsumodetalle_cde->cde_usucreacion = session('id_usuario');
                 $Tblconsumodetalle_cde->save();
                 
                 $success = 1;
@@ -264,6 +265,7 @@ class Consumos_Controller extends Controller
                     $Tblconsumodetalle_cde->cde_fecregistro = date('Y-m-d H:i:s');
                     $Tblconsumodetalle_cde->cde_anio = date('Y');
                     $Tblconsumodetalle_cde->cde_consumo = isset($request['consumo'][$i]) ? round($request['consumo'][$i],3) : 0.0;
+                    $Tblconsumodetalle_cde->cde_usucreacion = session('id_usuario');
                     $Tblconsumodetalle_cde->save();
                 }
                 $success = 1; 
@@ -330,6 +332,22 @@ class Consumos_Controller extends Controller
                 $fdesde = "";
                 $fhasta = "";
             }
+            if(isset($request["ruta"]))
+            {
+                $ruta = strtoupper(trim($request['ruta']));
+            }    
+            else
+            {
+                $ruta = "";
+            }
+            if(isset($request["estacion"]))
+            {
+                $estacion = strtoupper(trim($request['estacion']));
+            }    
+            else
+            {
+                $estacion = "";
+            }
             
             $where="WHERE 1=1";
             if($vale!='')
@@ -345,6 +363,16 @@ class Consumos_Controller extends Controller
             if($fdesde!='' && $fhasta!='')
             {
                 $where.= " AND cde_fecha between '$fdesde' and '$fhasta'";
+            }
+            
+            if($ruta!='')
+            {
+                $where.= " AND rut_descripcion LIKE '%$ruta%'";
+            }
+            
+            if($estacion!='')
+            {
+                $where.= " AND est_descripcion LIKE '%$estacion%'";
             }
 
             $totalg = DB::select("select count(*) as total from taller.vw_consumos ".$where);

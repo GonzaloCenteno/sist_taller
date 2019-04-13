@@ -49,9 +49,10 @@
                         <div class="dropdown-divider"></div>
                         <a href="#" id="btn_ctr_abastecimiento" class="btn btn-xl"> CONTROL ABASTECIMIENTOS DE ADBLUE POR PLACA</a>
                         <div class="dropdown-divider"></div>
+                        <a href="#" id="btn_ctr_consumo" class="btn btn-xl"> CONTROL CONSUMOS</a>
+                        <div class="dropdown-divider"></div>
                     </div>
                 </div>
-                
             </div>
         </div>
 
@@ -97,7 +98,7 @@
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label>PLACA:</label>
@@ -119,6 +120,77 @@
             <div class="modal-footer">
                 <button type="button" id="btn_abrir_reporte" class="btn btn-success btn-xl"></button>
                 <button type="button" id="btn_cerrar_modal" class="btn btn-danger btn-xl" data-dismiss="modal"><i class="fa fa-times-rectangle-o"></i> CERRAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalRepCtrlConsumo">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">X</span></button>
+            </div>
+
+            <div class="modal-body ui-front">
+                <div class="card card-danger card-outline">
+                    <div class="card-header">
+                        <h5 class="m-0">DATOS</h5>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>AÑO:</label>
+
+                                    <select class="form-control" style="width: 100%;" id="cbx_ctrlcon_anio" name="cbx_ctrlcon_anio">
+                                        <option value="2019"> 2019 </option>
+                                        <option value="2020"> 2020 </option>
+                                        <option value="2021"> 2021 </option>
+                                        <option value="2022"> 2022 </option>
+                                        <option value="2023"> 2023 </option>
+                                    </select>
+
+                                </div>
+                            </div>
+
+                            <div class="col-lg-6">
+                                <div class="form-group">
+                                    <label>MES:</label>
+
+                                    <select class="form-control" style="width: 100%;" id="cbx_ctrlcon_mes" name="cbx_ctrlcon_mes">
+                                        <option value="1"> ENERO </option>
+                                        <option value="2"> FEBRERO </option>
+                                        <option value="3"> MARZO </option>
+                                        <option value="4"> ABRIL </option>
+                                        <option value="5"> MAYO </option>
+                                        <option value="6"> JUNIO </option>
+                                        <option value="7"> JULIO </option>
+                                        <option value="8"> AGOSTO </option>
+                                        <option value="9"> SEPTIEMBRE </option>
+                                        <option value="10"> OCTUBRE </option>
+                                        <option value="11"> NOVIEMBRE </option>
+                                        <option value="12"> DICIEMBRE </option>
+                                    </select>
+
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btn_abrir_reporte_ctrlcon" class="btn btn-success btn-xl"></button>
+                <button type="button" id="btn_cerrar_modal_ctrlcon" class="btn btn-danger btn-xl" data-dismiss="modal"><i class="fa fa-times-rectangle-o"></i> CERRAR</button>
             </div>
         </div>
     </div>

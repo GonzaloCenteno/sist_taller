@@ -15,9 +15,38 @@
             <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
             <button type="button" class="btn btn-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
         </div>
-        <div class="col-lg-6">
-            <button id="btn_vw_nuevo_consumo_or" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVAS RUTAS</button>
-            <button id="btn_vw_consumocab" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS CONSUMOS</button>
+        <div class="row text-center" id="cabecera_consumo">
+            <div class="col-md-2" style="padding-top: 32px;">
+                <button id="btn_vw_nuevo_consumo_or" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVAS RUTAS</button>
+            </div>
+            <div class="col-md-2" style="padding-top: 32px;">
+                <button id="btn_vw_consumocab" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS CONSUMOS</button>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>FECHA DESDE:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                        </div>
+                        <input type="date" id="txt_buscar_fdesde" class="form-control text-center text-uppercase">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label>FECHA HASTA:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                        </div>
+                        <input type="date" id="txt_buscar_fhasta" class="form-control text-center text-uppercase">
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-2" style="padding-top: 32px;">
+                <button id="btn_vw_buscar_consumos" type="button" class="btn btn-xl btn-success" readonly="readonly"><i class="fa fa-search"></i> BUSCAR</button>
+            </div>
         </div>
     </div>
     <div class="card-body">
@@ -48,7 +77,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-2">
+                        <div class="col-lg-3">
                             <div class="form-group">
                                 <label>ESCRIBIR N° PLACA:</label>
                                 <div class="input-group">
@@ -59,34 +88,30 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-lg-2">
                             <div class="form-group">
-                                <label>FECHA DESDE:</label>
+                                <label>ESCRIBIR RUTA:</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                        <span class="input-group-text"><i class="fa fa-tasks"></i></span>
                                     </div>
-                                    <input type="date" id="txt_buscar_fdesde" class="form-control text-center text-uppercase">
+                                    <input type="text" id="txt_buscar_ruta" class="form-control text-center text-uppercase">
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-3">
+                        <div class="col-lg-3">
                             <div class="form-group">
-                                <label>FECHA HASTA:</label>
+                                <label>ESCRIBIR ESTACION:</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                        <span class="input-group-text"><i class="fa fa-tasks"></i></span>
                                     </div>
-                                    <input type="date" id="txt_buscar_fhasta" class="form-control text-center text-uppercase">
+                                    <input type="text" id="txt_buscar_estacion" class="form-control text-center text-uppercase">
                                 </div>
                             </div>
-                        </div>
-                        <div class="col-lg-2" style="padding-top: 32px;">
-                            <button id="btn_vw_buscar_consumos" type="button" class="btn btn-xl btn-success" readonly="readonly"><i class="fa fa-search"></i> BUSCAR</button>
                         </div>
                     </div>
                 </div>
-
                 <div id="formularioButtons" style="display:none; padding-top: 32px;">
                     <button id="btn_vw_consumoscab_Guardar" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-save"></i> GUARDAR REGISTROS</button>
                     <button id="btn_vw_consumoscab_Cancelar" type="button" class="btn btn-xl btn-default" readonly="readonly"><i class="fa fa-arrow-circle-left"></i> REGRESAR</button>

@@ -45,11 +45,17 @@ jQuery(document).ready(function($){
 jQuery(document).on("click", "#menu_push", function(){    
     if ($("#body_push").hasClass('sidebar-mini sidebar-collapse')) 
     {
-        $("#tblrutaestacion").jqGrid('setGridWidth', 1520);
+        setTimeout(function (){
+            var width = $('#contenedor').width();
+            $('#tblrutaestacion').setGridWidth(width);
+        }, 300);
     }
     else
     {
-        $("#tblrutaestacion").jqGrid('setGridWidth', 1327);
+       setTimeout(function (){
+            var width = $('#contenedor').width();
+            $('#tblrutaestacion').setGridWidth(width);
+       }, 300);
     } 
 });
 

@@ -24,14 +24,21 @@ jQuery(document).ready(function ($) {
     });
 });
 
-jQuery(document).on("click", "#menu_push", function () {
-    if ($("#body_push").hasClass('sidebar-mini sidebar-collapse'))
+jQuery(document).on("click", "#menu_push", function(){    
+    if ($("#body_push").hasClass('sidebar-mini sidebar-collapse')) 
     {
-        $("#tblcontrol").jqGrid('setGridWidth', 1520);
-    } else
-    {
-        $("#tblcontrol").jqGrid('setGridWidth', 1327);
+        setTimeout(function (){
+            var width = $('#contenedor').width();
+            $('#tblcontrol').setGridWidth(width);
+        }, 300);
     }
+    else
+    {
+       setTimeout(function (){
+            var width = $('#contenedor').width();
+            $('#tblcontrol').setGridWidth(width);
+       }, 300);
+    } 
 });
 
 function autocompletar_estaciones(textbox){
@@ -175,4 +182,14 @@ jQuery(document).on("click", "#btn_abrir_reporte", function(){
     }
     
     window.open('control_abast_xplaca/'+$("#hiddenmdl_txt_estacion").val()+'/'+$("#hiddenmdl_txt_placa").val());
+});
+
+jQuery(document).on("click", "#btn_ctr_consumo", function(){
+    Consumo = $('#ModalRepCtrlConsumo').modal({backdrop: 'static', keyboard: false});
+    Consumo.find('.modal-title').text('CONTROL DE CONSUMOS');
+    Consumo.find('#btn_abrir_reporte_ctrlcon').html('<i class="fa fa-sign-in"></i> ABRIR REPORTE').show();
+});
+
+jQuery(document).on("click", "#btn_abrir_reporte_ctrlcon", function(){
+    window.open('control_consumo/'+$("#cbx_ctrlcon_anio").val()+'/'+$("#cbx_ctrlcon_mes").val());
 });

@@ -129,7 +129,7 @@
                                 </a>
                             </li>
 
-                            @if(isset($menu_registro) && isset($menu_dashboard))  
+                            @if(isset($menu_registro))  
                             <li class="nav-header"><center><h5>ADBLUE</h5></center></li>
                             <li class="nav-item has-treeview" id="men_registro">
                                 <a href="#1" class="nav-link">
@@ -145,26 +145,6 @@
                                         <a href="{{ $men_reg->menu_rut }}" class="nav-link {{ $men_reg->menu_rut }}">
                                             <i class="fa fa-circle-o nav-icon"></i>
                                             <p>{{ $men_reg->menu_desc }}</p>
-                                        </a>
-                                    </li>
-                                    @endforeach
-                                </ul>
-                            </li>
-                            
-                            <li class="nav-item has-treeview" id="men_dashboard">
-                                <a href="#2" class="nav-link">
-                                    <i class="nav-icon fa fa-dashboard"></i>
-                                    <p>
-                                        Dashboard
-                                        <i class="right fa fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    @foreach($menu_dashboard as $men_dash)
-                                    <li class="nav-item">
-                                        <a href="{{ $men_dash->menu_rut }}" class="nav-link {{ $men_dash->menu_rut }}">
-                                            <i class="fa fa-circle-o nav-icon"></i>
-                                            <p>{{ $men_dash->menu_desc }}</p>
                                         </a>
                                     </li>
                                     @endforeach

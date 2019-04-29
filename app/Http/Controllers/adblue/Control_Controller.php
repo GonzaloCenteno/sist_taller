@@ -15,8 +15,7 @@ class Control_Controller extends Controller
         if ($request->session()->has('id_usuario'))
         {
             $menu_registro = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',1]])->orderBy('menu_id','asc')->get();
-            $menu_dashboard = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',2]])->orderBy('menu_id','asc')->get();
-            return view('adblue/vw_control',compact('menu_registro','menu_dashboard'));
+            return view('adblue/vw_control',compact('menu_registro'));
         }
         else
         {
@@ -45,7 +44,7 @@ class Control_Controller extends Controller
 
     public function create(Request $request)
     {
-        $function = DB::select("select taller.control_salida(1,".round($request['cantidad'],3).")");
+        $function = DB::select("select taller.control_salida(1,".round($request['cantidad'],3).",'".strtoupper($request['observacion'])."')");
         return $function;
     }
 
@@ -89,8 +88,8 @@ class Control_Controller extends Controller
             $start = 0;
         }
         
-        $totalg = DB::select("select count(*) as total from taller.fn_control_total_salida()");
-        $sql = DB::select("select * from taller.fn_control_total_salida() order by ".$sidx." ".$sord." limit ".$limit." offset ".$start);
+        $totalg = DB::select("select count(*) as total from taller.fn_control_diario_adblue()");
+        $sql = DB::select("select * from taller.fn_control_diario_adblue() order by ".$sidx." ".$sord." limit ".$limit." offset ".$start);
 
         $total_pages = 0;
         if (!$sidx) {
@@ -111,11 +110,13 @@ class Control_Controller extends Controller
             $Lista->rows[$Index]['id'] = $Datos->xcon_id;           
             $Lista->rows[$Index]['cell'] = array(
                 trim($Datos->xcon_id),
-                trim($Datos->xcon_fecregistro),
-                trim($Datos->xcon_ingreso),
-                trim($Datos->xcon_totsalida),
-                trim($Datos->xcon_stop),
-                trim($Datos->xcon_cantidad)
+                trim($Datos->xfecha),
+                trim($Datos->xing_isotanque),
+                trim($Datos->xtotal_sal_isotanq),
+                trim($Datos->xstop),
+                trim($Datos->xexce_isotanq),
+                trim($Datos->xcantidad),
+                trim($Datos->xcon_observacion),
             );
         }
         return response()->json($Lista);
@@ -125,13 +126,12 @@ class Control_Controller extends Controller
     {
         if ($request->session()->has('id_usuario') && session('menu_rol') == 6)
         {
-            //$control = DB::table('taller.tblcontrol_con')->orderBy('con_id','asc')->get();
-            $meses = DB::select("select * from taller.vw_rep_ctrl_diario_adblue order by mes asc");
+            $meses = DB::select("select * from taller.fn_control_diario_adblue_total()");
             if(count($meses) > 0)
             {
                 $view = \View::make('adblue.reportes.vw_control_interno',compact('meses'))->render();
                 $pdf = \App::make('dompdf.wrapper');
-                $pdf->loadHTML($view)->setPaper('a4');
+                $pdf->loadHTML($view)->setPaper('a4','landscape');
                 return $pdf->stream("CONTROL INTERNO".".pdf");
             }
             else
@@ -209,33 +209,35 @@ class Control_Controller extends Controller
         }  
     }
     
-    public function abrir_rep_control_consumo($anio,$mes, Request $request)
-    {
-        if ($request->session()->has('id_usuario') && session('menu_rol') == 6)
-        {
-            $placas = DB::select("select xcde_placa,round(avg(xcde_consumo_real),3) as consumo,round(avg(xcde_kilometraje),3) as kg,round(avg(xcde_rendimiento),3) as rendimiento from taller.control_consumo() 
-                                    where extract(month from xcde_fecha) = $mes and extract(year from xcde_fecha) = $anio group by xcde_placa order by xcde_placa asc");
-            $rutas = DB::select("select xcde_ruta,round(avg(xcde_consumo_real),3) as consumo,round(avg(xcde_kilometraje),3) as kg,round(avg(xcde_rendimiento),3) as rendimiento from taller.control_consumo() 
-                                    where extract(month from xcde_fecha) = $mes and extract(year from xcde_fecha) = $anio group by xcde_ruta order by xcde_ruta asc");
-            setlocale(LC_TIME, 'es');
-            $fecha = \DateTime::createFromFormat('!m', $mes);
-            $mes = strftime("%B", $fecha->getTimestamp());
-            if (count($placas) > 0 && count($rutas) > 0) 
-            {
-                $view = \View::make('adblue.reportes.vw_control_consumos',compact('placas','rutas','mes'))->render();
-                $pdf = \App::make('dompdf.wrapper');
-                $pdf->loadHTML($view)->setPaper('a4','landscape');
-                return $pdf->stream("CONTROL CONSUMO".".pdf");
-            }
-            else
-            {
-                return "NO SE ENCONTRARON DATOS";
-            }
-        }
-        else
-        {
-            return view('errors/vw_sin_acceso');
-        }  
-    }
+//    public function abrir_rep_control_consumo($anio,$mes, Request $request)
+//    {
+//        if ($request->session()->has('id_usuario') && session('menu_rol') == 6)
+//        {
+//            $placas = DB::select("select xcde_placa,round(avg(xcde_rendimiento_lt),3) as rendimiento, round(avg(xcde_ahxviaje),3) as ahorro, round(avg(xcde_exxviaje),3) as exceso,
+//                                    (round(avg(xcde_ahxviaje),3) + round(avg(xcde_exxviaje),3)) as totalae from taller.control_consumo() 
+//                                    where extract(month from xcde_fecha) = $mes and extract(year from xcde_fecha) = $anio group by xcde_placa order by xcde_placa asc");
+//            $rutas = DB::select("select xcde_ruta,round(avg(xcde_consumo_real),3) as consumo,round(avg(xcde_kilometraje),3) as kg,round(avg(xcde_rendimiento_lt),3) as rendimiento, round(avg(xcde_ahxviaje),3) as ahorro, round(avg(xcde_exxviaje),3) as exceso, 
+//                                    (round(avg(xcde_ahxviaje),3) + round(avg(xcde_exxviaje),3)) as totalae from taller.control_consumo() 
+//                                    where extract(month from xcde_fecha) = $mes and extract(year from xcde_fecha) = $anio group by xcde_ruta ORDER BY SUBSTRING(xcde_ruta FROM '([0-9]+)')::BIGINT ASC, xcde_ruta");
+//            setlocale(LC_TIME, 'es');
+//            $fecha = \DateTime::createFromFormat('!m', $mes);
+//            $mes = strftime("%B", $fecha->getTimestamp());
+//            if (count($placas) > 0 && count($rutas) > 0) 
+//            {
+//                $view = \View::make('adblue.reportes.vw_control_consumos',compact('placas','rutas','mes'))->render();
+//                $pdf = \App::make('dompdf.wrapper');
+//                $pdf->loadHTML($view)->setPaper('a4','landscape');
+//                return $pdf->stream("CONTROL CONSUMO".".pdf");
+//            }
+//            else
+//            {
+//                return "NO SE ENCONTRARON DATOS";
+//            }
+//        }
+//        else
+//        {
+//            return view('errors/vw_sin_acceso');
+//        }  
+//    }
 
 }

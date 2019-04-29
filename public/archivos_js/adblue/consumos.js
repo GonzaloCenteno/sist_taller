@@ -8,16 +8,17 @@ jQuery(document).ready(function($){
     jQuery("#tblconsumosdet").jqGrid({
         url: 'consumo/0?grid=consumos&indice=0',
         datatype: 'json', mtype: 'GET',
-        height: '380px', autowidth: true,
+        height: '370px', autowidth: true,
         toolbarfilter: true,
         sortable:false,
         shrinkToFit: false,
         forceFit:true,  
         scroll: false,
-        colNames: ['ID', 'FECHA','IDCAB','VALE','PLACA','RUTA','ESTACION','CONDUCTOR','COPILOTO','KM','%','Q-LT','%','Q-LT','Q-ABAST','OBSERVACIONES','INGRESO','SALIDA','STOP'],
+        colNames: ['ID', 'Q-PARCIAL','FECHA','IDCAB','VALE','PLACA','RUTA','ESTACION','CONDUCTOR','COPILOTO','KM','%','Q-LT','%','Q-LT','Q-ABAST','OBSERVACIONES','INGRESO','SALIDA','STOP'],
         rowNum: 20, sortname: 'cde_id', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblconsumos" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - LISTA DE CONSUMOS -', align: "center",
         colModel: [
             {name: 'cde_id', index: 'cde_id', align: 'left',width: 10,hidden:true,frozen:true},
+            {name: 'cde_qparcial', index: 'cde_qparcial', align: 'center', width: 70,frozen:true,formatter: OptionFormato},
             {name: 'cde_fecha', index: 'cde_fecha', align: 'center', width: 90,frozen:true},
             {name: 'cca_id', index: 'cca_id', align: 'center', width: 70,hidden:true,frozen:true},
             {name: 'nro_vale', index: 'nro_vale', align: 'center', width: 55,frozen:true},
@@ -62,6 +63,7 @@ jQuery(document).ready(function($){
     });
     
     $("#tblconsumosdet").jqGrid("destroyFrozenColumns")
+            .jqGrid("setColProp", "cde_qparcial", { frozen: true })
             .jqGrid("setColProp", "cde_fecha", { frozen: true })
             .jqGrid("setColProp", "nro_vale", { frozen: true })
             .jqGrid("setColProp", "veh_placa", { frozen: true })
@@ -94,6 +96,11 @@ jQuery(document).ready(function($){
     });
 
 });
+
+function OptionFormato(cellValue, options, rowObject) {
+    var opciones = (parseInt(cellValue) == 0) ? '<button onclick="consumo_parcial('+rowObject[0]+','+rowObject[1]+')" type="button" class="btn btn-xl btn-success"><i class="fa fa-gear"></i> </button>' : '<button onclick="consumo_parcial('+rowObject[0]+','+rowObject[1]+')" type="button" class="btn btn-xl btn-danger"><i class="fa fa-gears"></i> </button>';
+    return opciones;
+}
 
 jQuery(document).on("click", "#menu_push", function(){    
     if ($("#body_push").hasClass('sidebar-mini sidebar-collapse')) 
@@ -273,13 +280,13 @@ jQuery(document).on("click", "#btn_generar_consumodet", function(){
                                                 <td><input type="hidden" name="contador[]"><input type="hidden" name="estacion[]" id="hiddenestacion_'+num+'"><input type="text" id="estacion_'+num+'" class="form-control text-uppercase text-center"></td>\n\
                                                 <td><input type="hidden" name="conductor[]" id="hiddenconductor_'+num+'"><input type="text" id="conductor_'+num+'" class="form-control conductor text-uppercase text-center"></td>\n\
                                                 <td><input type="hidden" name="piloto[]" id="hiddenpiloto_'+num+'"><input type="text" id="piloto_'+num+'" class="form-control piloto text-uppercase text-center"></td>\n\
-                                                <td><input type="text" name="km[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="6"></td>\n\
-                                                <td><input type="text" name="xtanque[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                                                <td><input type="text" name="qabast[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                                                <td><input type="text" name="km[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="6" placeholder="0"></td>\n\
+                                                <td><input type="text" name="xtanque[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0"></td>\n\
+                                                <td><input type="text" name="qabast[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
                                                 <td><input type="text" name="observ[]" class="form-control text-uppercase text-center" maxlength="255"></td>\n\
-                                                <td><input type="text" name="ingreso[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                                                <td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                                                <td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                                                <td><input type="text" name="ingreso[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
+                                                <td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
+                                                <td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
                                             </tr>\n\
                                         </tbody>\n\
                                     </table>\n\
@@ -323,13 +330,13 @@ jQuery(document).on("click", "#btn_generar_consumodet", function(){
                             <td><input type="hidden" name="contador[]"><input type="hidden" name="estacion[]" value="'+data[i].est_id+'"><label>'+data[i].est_descripcion+'</label></td>\n\
                             <td><input type="hidden" name="conductor[]" id="hiddenconductor_'+num+'"><input type="text" id="conductor_'+num+'" class="form-control conductor text-uppercase text-center"></td>\n\
                             <td><input type="hidden" name="piloto[]" id="hiddenpiloto_'+num+'"><input type="text" id="piloto_'+num+'" class="form-control piloto text-uppercase text-center"></td>\n\
-                            <td><input type="text" name="km[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="6"></td>\n\
-                            <td><input type="text" name="xtanque[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                            <td><input type="text" name="qabast[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
+                            <td><input type="text" name="km[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="6" placeholder="0"></td>\n\
+                            <td><input type="text" name="xtanque[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0"></td>\n\
+                            <td><input type="text" name="qabast[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
                             <td><input type="text" name="observ[]" class="form-control text-uppercase text-center" maxlength="255"></td>\n\
-                            <td><input type="text" name="ingreso[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                            <td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>\n\
-                            <td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"><input type="hidden" name="consumo[]" value="'+data[i].rte_consumo+'"></td>\n\
+                            <td><input type="text" name="ingreso[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
+                            <td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
+                            <td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"><input type="hidden" name="consumo[]" value="'+data[i].rte_consumo+'"></td>\n\
                             </tr>';
                         $("#consumodet").html(html);
                     }
@@ -380,13 +387,13 @@ jQuery(document).on("click", "#agregar_otrasrutas", function(){
             '<td><input type="hidden" name="contador[]"><input type="hidden" name="estacion[]" id="hiddenestacion_'+cont+'"><input type="text" id="estacion_'+cont+'" class="form-control text-uppercase text-center"></td>'+
             '<td><input type="hidden" name="conductor[]" id="hiddenconductor_'+cont+'"><input type="text" id="conductor_'+cont+'" class="form-control conductor text-uppercase text-center"></td>'+
             '<td><input type="hidden" name="piloto[]" id="hiddenpiloto_'+cont+'"><input type="text" id="piloto_'+cont+'" class="form-control piloto text-uppercase text-center"></td>'+
-            '<td><input type="text" name="km[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="6"></td>'+
-            '<td><input type="text" name="xtanque[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>'+
-            '<td><input type="text" name="qabast[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>'+
+            '<td><input type="text" name="km[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="6" placeholder="0"></td>'+
+            '<td><input type="text" name="xtanque[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0"></td>'+
+            '<td><input type="text" name="qabast[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>'+
             '<td><input type="text" name="observ[]" class="form-control text-uppercase text-center" maxlength="255"></td>'+
-            '<td><input type="text" name="ingreso[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>'+
-            '<td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>'+
-            '<td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8"></td>'+
+            '<td><input type="text" name="ingreso[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>'+
+            '<td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>'+
+            '<td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>'+
             '</tr>';
     autocompletar_estaciones('estacion_'+cont);
     autocompletar_personas('conductor_'+cont);
@@ -420,7 +427,7 @@ jQuery(document).on("click", "#btn_vw_otrosconsumos_Guardar", function(){
             }
             else
             {
-                MensajeAdvertencia('NO SE PUDO ENVIAR LOS DATOS, OCURRIO UN PROBLEMA');
+                MensajeAdvertencia('NO SE PUDO ENVIAR LA RESPUESTA');
                 console.log(data);
             }
         },
@@ -458,7 +465,7 @@ jQuery(document).on("click", "#btn_vw_consumoscab_Guardar", function() {
             }
             else
             {
-                MensajeAdvertencia('NO SE PUDO ENVIAR LOS DATOS, OCURRIO UN PROBLEMA');
+                MensajeAdvertencia('NO SE PUDO ENVIAR LA RESPUESTA');
                 console.log(data);
             }
         },
@@ -511,7 +518,18 @@ function modificar_consumodetalle(cde_id){
             $("#txt_cde_fecha").val(data.cde_fecha);
             $("#txt_cde_km").val(data.cde_kilometros);
             $("#txt_cde_xtanque").val(data.cde_xtanque);
-            $("#txt_cde_qabast").val(data.cde_qabastecida);
+            if (data.cde_qparcial === 1) 
+            {
+                $("#txt_cde_qabast").val(data.cde_qabastecida);
+                $("#txt_cde_qabast").attr('disabled',true);
+                $("#cabeceraModalConsumo").show();
+            }
+            else
+            {
+                $("#txt_cde_qabast").val(data.cde_qabastecida);
+                $("#txt_cde_qabast").removeAttr('disabled');
+                $("#cabeceraModalConsumo").hide();
+            }
             $("#txt_cde_observaciones").val(data.cde_observaciones);
             $("#txt_cde_ingreso").val(data.cde_ingreso);
             $("#txt_cde_salida").val(data.cde_salida);
@@ -739,6 +757,243 @@ jQuery(document).on("click", "#btn_crear_nueva_ruta", function(){
             {
                 MensajeAdvertencia('NO SE PUDO ENVIAR LA RESPUESTA');
                 console.log(data);
+            }
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
+});
+
+function consumo_parcial(cde_id,cde_qparcial)
+{
+    if (cde_qparcial === 0)
+    {
+        ConsumoParcial = $('#ModalConsumoQparcial').modal({backdrop: 'static', keyboard: false});
+        ConsumoParcial.find('.modal-title').text('AGREGAR Q-ABAST. PARCIALES');
+        ConsumoParcial.find('#btn_agregar_cqparciales').html('<i class="fa fa-sign-in"></i> AGREGAR Q-ABAST.').show();
+        $('#principal').show();
+        $('#secundario').hide();
+        $('#btn_agregar_cqparciales').show();
+        $('#btn_agregar_cqparciales').attr('disabled',true);
+        $('#btn_actualizar_cqparciales').hide();
+        $(".qabastparciales").remove();
+        cont_qparcial=0;
+        det_qparcial=0;
+        $("#lbl_conpar_vale").html("VALE: " + "<b>"+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'nro_vale')+"</b>");
+        $("#lbl_conpar_placa").html("PLACA: " + "<b>"+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'veh_placa')+"</b>");
+        $("#lbl_conpar_estacion").html("ESTACION: " + "<b>"+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'est_descripcion')+"</b>");
+        $("#lbl_conpar_ruta").html("RUTA: " + "<b>"+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'rut_descripcion')+"</b>");
+    }
+    else
+    {
+        $.ajax({
+            headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+            url: 'consumo/'+cde_id+'?show=datos_qparcial',
+            type: 'GET',
+            beforeSend:function()
+            {            
+                MensajeEspera('RECUPERANDO INFORMACION');  
+            },
+            success: function(data) 
+            {
+                html_detalle = "";
+                ConsumoParcial = $('#ModalConsumoQparcial').modal({backdrop: 'static', keyboard: false});
+                ConsumoParcial.find('.modal-title').text('VER Q-ABAST. PARCIALES');
+                $("#lbl_conpar_vale").html("VALE: " + "<b>"+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'nro_vale')+"</b>");
+                $("#lbl_conpar_placa").html("PLACA: " + "<b>"+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'veh_placa')+"</b>");
+                $("#lbl_conpar_estacion").html("ESTACION: " + "<b>"+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'est_descripcion')+"</b>");
+                $("#lbl_conpar_ruta").html("RUTA: " + "<b>"+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'rut_descripcion')+"</b>");
+                
+                for(i=0;i<data.length;i++)
+                {
+                    html_detalle = html_detalle+'<div class="col-md-12 text-center">\n\
+                                                    <div class="form-group text-center">\n\
+                                                        <h4>'+data[i].cdp_qparcial+'</h4>\n\
+                                                    </div>\n\
+                                                </div>';
+                    $("#detalle_qabast_parcial_2").html(html_detalle);
+                }
+                $('#principal').hide();
+                $('#secundario').show();
+                $('#btn_actualizar_cqparciales').hide();
+                $('#btn_agregar_cqparciales').hide();
+                swal.close();
+            },
+            error: function(data) {
+                MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+                console.log('error');
+                console.log(data);
+            }
+        });
+    }
+}
+
+var cont_qparcial=0;
+var det_qparcial=0;
+jQuery(document).on("click", "#btn_generar_cqparciales", function(){
+    var detalleQparcial =  '<div class="col-md-12 qabastparciales filaPacial_'+cont_qparcial+'">'+
+                                '<div class="form-group">'+
+                                    '<label>Q-ABAST PARCIAL:</label>'+
+                                    '<div class="input-group">'+
+                                        '<div class="input-group-prepend">'+
+                                            '<span class="input-group-text"><i class="fa fa-tasks"></i></span>'+
+                                        '</div>'+
+                                        '<input type="hidden" name="contarqabastParcial[]"><input type="text" name="cdp_qparcial[]" class="form-control text-center" maxlength="8" onkeypress="return soloNumeroTab(event);">'+
+                                        '<button type="button" class="btn btn-danger" onclick="EliminarDetQparcial('+cont_qparcial+')"><i class="fa fa-trash-o"></i></button>'+
+                                        '<div name="otro[]"></div>'+
+                                    '</div>'+
+                                '</div>'+
+                            '</div>';
+    cont_qparcial++;
+    det_qparcial = det_qparcial + 1;
+    $('#detalle_qabast_parcial_1').append(detalleQparcial);
+    evaluarDetQparcial();
+});
+
+function EliminarDetQparcial(indice)
+{
+    $(".filaPacial_"+indice).remove();
+    det_qparcial = det_qparcial - 1;
+    cont_qparcial++;
+    evaluarDetQparcial();
+}
+
+function evaluarDetQparcial()
+{
+    console.log(det_qparcial);
+    if (det_qparcial>0)
+    {
+        $("#btn_agregar_cqparciales").removeAttr('disabled');
+    }
+    else
+    {
+        $('#btn_agregar_cqparciales').attr('disabled',true);
+        cont_qparcial = 0;
+    }
+}
+
+jQuery(document).on("click", "#btn_agregar_cqparciales", function(){
+    cde_id = $('#tblconsumosdet').jqGrid ('getGridParam', 'selrow');
+    var QabastPart = new FormData($("#FormularioQabastParcial")[0]);
+    $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: 'consumo?tipo=2&cde_id='+cde_id,
+        type: 'POST',
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+        data: QabastPart,
+        success: function (data) 
+        {
+            if (data == 1) 
+            {
+                MensajeConfirmacion('EL RESPUESTA FUE ENVIADA CON EXITO');
+                jQuery("#tblconsumosdet").jqGrid('setGridParam', {
+                    url: 'consumo/0?grid=consumos'
+                }).trigger('reloadGrid');
+                $("#btn_cerrar_modal_1").click();
+            }
+            else
+            {
+                console.log(data.error);
+                datos = $("input[name='cdp_qparcial[]']");
+                $.each(data.error, function(key, value){                        
+                    console.log(key);
+                    console.log(value);
+                    MensajeAdvertencia("<li>"+value+"</li>");
+                });
+            }
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
+});
+
+jQuery(document).on("click","#btn_modificar_qparcial", function(){
+    cde_id = $('#tblconsumosdet').jqGrid ('getGridParam', 'selrow');
+    $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: 'consumo/'+cde_id+'?show=datos_qparcial',
+        type: 'GET',
+        beforeSend:function()
+        {            
+            MensajeEspera('RECUPERANDO INFORMACION');  
+        },
+        success: function(data) 
+        {
+            html_detalle = "";
+            $("#btn_cerrar_modal").click();
+            ConsumoParcial = $('#ModalConsumoQparcial').modal({backdrop: 'static', keyboard: false});
+            ConsumoParcial.find('.modal-title').text('VER Q-ABAST. PARCIALES');
+            $("#lbl_conpar_vale").html("VALE: " + "<b>"+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'nro_vale')+"</b>");
+            $("#lbl_conpar_placa").html("PLACA: " + "<b>"+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'veh_placa')+"</b>");
+            $("#lbl_conpar_estacion").html("ESTACION: " + "<b>"+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'est_descripcion')+"</b>");
+            $("#lbl_conpar_ruta").html("RUTA: " + "<b>"+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'rut_descripcion')+"</b>");
+
+            for(i=0;i<data.length;i++)
+            {
+                html_detalle = html_detalle+'<div class="col-md-12">'+
+                                                '<div class="form-group">'+
+                                                    '<label>Q-ABAST PARCIAL:</label>'+
+                                                    '<div class="input-group">'+
+                                                        '<div class="input-group-prepend">'+
+                                                            '<span class="input-group-text"><i class="fa fa-tasks"></i></span>'+
+                                                        '</div>'+
+                                                        '<input type="hidden" name="contarqabastParcial[]"><input type="text" name="cdp_qparcial[]" value="'+data[i].cdp_qparcial+'" class="form-control text-center" maxlength="8" onkeypress="return soloNumeroTab(event);">'+
+                                                    '</div>'+
+                                                '</div>'+
+                                            '</div>';
+                $("#detalle_qabast_parcial_2").html(html_detalle);
+            }
+            $('#principal').hide();
+            $('#secundario').show();
+            $('#btn_actualizar_cqparciales').show();
+            $('#btn_agregar_cqparciales').hide();
+            swal.close();
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
+});
+
+jQuery(document).on("click", "#btn_actualizar_cqparciales", function(){
+    cde_id = $('#tblconsumosdet').jqGrid ('getGridParam', 'selrow');
+    var QabastPartmod = new FormData($("#FormularioQabastParcialMod")[0]);
+    $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: 'consumo?tipo=3&cde_id='+cde_id,
+        type: 'POST',
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+        data: QabastPartmod,
+        success: function (data) 
+        {
+            if (data == 1) 
+            {
+                MensajeConfirmacion('EL RESPUESTA FUE ENVIADA CON EXITO');
+                jQuery("#tblconsumosdet").jqGrid('setGridParam', {
+                    url: 'consumo/0?grid=consumos'
+                }).trigger('reloadGrid');
+                $("#btn_cerrar_modal_1").click();
+            }
+            else
+            {
+                console.log(data.error);
+                $.each(data.error, function(key, value){                        
+                    console.log(key);
+                    console.log(value);
+                    MensajeAdvertencia("<li>"+value+"</li>");
+                });
             }
         },
         error: function(data) {

@@ -6,18 +6,20 @@ jQuery(document).ready(function ($) {
     jQuery("#tblcontrol").jqGrid({
         url: 'control/0?grid=control',
         datatype: 'json', mtype: 'GET',
-        height: '500px', autowidth: true,
+        height: '450px', autowidth: true,
         toolbarfilter: true,
         sortable: false,
-        colNames: ['ID', 'FECHA', 'INGRESO', 'TOTAL SALIDA', 'STOP', 'CANTIDAD EN LITROS'],
+        colNames: ['ID', 'FECHA', 'INGRESO ISOTANQUE AL AREA', 'TOTAL SALIDA POR ISOTANQUE', 'STOP', 'EXCEDENTE POR ISOTANQUE','CANTIDAD','OBSERVACIONES'],
         rowNum: 20, sortname: 'xcon_id', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblcontrol" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - CONTROL DIARIO DE ADBLUE AREQUIPA LITROS -', align: "center",
         colModel: [
             {name: 'xcon_id', index: 'xcon_id', align: 'left', width: 10, hidden: true},
-            {name: 'xcon_fecregistro', index: 'xcon_fecregistro', align: 'center', width: 15, formatter: 'date', formatoptions: {srcformat: 'Y-m-d', newformat: 'd/m/Y'}},
-            {name: 'xcon_ingreso', index: 'xcon_ingreso', align: 'center', width: 15},
-            {name: 'xcon_totsalida', index: 'xcon_totsalida', align: 'center', width: 15},
-            {name: 'xcon_stop', index: 'xcon_stop', align: 'center', width: 15},
-            {name: 'xcon_cantidad', index: 'xcon_cantidad', align: 'center', width: 15, classes: 'column_red'}
+            {name: 'xfecha', index: 'xfecha', align: 'center', width: 10, formatter: 'date', formatoptions: {srcformat: 'Y-m-d', newformat: 'd/m/Y'}},
+            {name: 'xing_isotanque', index: 'xing_isotanque', align: 'center', width: 15},
+            {name: 'xtotal_sal_isotanq', index: 'xtotal_sal_isotanq', align: 'center', width: 15},
+            {name: 'xstop', index: 'xstop', align: 'center', width: 10},
+            {name: 'xexce_isotanq', index: 'xexce_isotanq', align: 'center', width: 15},
+            {name: 'xcantidad', index: 'xcantidad', align: 'center', width: 10, classes: 'column_red'},
+            {name: 'xcon_observacion', index: 'xcon_observacion', align: 'center', width: 35}
         ],
         pager: '#paginador_tblcontrol',
         rowList: [10, 20, 30, 40, 50]
@@ -122,7 +124,8 @@ function generar_control()
         type: 'GET',
         data:
         {
-            cantidad: $('#txt_cingreso').val()
+            cantidad: $('#txt_cingreso').val(),
+            observacion: $('#txt_cobservaciones').val()
         },
         beforeSend: function ()
         {
@@ -134,6 +137,7 @@ function generar_control()
             {
                 MensajeConfirmacion('SE GENERO EL CONTROL CON EXITO');
                 $("#txt_cingreso").val('');
+                $("#txt_cobservaciones").val('');
                 jQuery("#tblcontrol").jqGrid('setGridParam', {
                     url: 'control/0?grid=control'
                 }).trigger('reloadGrid');
@@ -148,6 +152,8 @@ function generar_control()
 }
 
 jQuery(document).on("click", "#btn_act_tblcontrol", function () {
+    $("#txt_cingreso").val('');
+    $("#txt_cobservaciones").val('');
     jQuery("#tblcontrol").jqGrid('setGridParam', {
         url: 'control/0?grid=control'
     }).trigger('reloadGrid');
@@ -191,5 +197,5 @@ jQuery(document).on("click", "#btn_ctr_consumo", function(){
 });
 
 jQuery(document).on("click", "#btn_abrir_reporte_ctrlcon", function(){
-    window.open('control_consumo/'+$("#cbx_ctrlcon_anio").val()+'/'+$("#cbx_ctrlcon_mes").val());
+    window.open('control_consumo_rep/'+$("#cbx_ctrlcon_anio").val()+'/'+$("#cbx_ctrlcon_mes").val());
 });

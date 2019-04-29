@@ -39,43 +39,55 @@
 
         <div class="lado3" style="height: 435px; margin-bottom: 20px;">
             @foreach($meses as $mes)
-                <h2>{{ strtoupper($mes->mes_descripcion) }}</h2> 
-                <table border="0" cellspacing="0" cellpadding="0" style="margin-bottom:20px; margin-top: 0px;  font-size: 1.4em;">
-                    <thead>
+                <h2>{{ strtoupper($mes->xmes_descripcion) }}</h2> 
+                <table border="0" cellspacing="0" cellpadding="0" style="margin-bottom:20px; margin-top: 0px;  font-size: 1.0em;">
+                    <thead style="font-size: 1em;">
                         <tr >
-                            <th style="width: 20%;">FECHA INGRESO</th>
+                            <th style="width: 12%;">FECHA INGRESO</th>
+                            <th style="width: 12%;"></th>
+                            <th style="width: 12%;"></th>
+                            <th style="width: 12%;"></th>
+                            <th style="width: 15%;">INGRESO ISOTANQUE AL AREA</th>
                             <th style="width: 15%;"></th>
-                            <th style="width: 15%;">INGRESO</th>
-                            <th style="width: 15%;"></th>
-                            <th style="width: 15%;">TOTAL SALIDA</th>
-                            <th style="width: 15%;">STOP</th>
-                            <th style="width: 15%;">CANTIDAD</th>
-                            <th rowspan="2" style="width: 15%;">TOTAL INGREO MENSUAL</th>
-                            <th rowspan="2" style="width: 15%;">TOTAL SALIDA MENSUAL</th>
-                            <th rowspan="2" style="width: 15%;">EXISTENCIA</th>   
+                            <th style="width: 15%;">TOTAL SALIDA POR ISOTANQUE</th>
+                            <th style="width: 9%;">STOP</th>
+                            <th style="width: 15%;">EXCEDENTE DE ISOTANQUE</th>
+                            <th style="width: 15%;">CANTIDAD EN LITROS</th>
+                            <th style="width: 22%;">OBSERVACION</th>
+                            <th rowspan="2" style="width: 15%;">TOTAL DE DESCARGA MENSUAL</th>
+                            <th rowspan="2" style="width: 15%;">TOTAL ABASTECIMIENTO MENSUAL</th>
+                            <th rowspan="2" style="width: 15%;">SALDO PROXIMO MES</th>   
                         </tr>
                     </thead>
-                    <thead>
+                    <thead style="font-size: 1em;">
                         <tr>
+                            <th style="width: 12%;"></th>
+                            <th style="width: 12%;">FECHA REGISTRO</th>
+                            <th style="width: 12%;">CIUDAD</th>
+                            <th style="width: 12%;">PLACA</th>
                             <th style="width: 15%;"></th>
-                            <th style="width: 20%;">FECHA REGISTRO</th>
+                            <th style="width: 15%;">CONSUMO DEL DIA</th>
                             <th style="width: 15%;"></th>
-                            <th style="width: 15%;">SALIDA</th>
+                            <th style="width: 9%;"></th>
                             <th style="width: 15%;"></th>
                             <th style="width: 15%;"></th>
-                            <th style="width: 15%;"></th>
+                            <th style="width: 22%;"></th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php $control = DB::select("select * from taller.fn_control_total_salida() where TO_CHAR(xcon_fecregistro,'MM') = '$mes->mes' order by xcon_fecregistro asc"); ?>
+                        <?php $control = DB::select("select * from taller.fn_control_diario_adblue() where TO_CHAR(xfecha,'MM') = '$mes->xmes' order by xfecha asc"); ?>
                         @foreach ($control as $con)
-                            <?php $detalle = DB::table('taller.tblconsumodetalle_cde')->select('cde_fecha', 'cde_qabastecida','est_id','cde_estado')->where([['est_id',1],['cde_fecha','>=',$con->xcon_fecinicio],['cde_fecha','<=',$con->xcon_fecfin],['cde_estado',1]])->orderBy('cde_fecha','asc')->get(); ?>
+                            <?php $detalle = DB::table('taller.vw_consumos')->select('cde_fecha', 'cde_qabastecida','est_id','cde_estado','veh_placa','est_descripcion')->where([['est_id',1],['cde_fecha','>=',$con->xcon_fecinicio],['cde_fecha','<=',$con->xcon_fecfin],['cde_estado',1]])->orderBy('cde_fecha','asc')->get(); ?>
                             @foreach ($detalle as $det)
                             <tr>
                                 <td></td>
                                 <td style="text-align: center;">{{ \Carbon\Carbon::parse($det->cde_fecha)->format('d/m/Y') }}</td>
+                                <td style="text-align: center;">{{ $det->est_descripcion }}</td>
+                                <td style="text-align: center;">{{ $det->veh_placa }}</td>
                                 <td></td>
                                 <td style="text-align: center;">{{$det->cde_qabastecida}}</td>
+                                <td></td>
+                                <td></td>
                                 <td></td>
                                 <td></td>
                                 <td></td>
@@ -86,13 +98,17 @@
                             </tr>
                             @endforeach
                             <tr>
-                                <td style="text-align: center;">{{ \Carbon\Carbon::parse($con->xcon_fecregistro)->format('d/m/Y') }}</td>
+                                <td style="text-align: center;">{{ \Carbon\Carbon::parse($con->xfecha)->format('d/m/Y') }}</td>
                                 <td></td>
-                                <td style="text-align: center;">{{ $con->xcon_ingreso }}</td>
                                 <td></td>
-                                <td style="text-align: center;">{{ $con->xcon_totsalida }}</td>
-                                <td style="text-align: center;">{{ $con->xcon_stop }}</td>
-                                <td style="text-align: center;">{{ $con->xcon_cantidad }}</td>
+                                <td></td>
+                                <td style="text-align: center;">{{ $con->xing_isotanque }}</td>
+                                <td></td>
+                                <td style="text-align: center;">{{ $con->xtotal_sal_isotanq }}</td>
+                                <td style="text-align: center;">{{ $con->xstop }}</td>
+                                <td style="text-align: center;">{{ $con->xexce_isotanq }}</td>
+                                <td style="text-align: center;">{{ $con->xcantidad }}</td>
+                                <td style="text-align: center; font-size: 0.7em;">{{ $con->xcon_observacion }}</td>
                                 
                                 <td style="border-bottom: 0px;border-top: 0px;"></td>
                                 <td style="border-bottom: 0px;border-top: 0px;"></td>
@@ -101,10 +117,10 @@
                         @endforeach
                     </tbody>
                     <tr>
-                        <td colspan="7" style="text-align: right;"><b> TOTAL: </b></td>
-                        <td style="text-align: center;"><b>{{ $mes->cantidad }}</b></td>
-                        <td style="text-align: center;"><b>{{ $mes->totsalida }}</b></td>
-                        <td style="text-align: center;"><b>{{ $mes->existencia }}</b></td>
+                        <td colspan="11" style="text-align: right;"><b> TOTAL: </b></td>
+                        <td style="text-align: center;"><b>{{ $mes->xtot_desc_mensual }}</b></td>
+                        <td style="text-align: center;"><b>{{ $mes->xtot_abast_mensual }}</b></td>
+                        <td style="text-align: center;"><b>{{ $mes->xsaldo_prox_mes }}</b></td>
                     </tr>
                 </table>
             @endforeach

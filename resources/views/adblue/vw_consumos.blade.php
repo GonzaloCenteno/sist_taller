@@ -288,9 +288,13 @@
 
                 <div class="card card-danger card-outline">
                     <div class="card-header">
-                        <h5 class="m-0">COMSUMOS</h5>
-                        <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <h5 class="m-0">COMSUMOS</h5>
+                            </div>
+                            <div class="col-md-6 text-center" id="cabeceraModalConsumo">
+                                <button type="button" id="btn_modificar_qparcial" class="btn btn-danger btn-xl"><i class="fa fa-pencil-square-o"></i> MODIFICAR Q-ABAST.</button>
+                            </div>
                         </div>
                     </div>
                     <div class="card-body">
@@ -303,7 +307,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-tasks"></i></span>
                                         </div>
-                                        <input type="text" id="txt_cde_km" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="6">
+                                        <input type="text" id="txt_cde_km" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="6" placeholder="0">
                                     </div>
 
                                 </div>
@@ -317,7 +321,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-percent"></i></span>
                                         </div>
-                                        <input type="text" id="txt_cde_xtanque" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8">
+                                        <input type="text" id="txt_cde_xtanque" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0">
                                     </div>
 
                                 </div>
@@ -331,7 +335,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-tasks"></i></span>
                                         </div>
-                                        <input type="text" id="txt_cde_qabast" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8">
+                                        <input type="text" id="txt_cde_qabast" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000">
                                     </div>
 
                                 </div>
@@ -371,7 +375,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-gear"></i></span>
                                         </div>
-                                        <input type="text" id="txt_cde_ingreso" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8">
+                                        <input type="text" id="txt_cde_ingreso" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000">
                                     </div>
 
                                 </div>
@@ -385,7 +389,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-gear"></i></span>
                                         </div>
-                                        <input type="text" id="txt_cde_salida" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8">
+                                        <input type="text" id="txt_cde_salida" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000">
                                     </div>
 
                                 </div>
@@ -399,7 +403,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-gear"></i></span>
                                         </div>
-                                        <input type="text" id="txt_cde_stop" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8">
+                                        <input type="text" id="txt_cde_stop" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000">
                                     </div>
 
                                 </div>
@@ -535,7 +539,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-tasks"></i></span>
                                         </div>
-                                        <input type="text" id="txt_new_kilometros" name="txt_new_kilometros" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="6">
+                                        <input type="text" id="txt_new_kilometros" name="txt_new_kilometros" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="6" placeholder="0">
                                     </div>
 
                                 </div>
@@ -549,7 +553,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-percent"></i></span>
                                         </div>
-                                        <input type="text" id="txt_new_xtanque" name="txt_new_xtanque" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="8">
+                                        <input type="text" id="txt_new_xtanque" name="txt_new_xtanque" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0">
                                     </div>
 
                                 </div>
@@ -563,7 +567,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-tasks"></i></span>
                                         </div>
-                                        <input type="text" id="txt_new_qabast" name="txt_new_qabast" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="8">
+                                        <input type="text" id="txt_new_qabast" name="txt_new_qabast" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000">
                                     </div>
 
                                 </div>
@@ -603,7 +607,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-gear"></i></span>
                                         </div>
-                                        <input type="text" id="txt_new_ingreso" name="txt_new_ingreso" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="8">
+                                        <input type="text" id="txt_new_ingreso" name="txt_new_ingreso" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000">
                                     </div>
 
                                 </div>
@@ -617,7 +621,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-gear"></i></span>
                                         </div>
-                                        <input type="text" id="txt_new_salida" name="txt_new_salida" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="8">
+                                        <input type="text" id="txt_new_salida" name="txt_new_salida" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000">
                                     </div>
 
                                 </div>
@@ -631,7 +635,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-gear"></i></span>
                                         </div>
-                                        <input type="text" id="txt_cde_stop" name="txt_cde_stop" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="8">
+                                        <input type="text" id="txt_cde_stop" name="txt_cde_stop" class="form-control text-center text-uppercase modal_new" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000">
                                     </div>
 
                                 </div>
@@ -645,6 +649,94 @@
             <div class="modal-footer">
                 <button type="button" id="btn_crear_nueva_ruta" class="btn btn-success btn-xl modal_new"></button>
                 <button type="button" id="btn_cerrar_modal" class="btn btn-danger btn-xl" data-dismiss="modal"><i class="fa fa-times-rectangle-o"></i> CERRAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL CONSUMO PARCIAL -->
+
+<div class="modal fade" id="ModalConsumoQparcial">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">X</span></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group">
+
+                            <div class="input-group">
+                                <h4 id="lbl_conpar_vale"> </h4>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+
+                            <div class="input-group">
+                                <h4 id="lbl_conpar_placa"></h4>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+
+                            <div class="input-group">
+                                <h4 id="lbl_conpar_estacion"></h4>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+
+                            <div class="input-group">
+                                <h4 id="lbl_conpar_ruta"></h4>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card card-danger card-outline">
+                    <div class="card-header">
+                        <h5 class="m-0">NUEVOS Q-ABAST. PARCIALES</h5>
+                    </div>
+                    <div class="card-body" id="principal" style="display:none;">
+                        <div class="col-md-12 text-center">
+                            <div class="form-group">
+                                <button type="button" id="btn_generar_cqparciales" class="btn btn-success btn-xl"><i class="fa fa-plus-square"> AGREGAR</i></button>
+                            </div>
+                        </div>
+                        
+                        <form id="FormularioQabastParcial" name="FormularioQabastParcial" method="post" enctype="multipart/form-data">
+                        @csrf
+                            <div class="row" id="detalle_qabast_parcial_1">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="card-body" id="secundario" style="display:none;">
+                        <form id="FormularioQabastParcialMod" name="FormularioQabastParcialMod" method="post" enctype="multipart/form-data">
+                        @csrf
+                            <div class="row" id="detalle_qabast_parcial_2">
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btn_agregar_cqparciales" class="btn btn-warning btn-xl" style="display:none;"></button>
+                <button type="button" id="btn_actualizar_cqparciales" class="btn btn-success btn-xl" style="display:none;"><i class="fa fa-pencil-square-o"></i> ACTUALIZAR Q-ABAST.</button>
+                <button type="button" id="btn_cerrar_modal_1" class="btn btn-danger btn-xl" data-dismiss="modal"><i class="fa fa-times-rectangle-o"></i> CERRAR</button>
             </div>
         </div>
     </div>

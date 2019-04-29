@@ -6,6 +6,10 @@
     .column_red {
         background-color: #c83839;
     }
+    th.ui-th-column div{
+    white-space:normal !important;
+    height:auto !important;
+    padding:2px;
 
 </style>
 <br>
@@ -20,7 +24,7 @@
     </div>
     <div class="card-body">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <div class="form-group">
                     <label>CANTIDAD EN LITROS:</label>
                     <div class="input-group">
@@ -31,7 +35,18 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-1" style="padding-top: 31px;">
+            <div class="col-md-5">
+                <div class="form-group">
+                    <label>OBSERVACIONES:</label>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-share"></i></span>
+                        </div>
+                        <input type="text" id="txt_cobservaciones" class="form-control text-center text-uppercase">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 text-center" style="padding-top: 31px;">
                 <button id="btn_nuevo_control" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> AGREGAR</button>
             </div>
             <div class="col-md-3" style="padding-top: 31px;">
@@ -48,8 +63,8 @@
                         <a href="{{ route('control_abastecimiento') }}" class="btn btn-xl" target="_blank"> CONTROL ABASTECIMIENTOS DE ADBLUE POR CIUDAD</a>
                         <div class="dropdown-divider"></div>
                         <a href="#" id="btn_ctr_abastecimiento" class="btn btn-xl"> CONTROL ABASTECIMIENTOS DE ADBLUE POR PLACA</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" id="btn_ctr_consumo" class="btn btn-xl"> CONTROL CONSUMOS</a>
+<!--                        <div class="dropdown-divider"></div>
+                        <a href="#" id="btn_ctr_consumo" class="btn btn-xl"> CONTROL CONSUMOS</a>-->
                         <div class="dropdown-divider"></div>
                     </div>
                 </div>

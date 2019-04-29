@@ -14,8 +14,7 @@ class Control_Consumo_Controller extends Controller
         if ($request->session()->has('id_usuario'))
         {
             $menu_registro = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',1]])->orderBy('menu_id','asc')->get();
-            $menu_dashboard = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',2]])->orderBy('menu_id','asc')->get();
-            return view('adblue/vw_control_consumo',compact('menu_registro','menu_dashboard'));
+            return view('adblue/vw_control_consumo',compact('menu_registro'));
         }
         else
         {
@@ -46,6 +45,34 @@ class Control_Consumo_Controller extends Controller
             {
                 return $this->crear_tabla_estaciones_consumo($request);
             }
+            if($request['grid'] == 'prom_gen_rut')
+            {
+                return $this->crear_tabla_promedios_generales($request);
+            }
+            if($request['grid'] == 'dat_gen_escania')
+            {
+                return $this->crear_tabla_datos_generales_scania($request);
+            }
+            if($request['grid'] == 'dat_gen_irizar')
+            {
+                return $this->crear_tabla_datos_generales_irizar($request);
+            }
+            if($request['datos'] == 'traer_saldo')
+            {
+                return $this->traer_datos_saldo($request);
+            }
+            if($request['grid'] == 'cost_opt_ruta')
+            {
+                return $this->crear_tabla_costo_optimo_ruta($request);
+            }
+            if($request['grid'] == 'cost_gen_abast_ruta')
+            {
+                return $this->crear_tabla_costo_gen_abast_ruta($request);
+            }
+            if($request['grid'] == 'cost_gen_abast_placa')
+            {
+                return $this->crear_tabla_costo_gen_abast_placa($request);
+            }
         }
     }
 
@@ -73,7 +100,7 @@ class Control_Consumo_Controller extends Controller
 
     public function store(Request $request)
     {
-       
+        
     }
     
     public function crear_tabla_control_consumo(Request $request)
@@ -135,7 +162,8 @@ class Control_Consumo_Controller extends Controller
                 trim($Datos->xcde_kmi),
                 trim($Datos->xcde_kmf),
                 trim($Datos->xcde_kilometraje),
-                trim($Datos->xcde_rendimiento),
+                trim($Datos->xcde_rendimiento_lt),
+                trim($Datos->xcde_rendimiento_gl),
             );
         }
         return response()->json($Lista);
@@ -185,7 +213,7 @@ class Control_Consumo_Controller extends Controller
     
     public function traer_datos_consumos($cde_id, Request $request)
     {
-        $datos = DB::table('taller.vw_consumos')->select('cde_id','est_descripcion','cde_qabastecida')->where('cde_id',$cde_id)->get();
+        $datos = DB::table('taller.vw_consumos')->select('cde_id','est_descripcion','cde_qabastecida','cde_qparcial')->where('cde_id',$cde_id)->get();
         return $datos;
     }
     
@@ -260,6 +288,351 @@ class Control_Consumo_Controller extends Controller
         {
             return $error;
         }
+    }
+    
+    public function crear_tabla_promedios_generales(Request $request)
+    {
+        header('Content-type: application/json');
+        $page = $_GET['page'];
+        $limit = $_GET['rows'];
+        $sidx = $_GET['sidx'];
+        $sord = $_GET['sord'];
+        $start = ($limit * $page) - $limit;
+        if ($start < 0) {
+            $start = 0;
+        }
+            
+        $totalg = DB::select("select count(*) as total from taller.control_consumo() 
+                                where extract(month from xcde_fecha) = ".$request['mes']." and extract(year from xcde_fecha) = ".$request['anio']." ");
+        $sql = DB::select("select xcde_ruta,round(avg(xcde_consumo_real),3) as consumo,round(avg(xcde_kilometraje),3) as kg,round(avg(xcde_rendimiento_lt),3) as rendimiento, round(sum(xcde_ahxviaje),3) as ahorro, round(sum(xcde_exxviaje),3) as exceso, 
+                                (round(sum(xcde_ahxviaje),3) + round(sum(xcde_exxviaje),3)) as totalae,count(xcde_ruta) as nro_viajes from taller.control_consumo() 
+                                where extract(month from xcde_fecha) = ".$request['mes']." and extract(year from xcde_fecha) = ".$request['anio']." group by xcde_ruta ORDER BY SUBSTRING(".$sidx." FROM '([0-9]+)')::BIGINT ".$sord.", ".$sidx." limit ".$limit." offset ".$start);
+
+        $total_pages = 0;
+        if (!$sidx) {
+            $sidx = 1;
+        }
+        $count = $totalg[0]->total;
+        if ($count > 0) {
+            $total_pages = ceil($count / $limit);
+        }
+        if ($page > $total_pages) {
+            $page = $total_pages;
+        }
+        
+        $array = array();
+        $sum = DB::select("select count(xcde_ruta) as sum from taller.control_consumo() where extract(month from xcde_fecha) = ".$request['mes']." and extract(year from xcde_fecha) = ".$request['anio']." ");
+        $array['sum'] = $sum[0]->sum;
+        
+        $Lista = new \stdClass();
+        $Lista->page = $page;
+        $Lista->total = $total_pages;
+        $Lista->records = $count;
+        $Lista->userdata = $array;
+        foreach ($sql as $Index => $Datos) {
+            $Lista->rows[$Index]['id'] = $Datos->xcde_ruta;           
+            $Lista->rows[$Index]['cell'] = array(
+                trim($Datos->xcde_ruta),
+                trim($Datos->consumo),
+                trim($Datos->kg),
+                trim($Datos->rendimiento),
+                trim($Datos->ahorro),
+                trim($Datos->exceso),
+                trim($Datos->totalae),
+                trim($Datos->nro_viajes)
+            );
+        }
+        return response()->json($Lista);
+    }
+    
+    public function crear_tabla_datos_generales_scania(Request $request)
+    {
+        header('Content-type: application/json');
+        $page = $_GET['page'];
+        $limit = $_GET['rows'];
+        $sidx = $_GET['sidx'];
+        $sord = $_GET['sord'];
+        $start = ($limit * $page) - $limit;
+        if ($start < 0) {
+            $start = 0;
+        }
+
+        $totalg = DB::select("select count(*) as total from taller.control_consumo() 
+                                where extract(month from xcde_fecha) = ".$request['mes']." and extract(year from xcde_fecha) = ".$request['anio']." and xveh_marca like '%SCANIA%'");
+        $sql = DB::select("select xcde_placa,round(avg(xcde_rendimiento_lt),3) as rendimiento, round(sum(xcde_ahxviaje),3) as ahorro, round(sum(xcde_exxviaje),3) as exceso,
+                                   (round(sum(xcde_ahxviaje),3) + round(sum(xcde_exxviaje),3)) as totalae,count(xcde_placa) as nro_viajes from taller.control_consumo() 
+                                    where extract(month from xcde_fecha) = ".$request['mes']." and extract(year from xcde_fecha) = ".$request['anio']." and xveh_marca like '%SCANIA%' group by xcde_placa order by ".$sidx." ".$sord." limit ".$limit." offset ".$start);
+
+        $total_pages = 0;
+        if (!$sidx) {
+            $sidx = 1;
+        }
+        $count = $totalg[0]->total;
+        if ($count > 0) {
+            $total_pages = ceil($count / $limit);
+        }
+        if ($page > $total_pages) {
+            $page = $total_pages;
+        }
+        
+        $array = array();
+        $sum = DB::select("select count(xcde_placa) as sum from taller.control_consumo() where extract(month from xcde_fecha) = ".$request['mes']." and extract(year from xcde_fecha) = ".$request['anio']." and xveh_marca like '%SCANIA%' ");
+        $array['sum'] = $sum[0]->sum;
+        
+        $Lista = new \stdClass();
+        $Lista->page = $page;
+        $Lista->total = $total_pages;
+        $Lista->records = $count;
+        $Lista->userdata = $array;
+        foreach ($sql as $Index => $Datos) {
+            $Lista->rows[$Index]['id'] = $Datos->xcde_placa;           
+            $Lista->rows[$Index]['cell'] = array(
+                trim($Datos->xcde_placa),
+                trim($Datos->rendimiento),
+                trim($Datos->ahorro),
+                trim($Datos->exceso),
+                trim($Datos->totalae),
+                trim($Datos->nro_viajes)
+            );
+        }
+        return response()->json($Lista);
+    }
+    
+    public function crear_tabla_datos_generales_irizar(Request $request)
+    {
+        header('Content-type: application/json');
+        $page = $_GET['page'];
+        $limit = $_GET['rows'];
+        $sidx = $_GET['sidx'];
+        $sord = $_GET['sord'];
+        $start = ($limit * $page) - $limit;
+        if ($start < 0) {
+            $start = 0;
+        }
+
+        $totalg = DB::select("select count(*) as total from taller.control_consumo() 
+                                where extract(month from xcde_fecha) = ".$request['mes']." and extract(year from xcde_fecha) = ".$request['anio']." and xveh_marca like '%MERCEDES%'");
+        $sql = DB::select("select xcde_placa,round(avg(xcde_rendimiento_lt),3) as rendimiento, round(sum(xcde_ahxviaje),3) as ahorro, round(sum(xcde_exxviaje),3) as exceso,
+                                   (round(sum(xcde_ahxviaje),3) + round(sum(xcde_exxviaje),3)) as totalae,count(xcde_placa) as nro_viajes from taller.control_consumo() 
+                                    where extract(month from xcde_fecha) = ".$request['mes']." and extract(year from xcde_fecha) = ".$request['anio']." and xveh_marca like '%MERCEDES%' group by xcde_placa order by ".$sidx." ".$sord." limit ".$limit." offset ".$start);
+
+        $total_pages = 0;
+        if (!$sidx) {
+            $sidx = 1;
+        }
+        $count = $totalg[0]->total;
+        if ($count > 0) {
+            $total_pages = ceil($count / $limit);
+        }
+        if ($page > $total_pages) {
+            $page = $total_pages;
+        }
+        
+        $array = array();
+        $sum = DB::select("select count(xcde_placa) as sum from taller.control_consumo() where extract(month from xcde_fecha) = ".$request['mes']." and extract(year from xcde_fecha) = ".$request['anio']." and xveh_marca like '%MERCEDES%' ");
+        $array['sum'] = $sum[0]->sum;
+        
+        $Lista = new \stdClass();
+        $Lista->page = $page;
+        $Lista->total = $total_pages;
+        $Lista->records = $count;
+        $Lista->userdata = $array;
+        foreach ($sql as $Index => $Datos) {
+            $Lista->rows[$Index]['id'] = $Datos->xcde_placa;           
+            $Lista->rows[$Index]['cell'] = array(
+                trim($Datos->xcde_placa),
+                trim($Datos->rendimiento),
+                trim($Datos->ahorro),
+                trim($Datos->exceso),
+                trim($Datos->totalae),
+                trim($Datos->nro_viajes)
+            );
+        }
+        return response()->json($Lista);
+    }
+    
+    public function traer_datos_saldo(Request $request)
+    {
+        $costoadblue = DB::table('taller.tblcostoadblue_coa')->select('coa_saldo')->where([['coa_anio',$request['anio']],['coa_mes',$request['mes']]])->get();
+        if ($costoadblue->count() > 0) 
+        {
+            return $costoadblue;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    
+    public function crear_tabla_costo_optimo_ruta(Request $request)
+    {
+        header('Content-type: application/json');
+        $page = $_GET['page'];
+        $limit = $_GET['rows'];
+        $sidx = $_GET['sidx'];
+        $sord = $_GET['sord'];
+        $start = ($limit * $page) - $limit;
+        if ($start < 0) {
+            $start = 0;
+        }
+        
+        $costoadblue = DB::table('taller.tblcostoadblue_coa')->select('coa_saldo')->where([['coa_anio',$request['anio']],['coa_mes',$request['mes']]])->get();
+
+        $totalg = DB::select("select count(*) as total from taller.control_consumo() 
+                                where extract(month from xcde_fecha) = ".$request['mes']." and extract(year from xcde_fecha) = ".$request['anio']." ");
+        $sql = DB::select("SELECT xrut_id,xcde_ruta,xcde_consumo_deseado as cdg, round(avg(xcde_consumo_real),3) as cra, (xcde_consumo_deseado - round(avg(xcde_consumo_real),3)) as totalae, round(xcde_consumo_deseado * ".$costoadblue[0]->coa_saldo.",3) as costocdg,  
+                                round(avg(xcde_consumo_real) * ".$costoadblue[0]->coa_saldo.",3) as costocra, (round(xcde_consumo_deseado * ".$costoadblue[0]->coa_saldo.",3) - round(avg(xcde_consumo_real) * ".$costoadblue[0]->coa_saldo.",3)) as costoae FROM taller.control_consumo()
+                                where extract(month from xcde_fecha) = ".$request['mes']." and extract(year from xcde_fecha) = ".$request['anio']." group by xrut_id,xcde_ruta,xcde_consumo_deseado order by ".$sidx." ".$sord." limit ".$limit." offset ".$start);
+
+        $total_pages = 0;
+        if (!$sidx) {
+            $sidx = 1;
+        }
+        $count = $totalg[0]->total;
+        if ($count > 0) {
+            $total_pages = ceil($count / $limit);
+        }
+        if ($page > $total_pages) {
+            $page = $total_pages;
+        }
+        
+        $Lista = new \stdClass();
+        $Lista->page = $page;
+        $Lista->total = $total_pages;
+        $Lista->records = $count;
+        foreach ($sql as $Index => $Datos) {
+            $Lista->rows[$Index]['id'] = $Datos->xcde_ruta;           
+            $Lista->rows[$Index]['cell'] = array(
+                trim($Datos->xcde_ruta),
+                trim($Datos->cdg),
+                trim($Datos->cra),
+                trim($Datos->totalae),
+                trim($Datos->costocdg),
+                trim($Datos->costocra),
+                trim($Datos->costoae)
+            );
+        }
+        return response()->json($Lista);
+    }
+    
+    public function crear_tabla_costo_gen_abast_ruta(Request $request)
+    {
+        header('Content-type: application/json');
+        $page = $_GET['page'];
+        $limit = $_GET['rows'];
+        $sidx = $_GET['sidx'];
+        $sord = $_GET['sord'];
+        $start = ($limit * $page) - $limit;
+        if ($start < 0) {
+            $start = 0;
+        }
+        
+        $costoadblue = DB::table('taller.tblcostoadblue_coa')->select('coa_saldo')->where([['coa_anio',$request['anio']],['coa_mes',$request['mes']]])->get();
+
+        $totalg = DB::select("select count(*) as total from taller.control_consumo() 
+                                where extract(month from xcde_fecha) = ".$request['mes']." and extract(year from xcde_fecha) = ".$request['anio']." ");
+        $sql = DB::select("select xcde_ruta, round(sum(xcde_ahxviaje),3) as ahorro,round(sum(xcde_ahxviaje) * ".$costoadblue[0]->coa_saldo.",3) as totalca,round(sum(xcde_exxviaje),3) as exceso, 
+                            round(sum(xcde_exxviaje * ".$costoadblue[0]->coa_saldo."),3) as totalce, round((sum(xcde_ahxviaje) * ".$costoadblue[0]->coa_saldo.") + (sum(xcde_exxviaje) * ".$costoadblue[0]->coa_saldo."),3) as totalcae from taller.control_consumo()
+                            where extract(month from xcde_fecha) = ".$request['mes']." and extract(year from xcde_fecha) = ".$request['anio']." group by xcde_ruta ORDER BY SUBSTRING(".$sidx." FROM '([0-9]+)')::BIGINT ".$sord.", ".$sidx." limit ".$limit." offset ".$start);
+
+        $total_pages = 0;
+        if (!$sidx) {
+            $sidx = 1;
+        }
+        $count = $totalg[0]->total;
+        if ($count > 0) {
+            $total_pages = ceil($count / $limit);
+        }
+        if ($page > $total_pages) {
+            $page = $total_pages;
+        }
+        
+        $Lista = new \stdClass();
+        $Lista->page = $page;
+        $Lista->total = $total_pages;
+        $Lista->records = $count;
+        foreach ($sql as $Index => $Datos) {
+            $Lista->rows[$Index]['id'] = $Datos->xcde_ruta;           
+            $Lista->rows[$Index]['cell'] = array(
+                trim($Datos->xcde_ruta),
+                trim($Datos->ahorro),
+                trim($Datos->totalca),
+                trim($Datos->exceso),
+                trim($Datos->totalce),
+                trim($Datos->totalcae)
+            );
+        }
+        return response()->json($Lista);
+    }
+    
+    public function crear_tabla_costo_gen_abast_placa(Request $request)
+    {
+        header('Content-type: application/json');
+        $page = $_GET['page'];
+        $limit = $_GET['rows'];
+        $sidx = $_GET['sidx'];
+        $sord = $_GET['sord'];
+        $start = ($limit * $page) - $limit;
+        if ($start < 0) {
+            $start = 0;
+        }
+        
+        $costoadblue = DB::table('taller.tblcostoadblue_coa')->select('coa_saldo')->where([['coa_anio',$request['anio']],['coa_mes',$request['mes']]])->get();
+
+        $totalg = DB::select("select count(*) as total from taller.control_consumo() 
+                                where extract(month from xcde_fecha) = ".$request['mes']." and extract(year from xcde_fecha) = ".$request['anio']." ");
+        $sql = DB::select("select xcde_placa,(round(sum(xcde_ahxviaje),3) + round(sum(xcde_exxviaje),3)) as sum,round((sum(xcde_ahxviaje) + sum(xcde_exxviaje)) * ".$costoadblue[0]->coa_saldo.",3) as tot
+                                from taller.control_consumo() 
+                                where extract(month from xcde_fecha) = ".$request['mes']." and extract(year from xcde_fecha) = ".$request['anio']." group by xcde_placa order by ".$sidx." ".$sord." limit ".$limit." offset ".$start);
+
+        $total_pages = 0;
+        if (!$sidx) {
+            $sidx = 1;
+        }
+        $count = $totalg[0]->total;
+        if ($count > 0) {
+            $total_pages = ceil($count / $limit);
+        }
+        if ($page > $total_pages) {
+            $page = $total_pages;
+        }
+        
+        $Lista = new \stdClass();
+        $Lista->page = $page;
+        $Lista->total = $total_pages;
+        $Lista->records = $count;
+        foreach ($sql as $Index => $Datos) {
+            $Lista->rows[$Index]['id'] = $Datos->xcde_placa;    
+            if ($Datos->sum > 0) {
+                $ahorro = $Datos->sum;
+            }else{
+                $ahorro = 0.000;
+            }
+            if ($Datos->tot > 0) {
+                $costo_ahorro = $Datos->tot;
+            }else{
+                $costo_ahorro = 0.000;
+            }
+            
+            if ($Datos->sum < 0) {
+                $exceso = $Datos->sum;
+            }else{
+                $exceso = 0.000;
+            }
+            if ($Datos->tot < 0) {
+                $costo_exceso = $Datos->tot;
+            }else{
+                $costo_exceso = 0.000;
+            }
+            $Lista->rows[$Index]['cell'] = array(
+                trim($Datos->xcde_placa),
+                $ahorro,
+                $costo_ahorro,
+                $exceso,
+                $costo_exceso
+            );
+        }
+        return response()->json($Lista);
     }
     
 }

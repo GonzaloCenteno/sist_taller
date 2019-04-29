@@ -20,9 +20,8 @@ class Capacidad_Controller extends Controller
         if ($request->session()->has('id_usuario'))
         {
             $menu_registro = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',1]])->orderBy('menu_id','asc')->get();
-            $menu_dashboard = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',2]])->orderBy('menu_id','asc')->get();
             
-            return view('adblue/vw_capacidad',compact('menu_registro','menu_dashboard'));
+            return view('adblue/vw_capacidad',compact('menu_registro'));
         }
         else
         {

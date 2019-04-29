@@ -45,15 +45,18 @@
                     <table border="0" cellspacing="0" cellpadding="0" style="font-size: 1.4em; float: right;clear: both;">
                         <thead>
                             <tr>
-                                <th rowspan="2" style="width: 30%;">RUTAS</th>
-                                <th colspan="3" style="width: 70%;">TOTAL</th>
+                                <th rowspan="2" style="width: 12%;">RUTAS</th>
+                                <th colspan="6" style="width: 88%;">TOTAL</th>
                             </tr>
                         </thead>
                         <thead>
                             <tr>
                                 <th>CONSUMO</th>
-                                <th>KILOMETRAJE</th>
+                                <th>KM.</th>
                                 <th>RENDIMIENTO</th>
+                                <th>AHORRO</th>
+                                <th>EXCESO</th>
+                                <th>TOTAL A/E</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -63,6 +66,9 @@
                                     <td style="text-align: center;">{{ $rut->consumo }}</td>
                                     <td style="text-align: center;">{{ $rut->kg }}</td>
                                     <td style="text-align: center;">{{ $rut->rendimiento }}</td>
+                                    <td style="text-align: center;">{{ $rut->ahorro }}</td>
+                                    <td style="text-align: center;">{{ $rut->exceso }}</td>
+                                    <td style="text-align: center;">{{ $rut->totalae }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -72,24 +78,26 @@
                     <table border="0" cellspacing="0" cellpadding="0" style="font-size: 1.4em; float: right;clear: both;">
                         <thead>
                             <tr>
-                                <th rowspan="2" style="width: 30%;">PLACAS</th>
-                                <th colspan="3" style="width: 70%;">TOTAL</th>
+                                <th rowspan="2" style="width: 15%;">PLACAS</th>
+                                <th colspan="4" style="width: 85%;">TOTAL</th>
                             </tr>
                         </thead>
                         <thead>
                             <tr>
-                                <th>CONSUMO</th>
-                                <th>KILOMETRAJE</th>
                                 <th>RENDIMIENTO</th>
+                                <th>AHORRO</th>
+                                <th>EXCESO</th>
+                                <th>TOTAL A/E</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach($placas as $pla)
                                 <tr>
                                     <td style="text-align: center;">{{ $pla->xcde_placa }}</td>
-                                    <td style="text-align: center;">{{ $pla->consumo }}</td>
-                                    <td style="text-align: center;">{{ $pla->kg }}</td>
                                     <td style="text-align: center;">{{ $pla->rendimiento }}</td>
+                                    <td style="text-align: center;">{{ $pla->ahorro }}</td>
+                                    <td style="text-align: center;">{{ $pla->exceso }}</td>
+                                    <td style="text-align: center;">{{ $pla->totalae }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

@@ -194,7 +194,7 @@ jQuery(document).on("click", "#btn_generar_estaciones", function(){
     var fila='<tr class="filas" id="fila'+cont+'">'+
     '<td><button type="button" class="btn btn-danger btn-xl" onclick="eliminarDetalle('+cont+')">X</button></td>'+
     '<td><input type="hidden" name="nro_filas[]"><input type="hidden" name="estaciones[]" id="hiddenestacion_' + cont + '"><input type="text" id="estacion_' + cont + '" class="form-control text-uppercase text-center"></td>'+
-    '<td><input type="text" name="consumo[]" value="'+cantidad+'" class="form-control text-center" onkeypress="return soloNumeroTab(event);"></td>'+
+    '<td><input type="text" name="consumo[]" value="'+cantidad+'" class="form-control text-center" onkeypress="return soloNumeroTab(event);" placeholder="0" maxlength="8"></td>'+
     '</tr>';
     autocompletar_estaciones('estacion_'+cont);
     cont++;

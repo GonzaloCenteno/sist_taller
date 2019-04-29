@@ -6,7 +6,7 @@ jQuery(document).ready(function($){
     jQuery("#tblcapacidad").jqGrid({
         url: 'capacidad/0?grid=capacidad',
         datatype: 'json', mtype: 'GET',
-        height: '512px', autowidth: true,
+        height: '450px', autowidth: true,
         toolbarfilter: true,
         sortable:false,
         colNames: ['ID', 'VALOR','FECHA REGISTRO','ESTADO'],

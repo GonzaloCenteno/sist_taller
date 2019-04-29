@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use App\Http\Models\Tblconsumocabecera_cca;
 use App\Http\Models\Tblconsumodetalle_cde;
+use App\Http\Models\Tblconsumodetparcial_cdp;
+use Validator;
 
 class Consumos_Controller extends Controller
 {   
@@ -15,12 +17,10 @@ class Consumos_Controller extends Controller
         if ($request->session()->has('id_usuario'))
         {
             $menu_registro = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',1]])->orderBy('menu_id','asc')->get();
-            $menu_dashboard = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',2]])->orderBy('menu_id','asc')->get();
-            //$estaciones = DB::table('taller.vw_estaciones')->get();
             $capacidad = DB::table('taller.tblcapacidad_cap')->where('cap_estado',1)->orderby('cap_id','asc')->get();
             $placas = DB::table('taller.tblvehiculos_veh')->get();
             $tripulantes = DB::table('taller.tbltripulantes_tri')->select('tri_id','tri_nombre','tri_apaterno','tri_amaterno')->get();
-            return view('adblue/vw_consumos',compact('menu_registro','menu_dashboard','capacidad','placas','tripulantes'));
+            return view('adblue/vw_consumos',compact('menu_registro','capacidad','placas','tripulantes'));
         }
         else
         {
@@ -39,7 +39,11 @@ class Consumos_Controller extends Controller
             if($request['show'] == 'generar_consumos')
             {
                 return $this->recuperar_datos_crutas($id, $request);
-            }     
+            }
+            if($request['show'] == 'datos_qparcial')
+            {
+                return $this->recuperar_datos_qparcial($id, $request);
+            }
         }
         else
         {
@@ -181,9 +185,17 @@ class Consumos_Controller extends Controller
 
     public function store(Request $request)
     {
-       if ($request['tipo'] == 1) 
+        if ($request['tipo'] == 1) 
         {
             return $this->crear_datos_consumos($request);
+        }
+        if ($request['tipo'] == 2) 
+        {
+            return $this->crear_qabast_parciales($request);
+        }
+        if ($request['tipo'] == 3) 
+        {
+            return $this->modificar_qabast_parciales($request);
         }
     }
     
@@ -197,6 +209,12 @@ class Consumos_Controller extends Controller
     {
         $rutas = DB::table('taller.vw_ruta_estacion')->where('rut_id',$rut_id)->get();
         return $rutas;
+    }
+    
+    public function recuperar_datos_qparcial($cde_id, Request $request)
+    {
+        $qparcial = DB::table('taller.tblconsumodetparcial_cdp')->select('cdp_qparcial')->where('cde_id',$cde_id)->get();
+        return $qparcial;
     }
     
     public function traer_datos_estaciones(Request $request)
@@ -241,6 +259,8 @@ class Consumos_Controller extends Controller
                 $Tblconsumocabecera_cca->save();
 
                 $filas = count($request['contador']);
+                
+                $rutasestacion = DB::table('taller.vw_consumo_deseado_optimo')->where('rut_id',$request['cbx_consumo_ruta'])->get();
 
                 for($i=0; $i<$filas; $i++)
                 {
@@ -265,6 +285,8 @@ class Consumos_Controller extends Controller
                     $Tblconsumodetalle_cde->cde_fecregistro = date('Y-m-d H:i:s');
                     $Tblconsumodetalle_cde->cde_anio = date('Y');
                     $Tblconsumodetalle_cde->cde_consumo = isset($request['consumo'][$i]) ? round($request['consumo'][$i],3) : 0.0;
+                    $Tblconsumodetalle_cde->cde_condeseado = $rutasestacion[0]->consumo_deseado;
+                    $Tblconsumodetalle_cde->cde_montoptimo = $rutasestacion[0]->monto_optimo;
                     $Tblconsumodetalle_cde->cde_usucreacion = session('id_usuario');
                     $Tblconsumodetalle_cde->save();
                 }
@@ -398,6 +420,7 @@ class Consumos_Controller extends Controller
             $Lista->rows[$Index]['id'] = $Datos->cde_id;     
             $Lista->rows[$Index]['cell'] = array(
                 trim($Datos->cde_id),
+                trim($Datos->cde_qparcial),
                 trim($Datos->cde_fecha),
                 trim($Datos->cca_id),
                 trim($Datos->nro_vale),
@@ -416,9 +439,149 @@ class Consumos_Controller extends Controller
                 trim($Datos->cde_ingreso),
                 trim($Datos->cde_salida),
                 trim($Datos->cde_stop),
+                trim($Datos->cde_qparcial),
             );
         }
         return response()->json($Lista);
+    }
+    
+    public function crear_qabast_parciales(Request $request)
+    {
+        if($request->ajax())
+        {
+            $validator = Validator::make($request->all(), [
+                'cdp_qparcial.*' => 'required|max:8',
+            ],[
+                'cdp_qparcial.*.required' => 'EL CAMPO Q-ABAST PARCIAL ES OBLIGATORIO',
+                'cdp_qparcial.*.max' => 'EL CAMPO Q-ABAST PARCIAL DEBE TENER COMO MAXIMO 8 DIGITOS',
+            ]);
+
+            if ($validator->passes()) 
+            {
+                $error = null;
+
+                DB::beginTransaction();
+                try{
+                    $inputs = count($request['contarqabastParcial']);
+
+                    for($i=0; $i<$inputs; $i++)
+                    {
+                        $Tblconsumodetparcial_cdp = new Tblconsumodetparcial_cdp;
+                        $Tblconsumodetparcial_cdp->cde_id = $request['cde_id'];
+                        $Tblconsumodetparcial_cdp->cdp_qparcial = isset($request['cdp_qparcial'][$i]) ? round($request['cdp_qparcial'][$i],3) : 0.0;
+                        $Tblconsumodetparcial_cdp->cdp_usucreacion = session('id_usuario');
+                        $Tblconsumodetparcial_cdp->save();
+                    }
+
+                    $Tblconsumodetalle_cde = new Tblconsumodetalle_cde;
+                    $Qparcial = DB::table('taller.tblconsumodetparcial_cdp')->select(DB::raw("sum(cdp_qparcial) as total"))->where('cde_id',$request['cde_id'])->get();
+                    $detalle = $Tblconsumodetalle_cde::where("cde_id","=",$request['cde_id'])->first();
+                    if($detalle)
+                    {
+                        $detalle->cde_qparcial = 1;
+                        $detalle->cde_qabastecida = round($Qparcial[0]->total,3);
+                        $detalle->cde_usumodificacion = session('id_usuario');
+                        $detalle->cde_fecmodificacion = date('Y-m-d H:i:s');
+                        $detalle->save();
+                    }
+
+                    $success = 1;
+                    DB::commit();
+                } catch (\Exception $ex) {
+                    $success = 2;
+                    $error = $ex->getMessage();
+                    DB::rollback();
+                }
+            }
+            else
+            {
+                return response()->json([
+                'msg' => 'validator',
+                'error'=>$validator->errors()->all()
+                ]);
+            }
+        }
+
+        if ($success == 1) 
+        {
+            return $success;
+        }
+        else
+        {
+            return $error;
+        }   
+    }
+    
+    public function modificar_qabast_parciales(Request $request)
+    {
+        if($request->ajax())
+        {
+            $validator = Validator::make($request->all(), [
+                'cdp_qparcial.*' => 'required|max:8',
+            ],[
+                'cdp_qparcial.*.required' => 'EL CAMPO Q-ABAST PARCIAL ES OBLIGATORIO',
+                'cdp_qparcial.*.max' => 'EL CAMPO Q-ABAST PARCIAL DEBE TENER COMO MAXIMO 8 DIGITOS',
+            ]);
+            
+            if ($validator->passes()) 
+            {
+            
+                $error = null;
+
+                DB::beginTransaction();
+                try{
+                    $inputs = count($request['contarqabastParcial']);
+
+                    for($i=0; $i<$inputs; $i++)
+                    {
+                        $Tblconsumodetparcial_cdp = new Tblconsumodetparcial_cdp;
+                        $consumodetparcial = $Tblconsumodetparcial_cdp::where("cde_id","=",$request['cde_id'])->first();
+                        if($consumodetparcial)
+                        {
+                            $consumodetparcial->cdp_qparcial = round($request['cdp_qparcial'][$i],3);
+                            $consumodetparcial->cdp_usumodificacion = session('id_usuario');
+                            $consumodetparcial->cdp_fecmodificacion = date('Y-m-d H:i:s');
+                            $consumodetparcial->save();
+                        }
+                    }
+
+                    $Tblconsumodetalle_cde = new Tblconsumodetalle_cde;
+                    $Qparcial = DB::table('taller.tblconsumodetparcial_cdp')->select(DB::raw("sum(cdp_qparcial) as total"))->where('cde_id',$request['cde_id'])->get();
+                    $detalle = $Tblconsumodetalle_cde::where("cde_id","=",$request['cde_id'])->first();
+                    if($detalle)
+                    {
+                        $detalle->cde_qparcial = 1;
+                        $detalle->cde_qabastecida = round($Qparcial[0]->total,3);
+                        $detalle->cde_usumodificacion = session('id_usuario');
+                        $detalle->cde_fecmodificacion = date('Y-m-d H:i:s');
+                        $detalle->save();
+                    }
+
+                    $success = 1;
+                    DB::commit();
+                } catch (\Exception $ex) {
+                    $success = 2;
+                    $error = $ex->getMessage();
+                    DB::rollback();
+                }
+            }
+            else
+            {
+                return response()->json([
+                'msg' => 'validator',
+                'error'=>$validator->errors()->all()
+                ]);
+            }
+        }
+
+        if ($success == 1) 
+        {
+            return $success;
+        }
+        else
+        {
+            return $error;
+        }   
     }
     
 }

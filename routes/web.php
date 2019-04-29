@@ -34,7 +34,8 @@ Route::group(['namespace' => 'adblue'], function()
     Route::get('control_diario','Control_Controller@abrir_rep_control_diario')->name('control_diario');
     Route::get('control_abastecimiento','Control_Controller@abrir_rep_control_abast')->name('control_abastecimiento');
     Route::get('control_abast_xplaca/{est_id}/{veh_id}','Control_Controller@abrir_rep_control_abast_xplaca')->name('control_abast_xplaca');
-    Route::get('control_consumo/{anio}/{mes}','Control_Controller@abrir_rep_control_consumo')->name('control_consumo');
+    //Route::get('control_consumo_rep/{anio}/{mes}','Control_Controller@abrir_rep_control_consumo')->name('control_consumo_rep');
     Route::resource('control_consumo', 'Control_Consumo_Controller');
     Route::resource('capacidad', 'Capacidad_Controller');
+    Route::resource('costo_adblue', 'Costo_Adblue_Controller');
 });

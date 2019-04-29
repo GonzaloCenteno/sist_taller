@@ -20,9 +20,8 @@ class Ruta_Estacion_Controller extends Controller
         if ($request->session()->has('id_usuario'))
         {
             $menu_registro = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',1]])->orderBy('menu_id','asc')->get();
-            $menu_dashboard = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',2]])->orderBy('menu_id','asc')->get();
             $estaciones = DB::table('taller.tblestaciones_est')->where('est_estado',1)->get();
-            return view('adblue/vw_ruta_estacion',compact('menu_registro','menu_dashboard','estaciones'));
+            return view('adblue/vw_ruta_estacion',compact('menu_registro','estaciones'));
         }
         else
         {

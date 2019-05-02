@@ -504,6 +504,47 @@
     </div>
 </div>
 
+<div class="modal fade" id="ModalReportesGeneral">
+    <div class="modal-dialog modal-md modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">X</span></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>SELECCIONAR COLUMNA:</label>
+
+                            <select class="form-control" style="width: 100%;" id="cbx_rep_columna" name="cbx_rep_columna">
+                                
+                            </select>
+
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label>ORDEN:</label>
+
+                            <select class="form-control" style="width: 100%;" id="cbx_rep_orden" name="cbx_rep_orden">
+                                <option value="ASC">..:: ASCENDENTE ::.. </option>
+                                <option value="DESC">..:: DESCENDENTE ::..</option>
+                            </select>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-footer" id="ModalReportesGeneralFooter"></div>
+        </div>
+    </div>
+</div>
+
 @section('page-js-script')
 <script language="JavaScript" type="text/javascript" src="{{ asset('archivos_js/adblue/control_consumo.js') }}"></script>
 @stop

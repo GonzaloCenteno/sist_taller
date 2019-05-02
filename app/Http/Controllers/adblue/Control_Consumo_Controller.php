@@ -73,6 +73,10 @@ class Control_Consumo_Controller extends Controller
             {
                 return $this->crear_tabla_costo_gen_abast_placa($request);
             }
+            if($request['reportes'] == 'rep_generales')
+            {
+                return $this->reportes_generales($request);
+            }
         }
     }
 
@@ -633,6 +637,157 @@ class Control_Consumo_Controller extends Controller
             );
         }
         return response()->json($Lista);
+    }
+    
+    public function reportes_generales(Request $request)
+    {
+        //echo "columa: " . $request['columna'] . " orden: " . $request['orden'] . " tipo: " .$request['tipo'] ;
+        if ($request->session()->has('id_usuario') && session('menu_rol') == 6)
+        {
+            switch ($request['tipo']) 
+            {
+                case 1:
+                    if ($request['columna'] === 'xcde_ruta') 
+                    {
+                        $datos = DB::table(DB::raw('taller.control_consumo()'))->select(DB::raw("xcde_ruta,round(avg(xcde_consumo_real),3) as consumo,round(avg(xcde_kilometraje),3) as kg,round(avg(xcde_rendimiento_lt),3) as rendimiento, round(sum(xcde_ahxviaje),3) as ahorro, round(sum(xcde_exxviaje),3) as exceso, 
+                                (round(sum(xcde_ahxviaje),3) + round(sum(xcde_exxviaje),3)) as totalae,count(xcde_ruta) as nro_viajes"))->where([[DB::raw('extract(month from xcde_fecha)'),$request['mes']],[DB::raw('extract(year from xcde_fecha)'),$request['anio']]])->groupBy('xcde_ruta')->orderBy(DB::raw("substring(".$request['columna']." from '([0-9]+)')::bigint ".$request['orden'].",".$request['columna']." "))->get();
+                    }
+                    else
+                    {
+                        $datos = DB::table(DB::raw('taller.control_consumo()'))->select(DB::raw("xcde_ruta,round(avg(xcde_consumo_real),3) as consumo,round(avg(xcde_kilometraje),3) as kg,round(avg(xcde_rendimiento_lt),3) as rendimiento, round(sum(xcde_ahxviaje),3) as ahorro, round(sum(xcde_exxviaje),3) as exceso, 
+                                (round(sum(xcde_ahxviaje),3) + round(sum(xcde_exxviaje),3)) as totalae,count(xcde_ruta) as nro_viajes"))->where([[DB::raw('extract(month from xcde_fecha)'),$request['mes']],[DB::raw('extract(year from xcde_fecha)'),$request['anio']]])->groupBy('xcde_ruta')->orderBy($request['columna'],$request['orden'])->get();
+                    }
+                    if($datos->count() > 0)
+                    {
+                        $view = \View::make('adblue.reportes.vw_rep_datos_prom_general_1',compact('datos'))->render();
+                        $pdf = \App::make('dompdf.wrapper');
+                        $pdf->loadHTML($view)->setPaper('a4');
+                        return $pdf->stream("DATOS PROMEDIOS GENERALES POR TODA LA RUTA".".pdf");
+                    }
+                    else
+                    {
+                        return "NO SE ENCONTRARON DATOS";
+                    }
+                    break;
+                case 2:
+                    $datos = DB::table(DB::raw('taller.control_consumo()'))->select(DB::raw("xcde_placa,round(avg(xcde_rendimiento_lt),3) as rendimiento, round(sum(xcde_ahxviaje),3) as ahorro, round(sum(xcde_exxviaje),3) as exceso,
+                                   (round(sum(xcde_ahxviaje),3) + round(sum(xcde_exxviaje),3)) as totalae,count(xcde_placa) as nro_viajes"))->where([[DB::raw('extract(month from xcde_fecha)'),$request['mes']],[DB::raw('extract(year from xcde_fecha)'),$request['anio']],['xveh_marca','like','%SCANIA%']])
+                                   ->groupBy('xcde_placa')->orderBy($request['columna'],$request['orden'])->get();
+                    if($datos->count() > 0)
+                    {
+                        $view = \View::make('adblue.reportes.vw_rep_datos_prom_general_2',compact('datos'))->render();
+                        $pdf = \App::make('dompdf.wrapper');
+                        $pdf->loadHTML($view)->setPaper('a4');
+                        return $pdf->stream("DATOS GENERALES POR PLACA".".pdf");
+                    }
+                    else
+                    {
+                        return "NO SE ENCONTRARON DATOS";
+                    }
+                    break;
+                case 3:
+                    $datos = DB::table(DB::raw('taller.control_consumo()'))->select(DB::raw("xcde_placa,round(avg(xcde_rendimiento_lt),3) as rendimiento, round(sum(xcde_ahxviaje),3) as ahorro, round(sum(xcde_exxviaje),3) as exceso,
+                                   (round(sum(xcde_ahxviaje),3) + round(sum(xcde_exxviaje),3)) as totalae,count(xcde_placa) as nro_viajes"))->where([[DB::raw('extract(month from xcde_fecha)'),$request['mes']],[DB::raw('extract(year from xcde_fecha)'),$request['anio']],['xveh_marca','like','%MERCEDES%']])
+                                   ->groupBy('xcde_placa')->orderBy($request['columna'],$request['orden'])->get();
+                    if($datos->count() > 0)
+                    {
+                        $view = \View::make('adblue.reportes.vw_rep_datos_prom_general_3',compact('datos'))->render();
+                        $pdf = \App::make('dompdf.wrapper');
+                        $pdf->loadHTML($view)->setPaper('a4');
+                        return $pdf->stream("DATOS GENERALES POR PLACA".".pdf");
+                    }
+                    else
+                    {
+                        return "NO SE ENCONTRARON DATOS";
+                    }
+                    break;
+                case 4:
+                    $costoadblue = DB::table('taller.tblcostoadblue_coa')->select('coa_saldo')->where([['coa_anio',$request['anio']],['coa_mes',$request['mes']]])->get();
+                    if ($request['columna'] === 'xcde_ruta') 
+                    {
+                        $datos = DB::table(DB::raw('taller.control_consumo()'))->select(DB::raw("xrut_id,xcde_ruta,xcde_consumo_deseado as cdg, round(avg(xcde_consumo_real),3) as cra, (xcde_consumo_deseado - round(avg(xcde_consumo_real),3)) as totalae, round(xcde_consumo_deseado * ".$costoadblue[0]->coa_saldo.",3) as costocdg,round(avg(xcde_consumo_real) * ".$costoadblue[0]->coa_saldo.",3) as costocra,
+                                    (round(xcde_consumo_deseado * ".$costoadblue[0]->coa_saldo.",3) - round(avg(xcde_consumo_real) * ".$costoadblue[0]->coa_saldo.",3)) as costoae"))->where([[DB::raw('extract(month from xcde_fecha)'),$request['mes']],[DB::raw('extract(year from xcde_fecha)'),$request['anio']]])
+                                    ->groupBy('xrut_id','xcde_ruta','xcde_consumo_deseado')->orderBy(DB::raw("substring(".$request['columna']." from '([0-9]+)')::bigint ".$request['orden'].",".$request['columna']." "))->get();
+                    }
+                    else
+                    {
+                        $datos = DB::table(DB::raw('taller.control_consumo()'))->select(DB::raw("xrut_id,xcde_ruta,xcde_consumo_deseado as cdg, round(avg(xcde_consumo_real),3) as cra, (xcde_consumo_deseado - round(avg(xcde_consumo_real),3)) as totalae, round(xcde_consumo_deseado * ".$costoadblue[0]->coa_saldo.",3) as costocdg,round(avg(xcde_consumo_real) * ".$costoadblue[0]->coa_saldo.",3) as costocra,
+                                    (round(xcde_consumo_deseado * ".$costoadblue[0]->coa_saldo.",3) - round(avg(xcde_consumo_real) * ".$costoadblue[0]->coa_saldo.",3)) as costoae"))->where([[DB::raw('extract(month from xcde_fecha)'),$request['mes']],[DB::raw('extract(year from xcde_fecha)'),$request['anio']]])
+                                    ->groupBy('xrut_id','xcde_ruta','xcde_consumo_deseado')->orderBy($request['columna'],$request['orden'])->get();
+                    }
+                    if($datos->count() > 0 && $costoadblue->count() > 0)
+                    {
+                        $view = \View::make('adblue.reportes.vw_rep_datos_prom_general_4',compact('datos'))->render();
+                        $pdf = \App::make('dompdf.wrapper');
+                        $pdf->loadHTML($view)->setPaper('a4');
+                        return $pdf->stream("COSTO OPTIMO GENERAL POR ABASTECIMIENTO EN RUTA".".pdf");
+                    }
+                    else
+                    {
+                        return "NO SE ENCONTRARON DATOS";
+                    }
+                    break;
+                case 5:
+                    $costoadblue = DB::table('taller.tblcostoadblue_coa')->select('coa_saldo')->where([['coa_anio',$request['anio']],['coa_mes',$request['mes']]])->get();
+                    if ($request['columna'] === 'xcde_ruta') 
+                    {
+                        $datos = DB::table(DB::raw('taller.control_consumo()'))->select(DB::raw("xcde_ruta, round(sum(xcde_ahxviaje),3) as ahorro,round(sum(xcde_ahxviaje) * ".$costoadblue[0]->coa_saldo.",3) as totalca,round(sum(xcde_exxviaje),3) as exceso,round(sum(xcde_exxviaje * ".$costoadblue[0]->coa_saldo."),3) as totalce, 
+                                    round((sum(xcde_ahxviaje) * ".$costoadblue[0]->coa_saldo.") + (sum(xcde_exxviaje) * ".$costoadblue[0]->coa_saldo."),3) as totalcae"))->where([[DB::raw('extract(month from xcde_fecha)'),$request['mes']],[DB::raw('extract(year from xcde_fecha)'),$request['anio']]])
+                                    ->groupBy('xcde_ruta')->orderBy(DB::raw("substring(".$request['columna']." from '([0-9]+)')::bigint ".$request['orden'].",".$request['columna']." "))->get();
+                    }
+                    else
+                    {
+                        $datos = DB::table(DB::raw('taller.control_consumo()'))->select(DB::raw("xcde_ruta, round(sum(xcde_ahxviaje),3) as ahorro,round(sum(xcde_ahxviaje) * ".$costoadblue[0]->coa_saldo.",3) as totalca,round(sum(xcde_exxviaje),3) as exceso,round(sum(xcde_exxviaje * ".$costoadblue[0]->coa_saldo."),3) as totalce, 
+                                    round((sum(xcde_ahxviaje) * ".$costoadblue[0]->coa_saldo.") + (sum(xcde_exxviaje) * ".$costoadblue[0]->coa_saldo."),3) as totalcae"))->where([[DB::raw('extract(month from xcde_fecha)'),$request['mes']],[DB::raw('extract(year from xcde_fecha)'),$request['anio']]])
+                                    ->groupBy('xcde_ruta')->orderBy($request['columna'],$request['orden'])->get();
+                    }
+                    if($datos->count() > 0 && $costoadblue->count() > 0)
+                    {
+                        $view = \View::make('adblue.reportes.vw_rep_datos_prom_general_5',compact('datos'))->render();
+                        $pdf = \App::make('dompdf.wrapper');
+                        $pdf->loadHTML($view)->setPaper('a4');
+                        return $pdf->stream("COSTO GENERAL  POR ABASTECIMIENTO EN RUTA".".pdf");
+                    }
+                    else
+                    {
+                        return "NO SE ENCONTRARON DATOS";
+                    }
+                    break;
+                case 6:
+                    if ($request['columna'] === 'ahorro' || $request['columna'] === 'exceso')
+                    {
+                        $new_columna = 'sum';
+                    }
+                    else if($request['columna'] === 'costo_ahorro' || $request['columna'] === 'costo_exceso')
+                    {
+                        $new_columna = 'tot';
+                    }
+                    else
+                    {
+                        $new_columna = 'xcde_placa';
+                    }
+                    $costoadblue = DB::table('taller.tblcostoadblue_coa')->select('coa_saldo')->where([['coa_anio',$request['anio']],['coa_mes',$request['mes']]])->get();
+                    $datos = DB::table(DB::raw('taller.control_consumo()'))->select(DB::raw("xcde_placa,(round(sum(xcde_ahxviaje),3) + round(sum(xcde_exxviaje),3)) as sum,round((sum(xcde_ahxviaje) + sum(xcde_exxviaje)) * ".$costoadblue[0]->coa_saldo.",3) as tot"))
+                                    ->where([[DB::raw('extract(month from xcde_fecha)'),$request['mes']],[DB::raw('extract(year from xcde_fecha)'),$request['anio']]])
+                                    ->groupBy('xcde_placa')->orderBy($new_columna,$request['orden'])->get();
+                    if($datos->count() > 0 && $costoadblue->count() > 0)
+                    {
+                        $view = \View::make('adblue.reportes.vw_rep_datos_prom_general_6',compact('datos'))->render();
+                        $pdf = \App::make('dompdf.wrapper');
+                        $pdf->loadHTML($view)->setPaper('a4');
+                        return $pdf->stream("COSTO GENERAL POR ABASTECIMIENTO POR PLACA".".pdf");
+                    }
+                    else
+                    {
+                        return "NO SE ENCONTRARON DATOS";
+                    }
+                    break;
+            }
+        }
+        else
+        {
+            return view('errors/vw_sin_acceso');
+        }
     }
     
 }

@@ -100,17 +100,17 @@ jQuery(document).ready(function ($) {
         colNames: ['RUTA', 'CONSUMO','KILOMETRAJE','RENDIMIENTO','AHORRO','EXCESO','TOTAL A/E','N° VIAJES'],
         rowNum: 10, sortname: 'xcde_ruta', sortorder: 'asc', align: "center",
         colModel: [
-            {name: 'xcde_ruta', index: 'xcde_ruta', align: 'left',width:200,frozen:true},
-            {name: 'consumo', index: 'consumo', align: 'center', width: 200},
-            {name: 'kg', index: 'kg', align: 'center', width: 151},
-            {name: 'rendimiento', index: 'rendimiento', align: 'center', width: 200},
-            {name: 'ahorro', index: 'ahorro', align: 'center', width: 200},
-            {name: 'exceso', index: 'exceso', align: 'center', width: 200},
-            {name: 'totalae', index: 'totalae', align: 'center', width: 200},
-            {name: 'nro_viajes', index: 'nro_viajes', align: 'center', width: 150}
+            {name: 'xcde_ruta', index: 'xcde_ruta', align: 'left',width:150,frozen:true},
+            {name: 'consumo', index: 'consumo', align: 'center', width: 170},
+            {name: 'kg', index: 'kg', align: 'center', width: 170},
+            {name: 'rendimiento', index: 'rendimiento', align: 'center', width: 170},
+            {name: 'ahorro', index: 'ahorro', align: 'center', width: 170},
+            {name: 'exceso', index: 'exceso', align: 'center', width: 170},
+            {name: 'totalae', index: 'totalae', align: 'center', width: 170},
+            {name: 'nro_viajes', index: 'nro_viajes', align: 'center', width: 100}
         ],
-        rownumbers: true, // show row numbers
-        rownumWidth: 25, // the width of the row numbers columns
+        rownumbers: true,
+        rownumWidth: 25,
         loadComplete: function () {
             var sum = jQuery("#tblprom_gen_rut").getGridParam('userData').sum;
             if(sum==undefined){
@@ -130,7 +130,7 @@ jQuery(document).ready(function ($) {
     {
         useColSpanStyle: true,
         groupHeaders: [
-            { "numberOfColumns": 7, "titleText": "<center><h5>DATOS PROMEDIOS GENERALES  POR TODA LA RUTA </h5></center>", "startColumnName": "consumo",align: 'center'}]
+            { "numberOfColumns": 7, "titleText": "<div class='row text-center'><div class='col-md-8'><h5>DATOS PROMEDIOS GENERALES POR TODA LA RUTA</h5></div><div class='col-md-4'><button class='btn btn-warning' onClick='traer_datos_desplegable(tblprom_gen_rut,1);'><i class='fa fa-print'></i> IMPRIMIR</button</div></div>", "startColumnName": "consumo",align: 'center'}]
     });
     
     //DATOS GENERALES POR PLACA - SCANIA
@@ -145,12 +145,12 @@ jQuery(document).ready(function ($) {
         colNames: ['SCANIA', 'RENDIMIENTO','AHORRO','EXCESO','TOTAL A/E','N° VIAJES'],
         rowNum: 10, sortname: 'xcde_placa', sortorder: 'asc', viewrecords: false, align: "center",
         colModel: [
-            {name: 'xcde_placa', index: 'xcde_placa', align: 'left',width: 150,frozen:true},
+            {name: 'xcde_placa', index: 'xcde_placa', align: 'left',width: 100,frozen:true},
             {name: 'rendimiento', index: 'rendimiento', align: 'center', width: 120},
             {name: 'ahorro', index: 'ahorro', align: 'center', width: 100},
             {name: 'exceso', index: 'exceso', align: 'center', width: 100},
             {name: 'totalae', index: 'totalae', align: 'center', width: 100},
-            {name: 'nro_viajes', index: 'nro_viajes', align: 'center', width: 150}
+            {name: 'nro_viajes', index: 'nro_viajes', align: 'center', width: 100}
         ],
         rownumbers: true, // show row numbers
         rownumWidth: 25, // the width of the row numbers columns
@@ -172,7 +172,7 @@ jQuery(document).ready(function ($) {
     {
         useColSpanStyle: true,
         groupHeaders: [
-            { "numberOfColumns": 5, "titleText": "<center><h5>DATOS GENERALES POR PLACA</h5></center>", "startColumnName": "rendimiento",align: 'center'}]
+            { "numberOfColumns": 5, "titleText": "<div class='row text-center'><div class='col-md-8'><h5>DATOS GENERALES POR PLACA</h5></div><div class='col-md-4'><button class='btn btn-warning' onClick='traer_datos_desplegable(tblgen_scania,2);'><i class='fa fa-print'></i> IMPRIMIR</button</div></div>", "startColumnName": "rendimiento",align: 'center'}]
     });
     
     //DATOS GENERALES POR PLACA - IRIZAR
@@ -187,12 +187,12 @@ jQuery(document).ready(function ($) {
         colNames: ['IRIZAR', 'RENDIMIENTO','AHORRO','EXCESO','TOTAL A/E','N° VIAJES'],
         rowNum: 10, sortname: 'xcde_placa', sortorder: 'asc', viewrecords: false, align: "center",
         colModel: [
-            {name: 'xcde_placa', index: 'xcde_placa', align: 'left',width: 150,frozen:true},
+            {name: 'xcde_placa', index: 'xcde_placa', align: 'left',width: 100,frozen:true},
             {name: 'rendimiento', index: 'rendimiento', align: 'center', width: 120},
             {name: 'ahorro', index: 'ahorro', align: 'center', width: 100},
             {name: 'exceso', index: 'exceso', align: 'center', width: 100},
             {name: 'totalae', index: 'totalae', align: 'center', width: 100},
-            {name: 'nro_viajes', index: 'nro_viajes', align: 'center', width: 150}
+            {name: 'nro_viajes', index: 'nro_viajes', align: 'center', width: 100}
         ],
         rownumbers: true, // show row numbers
         rownumWidth: 25, // the width of the row numbers columns
@@ -214,7 +214,7 @@ jQuery(document).ready(function ($) {
     {
         useColSpanStyle: true,
         groupHeaders: [
-            { "numberOfColumns": 5, "titleText": "<center><h5>DATOS GENERALES POR PLACA</h5></center>", "startColumnName": "rendimiento",align: 'center'}]
+            { "numberOfColumns": 5, "titleText": "<div class='row text-center'><div class='col-md-8'><h5>DATOS GENERALES POR PLACA</h5></div><div class='col-md-4'><button class='btn btn-warning' onClick='traer_datos_desplegable(tblprom_gen_irizar,3);'><i class='fa fa-print'></i> IMPRIMIR</button</div></div>", "startColumnName": "rendimiento",align: 'center'}]
     });
     
     
@@ -230,13 +230,13 @@ jQuery(document).ready(function ($) {
         colNames: ['RUTA', 'CONSUMO DESEADO GENERAL','CONSUMO REAL AREQUIPA','TOTAL A/E','COSTO CDG','COSTO CRA','COSTO A/E'],
         rowNum: 10, sortname: 'xrut_id', sortorder: 'asc', viewrecords: false, align: "center",
         colModel: [
-            {name: 'xcde_ruta', index: 'xcde_ruta', align: 'left',width: 200,frozen:true},
+            {name: 'xcde_ruta', index: 'xcde_ruta', align: 'left',width: 150,frozen:true},
             {name: 'cdg', index: 'cdg', align: 'center', width: 200},
             {name: 'cra', index: 'cra', align: 'center', width: 200},
-            {name: 'totalae', index: 'totalae', align: 'center', width: 200},
-            {name: 'costocdg', index: 'costocdg', align: 'center', width: 200,formatter: 'currency',formatoptions: {decimalPlaces: 3, prefix: 'S/.' },classes: 'costo_cdg'},
-            {name: 'costocra', index: 'costocra', align: 'center', width: 200,formatter: 'currency',formatoptions: {decimalPlaces: 3, prefix: 'S/.' },classes: 'costo_cra'},
-            {name: 'costoae', index: 'costoae', align: 'center', width: 200,formatter: 'currency',formatoptions: {decimalPlaces: 3, prefix: 'S/.' },classes: 'costo_ae'}
+            {name: 'totalae', index: 'totalae', align: 'center', width: 160},
+            {name: 'costocdg', index: 'costocdg', align: 'center', width: 160,formatter: 'currency',formatoptions: {decimalPlaces: 3, prefix: 'S/.' },classes: 'costo_cdg'},
+            {name: 'costocra', index: 'costocra', align: 'center', width: 160,formatter: 'currency',formatoptions: {decimalPlaces: 3, prefix: 'S/.' },classes: 'costo_cra'},
+            {name: 'costoae', index: 'costoae', align: 'center', width: 160,formatter: 'currency',formatoptions: {decimalPlaces: 3, prefix: 'S/.' },classes: 'costo_ae'}
         ],
         rownumbers: true, // show row numbers
         rownumWidth: 25, // the width of the row numbers columns
@@ -259,7 +259,7 @@ jQuery(document).ready(function ($) {
     {
         useColSpanStyle: true,
         groupHeaders: [
-            { "numberOfColumns": 6, "titleText": "<center><h5>COSTO OPTIMO GENERAL POR ABASTECIMIENTO EN  RUTA</h5></center>", "startColumnName": "cdg",align: 'center'}]
+            { "numberOfColumns": 6, "titleText": "<div class='row text-center'><div class='col-md-8'><h5>COSTO OPTIMO GENERAL POR ABASTECIMIENTO EN  RUTA</h5></div><div class='col-md-4'><button class='btn btn-warning' onClick='traer_datos_desplegable(tblcost_opt_ruta,4);'><i class='fa fa-print'></i> IMPRIMIR</button</div></div>", "startColumnName": "cdg",align: 'center'}]
     });
     
     //COSTO GENERAL  POR ABASTECIMIENTO EN RUTA
@@ -302,7 +302,7 @@ jQuery(document).ready(function ($) {
     {
         useColSpanStyle: true,
         groupHeaders: [
-            { "numberOfColumns": 5, "titleText": "<center><h5>COSTO GENERAL  POR ABASTECIMIENTO EN RUTA</h5></center>", "startColumnName": "ahorro",align: 'center'}]
+            { "numberOfColumns": 5, "titleText": "<div class='row text-center'><div class='col-md-8'><h5>COSTO GENERAL  POR ABASTECIMIENTO EN RUTA</h5></div><div class='col-md-4'><button class='btn btn-warning' onClick='traer_datos_desplegable(tblcost_gen_abast_ruta,5);'><i class='fa fa-print'></i> IMPRIMIR</button</div></div>", "startColumnName": "ahorro",align: 'center'}]
     });
     
     //COSTO GENERAL POR ABASTECIMIENTO POR PLACA
@@ -344,7 +344,7 @@ jQuery(document).ready(function ($) {
     {
         useColSpanStyle: true,
         groupHeaders: [
-            { "numberOfColumns": 5, "titleText": "<center><h5>COSTO GENERAL POR ABASTECIMIENTO POR PLACA</h5></center>", "startColumnName": "ahorro",align: 'center'}]
+            { "numberOfColumns": 5, "titleText": "<div class='row text-center'><div class='col-md-8'><h5>COSTO GENERAL POR ABASTECIMIENTO POR PLACA</h5></div><div class='col-md-4'><button class='btn btn-warning' onClick='traer_datos_desplegable(tblcost_gen_abast_placa,6);'><i class='fa fa-print'></i> IMPRIMIR</button</div></div>", "startColumnName": "ahorro",align: 'center'}]
     });
       
 });
@@ -817,3 +817,34 @@ jQuery(document).on("change","#cbx_cost_mes", function(){
         }
     });
 });
+
+function traer_datos_desplegable(tabla,numero)
+{
+    console.log(tabla.id);
+    var titulos = jQuery("#"+tabla.id).jqGrid ('getGridParam', 'colNames');
+    var columnas = jQuery("#"+tabla.id).jqGrid ('getGridParam', 'colModel');
+    var tipo = numero;
+    //console.log(otro[1].index);
+    Reportes = $('#ModalReportesGeneral').modal({backdrop: 'static', keyboard: false});
+    Reportes.find('.modal-title').text('REPORTES GENERALES');
+    $("#ModalReportesGeneralFooter").html('<button type="button" onClick="abrir_reportes_generales('+tipo+')" class="btn btn-primary btn-xl"><i class="fa fa-sign-in"></i> ABRIR REPORTE</button><button type="button" id="btn_cerrar_modal_4" class="btn btn-danger btn-xl" data-dismiss="modal"><i class="fa fa-times-rectangle-o"></i> CERRAR</button>');
+    html = '';
+    for(i=1;i < columnas.length; i++)
+    {
+        //console.log("titulos: " + columnas[i].index + " columnas: " + titulos[i]);
+        html = html + '<option value='+columnas[i].index+'> ..:: '+titulos[i]+' ::.. </option>';
+    }
+    $("#cbx_rep_columna").html(html);
+}
+
+function abrir_reportes_generales(tipo)
+{
+    if (tipo === 1 || tipo === 2 || tipo === 3) 
+    {
+        window.open('control_consumo/0?reportes=rep_generales&columna='+$("#cbx_rep_columna").val()+'&orden='+$("#cbx_rep_orden").val()+'&tipo='+tipo+'&anio='+$("#cbx_dat_anio").val()+'&mes='+$("#cbx_dat_mes").val());
+    }
+    else
+    {
+        window.open('control_consumo/0?reportes=rep_generales&columna='+$("#cbx_rep_columna").val()+'&orden='+$("#cbx_rep_orden").val()+'&tipo='+tipo+'&anio='+$("#cbx_cost_anio").val()+'&mes='+$("#cbx_cost_mes").val());
+    }
+}

@@ -848,3 +848,7 @@ function abrir_reportes_generales(tipo)
         window.open('control_consumo/0?reportes=rep_generales&columna='+$("#cbx_rep_columna").val()+'&orden='+$("#cbx_rep_orden").val()+'&tipo='+tipo+'&anio='+$("#cbx_cost_anio").val()+'&mes='+$("#cbx_cost_mes").val());
     }
 }
+
+jQuery(document).on("click","#btn_imprimir_informacion_excel",function(){
+    window.open('control_consumo/0?reportes=reporte_informacion_excel&anio='+$("#cbx_cost_anio").val()+'&mes='+$("#cbx_cost_mes").val());
+});

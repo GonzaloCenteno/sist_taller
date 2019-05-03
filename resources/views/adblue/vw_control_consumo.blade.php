@@ -257,6 +257,10 @@
                             </div>
                         </div>
                     </div>
+                    
+                    <div class="col-lg-3 text-center" style="padding-top: 32px;">
+                        <button id="btn_imprimir_informacion_excel" type="button" class="btn btn-xl btn-success"><i class="fa fa-download"></i> DESCARGAR INFORMACION</button>
+                    </div>
                 </div>
                 
                 <div class="form-group col-md-12">

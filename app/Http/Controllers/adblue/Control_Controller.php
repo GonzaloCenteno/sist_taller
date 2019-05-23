@@ -9,13 +9,31 @@ use Illuminate\Support\Facades\Crypt;
 
 class Control_Controller extends Controller
 {
+    public function accesos()
+    {
+        $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_control'],['btn_view',1]])->get();
+        $rol = DB::table('permisos.tblsistemasrol_sro')->where([['sro_id',$permiso[0]->sro_id],['sro_descripcion', 'like', '%ADMINISTRADOR%']])->get();
+        if ($rol->count() > 0) 
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
     
     public function index(Request $request)
     {
         if ($request->session()->has('id_usuario'))
         {
-            $menu_registro = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',1]])->orderBy('menu_id','asc')->get();
-            return view('adblue/vw_control',compact('menu_registro'));
+            $menu = DB::table('permisos.vw_rol_menu_usuario')->where([['ume_usuario',session('id_usuario')],['sist_id',session('sist_id')]])->orderBy('ume_orden','asc')->get();
+            $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_control'],['btn_view',1]])->get();
+            if ($permiso->count() == 0) 
+            {
+                return view('errors/vw_sin_permiso',compact('menu'));
+            }
+            return view('adblue/vw_control',compact('menu','permiso'));
         }
         else
         {
@@ -124,7 +142,7 @@ class Control_Controller extends Controller
     
     public function abrir_rep_control_diario(Request $request)
     {
-        if ($request->session()->has('id_usuario') && session('menu_rol') == 6)
+        if ($request->session()->has('id_usuario') && $this->accesos() == 1)
         {
             $meses = DB::select("select * from taller.fn_control_diario_adblue_total()");
             if(count($meses) > 0)
@@ -141,13 +159,13 @@ class Control_Controller extends Controller
         }
         else
         {
-            return view('errors/vw_sin_acceso');
+            return view('errors/vw_sin_permiso');
         }  
     }
     
     public function abrir_rep_control_abast(Request $request)
     {
-        if ($request->session()->has('id_usuario') && session('menu_rol') == 6)
+        if ($request->session()->has('id_usuario') && $this->accesos() == 1)
         {
             $meses = DB::select("select mes,mes_descripcion,count(est_id) as tot_nroviajes, sum(cde_qabastecida) as tot_qabastecida from taller.vw_rep_ctrl_abastecimiento group by mes,mes_descripcion order by mes");
             if (count($meses) > 0) 
@@ -164,13 +182,13 @@ class Control_Controller extends Controller
         }
         else
         {
-            return view('errors/vw_sin_acceso');
+            return view('errors/vw_sin_permiso');
         }  
     }
     
     public function abrir_rep_control_abast_xplaca($est_id,$veh_id, Request $request)
     {
-        if ($request->session()->has('id_usuario') && session('menu_rol') == 6)
+        if ($request->session()->has('id_usuario') && $this->accesos() == 1)
         {
             $meses = DB::select("select distinct veh_id,est_descripcion,mes,TO_CHAR(cde_fecha,'YYYY') as anio,mes_descripcion from taller.vw_rep_ctrl_abast_irizar where est_id = $est_id and veh_id = $veh_id group by veh_id,est_descripcion,cde_fecha,mes,mes_descripcion order by est_descripcion asc");
             $totales = DB::table('taller.vw_consumos')->select(DB::raw('SUM(cde_qabastecida) as sum_qabastecida,count(veh_id) as count_vehid'))->where([['est_id',$est_id],['veh_id',$veh_id]])->get();
@@ -205,7 +223,7 @@ class Control_Controller extends Controller
         }
         else
         {
-            return view('errors/vw_sin_acceso');
+            return view('errors/vw_sin_permiso');
         }  
     }
     

@@ -8,9 +8,10 @@
         <!-- CSRF Token -->
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>SISTEMA TALLER</title>
+        <title>TALLER - @yield('title')</title>
         <!-- Tell the browser to be responsive to screen width -->
         <!-- Font Awesome -->
+        <link rel="icon" type="image/png" href="{{ asset('img/bus-home.png') }}" />
         <link href="{{ asset('plugins/font-awesome/css/font-awesome.min.css') }}" rel="stylesheet">
         <!-- Ionicons -->
         <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
@@ -104,7 +105,7 @@
             <!-- Main Sidebar Container -->
             <aside class="main-sidebar elevation-4 sidebar-light-danger">
                 <!-- Brand Logo -->
-                <a href="index3.html" class="brand-link bg-danger">
+                <a href="#" class="brand-link bg-danger">
                     <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
                          style="opacity: .8">
                     <span class="brand-text font-weight-light">Sist - Taller</span>
@@ -122,38 +123,33 @@
                     <!-- Sidebar Menu -->
                     <nav class="mt-2">
                         <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                            <li class="nav-item">
-                                <a href="inicio" class="nav-link">
-                                    <i class="nav-icon fa fa-file"></i>
-                                    <p>Inicio</p>
-                                </a>
-                            </li>
-
-                            @if(isset($menu_registro))  
-                            <li class="nav-header"><center><h5>ADBLUE</h5></center></li>
-                            <li class="nav-item has-treeview" id="men_registro">
-                                <a href="#1" class="nav-link">
-                                    <i class="nav-icon fa fa-edit"></i>
-                                    <p>
-                                        Registro
-                                        <i class="right fa fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    @foreach($menu_registro as $men_reg)
-                                    <li class="nav-item">
-                                        <a href="{{ $men_reg->menu_rut }}" class="nav-link {{ $men_reg->menu_rut }}">
-                                            <i class="fa fa-circle-o nav-icon"></i>
-                                            <p>{{ $men_reg->menu_desc }}</p>
-                                        </a>
-                                    </li>
-                                    @endforeach
-                                </ul>
-                            </li>
+                            @if(isset($menu))
+                                @foreach($menu as $men)
+                                <li class="nav-item has-treeview" id="{{ $men->men_sistema }}">
+                                    <a href="#" class="nav-link {{ $men->men_sistema }}">
+                                        <i class="nav-icon fa fa-edit"></i>
+                                        <p>
+                                            {{ $men->men_titulo }}
+                                            <i class="right fa fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <?php $submenu = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['men_id',$men->men_id],['btn_view',1]])->orderBy('usm_orden','asc')->get();?>
+                                        @foreach($submenu as $sub)
+                                        <li class="nav-item">
+                                            <a href="{{ $sub->sme_ruta }}" class="nav-link {{ $sub->sme_ruta }}">
+                                                <i class="fa fa-circle-o nav-icon"></i>
+                                                <p>{{ $sub->sme_titulo }}</p>
+                                            </a>
+                                        </li>
+                                        @endforeach
+                                    </ul>
+                                </li>
+                                <div class="dropdown-divider"></div>
+                                @endforeach
                             @else
                             @endif
                         </ul>
-                        <div class="dropdown-divider"></div>
                     </nav>
                     <!-- /.sidebar-menu -->
                 </div>

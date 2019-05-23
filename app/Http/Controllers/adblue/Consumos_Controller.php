@@ -16,11 +16,16 @@ class Consumos_Controller extends Controller
     {
         if ($request->session()->has('id_usuario'))
         {
-            $menu_registro = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',1]])->orderBy('menu_id','asc')->get();
+            $menu = DB::table('permisos.vw_rol_menu_usuario')->where([['ume_usuario',session('id_usuario')],['sist_id',session('sist_id')]])->orderBy('ume_orden','asc')->get();
+            $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_consumo'],['btn_view',1]])->get();
             $capacidad = DB::table('taller.tblcapacidad_cap')->where('cap_estado',1)->orderby('cap_id','asc')->get();
             $placas = DB::table('taller.tblvehiculos_veh')->get();
             $tripulantes = DB::table('taller.tbltripulantes_tri')->select('tri_id','tri_nombre','tri_apaterno','tri_amaterno')->get();
-            return view('adblue/vw_consumos',compact('menu_registro','capacidad','placas','tripulantes'));
+            if ($permiso->count() == 0) 
+            {
+                return view('errors/vw_sin_permiso',compact('menu'));
+            }
+            return view('adblue/vw_consumos',compact('menu','capacidad','placas','tripulantes','permiso'));
         }
         else
         {

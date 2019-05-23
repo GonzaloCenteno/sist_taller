@@ -19,8 +19,13 @@ class Estaciones_Controller extends Controller
     {
         if ($request->session()->has('id_usuario'))
         {
-            $menu_registro = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',1]])->orderBy('menu_id','asc')->get();
-            return view('adblue/vw_estaciones',compact('menu_registro'));
+            $menu = DB::table('permisos.vw_rol_menu_usuario')->where([['ume_usuario',session('id_usuario')],['sist_id',session('sist_id')]])->orderBy('ume_orden','asc')->get();
+            $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_estaciones'],['btn_view',1]])->get();
+            if ($permiso->count() == 0) 
+            {
+                return view('errors/vw_sin_permiso',compact('menu'));
+            }
+            return view('adblue/vw_estaciones',compact('menu','permiso'));
         }
         else
         {
@@ -131,6 +136,7 @@ class Estaciones_Controller extends Controller
 
         $totalg = $this->TblEstaciones_Est()->tblestacioncount()->get();
         $sql = $this->TblEstaciones_Est()->paginacion($sidx,$sord,$limit,$start)->get();
+        $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_estaciones'],['btn_view',1]])->get();
 
         $total_pages = 0;
         if (!$sidx) {
@@ -149,10 +155,21 @@ class Estaciones_Controller extends Controller
         $Lista->records = $count;
         foreach ($sql as $Index => $Datos) {
             $Lista->rows[$Index]['id'] = $Datos->est_id;
-            if ($Datos->est_estado == 1) {
-                $nuevo = '<button class="btn btn-xl btn-success" type="button" onclick="cambiar_estado_estacion('.trim($Datos->est_id).',0)"><i class="fa fa-check"></i> ACTIVO</button>';
-            }else{
-                $nuevo = '<button class="btn btn-xl btn-danger" type="button" onclick="cambiar_estado_estacion('.trim($Datos->est_id).',1)"><i class="fa fa-times"></i> INACTIVO</button>'; 
+            if ($permiso[0]->btn_del == 1) 
+            {
+                if ($Datos->est_estado == 1) {
+                    $nuevo = '<button class="btn btn-xl btn-success" type="button" onclick="cambiar_estado_estacion('.trim($Datos->est_id).',0)"><i class="fa fa-check"></i> ACTIVO</button>';
+                }else{
+                    $nuevo = '<button class="btn btn-xl btn-danger" type="button" onclick="cambiar_estado_estacion('.trim($Datos->est_id).',1)"><i class="fa fa-times"></i> INACTIVO</button>'; 
+                }
+            }
+            else
+            {
+                if ($Datos->est_estado == 1) {
+                    $nuevo = '<button class="btn btn-xl btn-success" type="button" onclick="sin_permiso()"><i class="fa fa-check"></i> ACTIVO</button>';
+                }else{
+                    $nuevo = '<button class="btn btn-xl btn-danger" type="button" onclick="sin_permiso()"><i class="fa fa-times"></i> INACTIVO</button>'; 
+                }
             }            
             $Lista->rows[$Index]['cell'] = array(
                 trim($Datos->est_id),

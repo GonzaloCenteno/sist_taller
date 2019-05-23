@@ -32,14 +32,12 @@ class LoginController extends Controller
                 for ($i=0; $i<$entradas["count"]; $i++) 
                 {
                     $departamento = isset($entradas[$i]["department"][0]) ? $entradas[$i]["department"][0] : "0;0";
-                    $rol = isset($entradas[$i]["title"][0]) ? $entradas[$i]["title"][0] : "0;0";
                     $user_cn = isset($entradas[$i]["cn"][0]) ? $entradas[$i]["cn"][0] : "-";
                     $nomb_usu = isset($entradas[$i]["displayname"][0]) ? $entradas[$i]["displayname"][0] : "-";
                 }           
                 $array_dep = explode(";", $departamento);
-                $array_rol = explode(";", $rol);
-                //print_r($array_rol);
-                $indice = array_search(4,$array_dep);
+                $sist_id = DB::table('permisos.tblsistemas_sis')->where('sist_desc', 'like', '%Taller%')->get();
+                $indice = array_search($sist_id[0]->sist_id,$array_dep);
                 //var_export($indice);
                 if($indice === false)
                 {
@@ -50,9 +48,8 @@ class LoginController extends Controller
                 {
                     session(['id_usuario'=>$user_cn]);
                     session(['nomb_usuario'=>$nomb_usu]);
-                    session(['menu_sist'=>$array_dep[$indice]]);
-                    session(['menu_rol'=>$array_rol[$indice]]);
-                    return redirect('inicio');
+                    session(['sist_id'=>$sist_id[0]->sist_id]);
+                    return redirect('estacion');
                 }
             }
             else

@@ -1,5 +1,5 @@
 @extends('principal.p_inicio')
-
+@section('title', 'CONTROL')
 @section('content')
 <style>
 
@@ -46,9 +46,15 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-2 text-center" style="padding-top: 31px;">
-                <button id="btn_nuevo_control" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> AGREGAR</button>
-            </div>
+            @if( $permiso[0]->btn_new == 1 )
+                <div class="col-md-2 text-center" style="padding-top: 31px;">
+                    <button id="btn_nuevo_control" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> AGREGAR</button>
+                </div>
+            @else
+                <div class="col-md-2 text-center" style="padding-top: 31px;">
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> AGREGAR</button>
+                </div>
+            @endif
             <div class="col-md-3" style="padding-top: 31px;">
                 <div class="btn-group">
                     <button type="button" class="btn btn-warning"><i class="fa fa-print"></i> IMPRIMIR</button>
@@ -57,15 +63,27 @@
                         <span class="sr-only">Toggle Dropdown</span>
                     </button>
                     <div class="dropdown-menu" role="menu">
-                        <div class="dropdown-divider"></div>
-                        <a href="{{ route('control_diario') }}" class="btn btn-xl" target="_blank"> CONTROL DIARIO DE ADBLUE - AREQUIPA</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="{{ route('control_abastecimiento') }}" class="btn btn-xl" target="_blank"> CONTROL ABASTECIMIENTOS DE ADBLUE POR CIUDAD</a>
-                        <div class="dropdown-divider"></div>
-                        <a href="#" id="btn_ctr_abastecimiento" class="btn btn-xl"> CONTROL ABASTECIMIENTOS DE ADBLUE POR PLACA</a>
-<!--                        <div class="dropdown-divider"></div>
-                        <a href="#" id="btn_ctr_consumo" class="btn btn-xl"> CONTROL CONSUMOS</a>-->
-                        <div class="dropdown-divider"></div>
+                        @if( $permiso[0]->btn_print == 1 )
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ route('control_diario') }}" class="btn btn-xl" target="_blank"> CONTROL DIARIO DE ADBLUE - AREQUIPA</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="{{ route('control_abastecimiento') }}" class="btn btn-xl" target="_blank"> CONTROL ABASTECIMIENTOS DE ADBLUE POR CIUDAD</a>
+                            <div class="dropdown-divider"></div>
+                            <a href="#" id="btn_ctr_abastecimiento" class="btn btn-xl"> CONTROL ABASTECIMIENTOS DE ADBLUE POR PLACA</a>
+    <!--                        <div class="dropdown-divider"></div>
+                            <a href="#" id="btn_ctr_consumo" class="btn btn-xl"> CONTROL CONSUMOS</a>-->
+                            <div class="dropdown-divider"></div>
+                        @else
+                            <div class="dropdown-divider"></div>
+                            <a onclick="sin_permiso();" class="btn btn-xl" target="_blank"> CONTROL DIARIO DE ADBLUE - AREQUIPA</a>
+                            <div class="dropdown-divider"></div>
+                            <a onclick="sin_permiso();" class="btn btn-xl" target="_blank"> CONTROL ABASTECIMIENTOS DE ADBLUE POR CIUDAD</a>
+                            <div class="dropdown-divider"></div>
+                            <a onclick="sin_permiso();" class="btn btn-xl"> CONTROL ABASTECIMIENTOS DE ADBLUE POR PLACA</a>
+    <!--                        <div class="dropdown-divider"></div>
+                            <a href="#" id="btn_ctr_consumo" class="btn btn-xl"> CONTROL CONSUMOS</a>-->
+                            <div class="dropdown-divider"></div>
+                        @endif
                     </div>
                 </div>
             </div>
@@ -213,6 +231,11 @@
 
 @section('page-js-script')
 <script language="JavaScript" type="text/javascript" src="{{ asset('archivos_js/adblue/control.js') }}"></script>
+<script>
+    $('#{{ $permiso[0]->men_sistema }}').addClass('menu-open');
+    $('.{{ $permiso[0]->men_sistema }}').addClass('active');
+    $('.{{ $permiso[0]->sme_ruta }}').addClass('active');
+</script>
 @stop
 
 @endsection

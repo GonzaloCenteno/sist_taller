@@ -19,9 +19,13 @@ class Rutas_Controller extends Controller
     {
         if ($request->session()->has('id_usuario'))
         {
-            $menu_registro = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',1]])->orderBy('menu_id','asc')->get();
-            
-            return view('adblue/vw_rutas',compact('menu_registro'));
+            $menu = DB::table('permisos.vw_rol_menu_usuario')->where([['ume_usuario',session('id_usuario')],['sist_id',session('sist_id')]])->orderBy('ume_orden','asc')->get();
+            $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_ruta'],['btn_view',1]])->get();
+            if ($permiso->count() == 0) 
+            {
+                return view('errors/vw_sin_permiso',compact('menu'));
+            }
+            return view('adblue/vw_rutas',compact('menu','permiso'));
         }
         else
         {
@@ -131,6 +135,7 @@ class Rutas_Controller extends Controller
 
         $totalg = $this->TblRutas_Rut()->tblrutacount()->get();
         $sql = $this->TblRutas_Rut()->paginacion($sidx,$sord,$limit,$start)->get();
+        $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_ruta'],['btn_view',1]])->get();
 
         $total_pages = 0;
         if (!$sidx) {
@@ -149,11 +154,22 @@ class Rutas_Controller extends Controller
         $Lista->records = $count;
         foreach ($sql as $Index => $Datos) {
             $Lista->rows[$Index]['id'] = $Datos->rut_id;
-            if ($Datos->rut_estado == 1) {
+            if ($permiso[0]->btn_del == 1) 
+            {
+                if ($Datos->rut_estado == 1) {
                 $nuevo = '<button class="btn btn-xl btn-success" type="button" onclick="cambiar_estado_ruta('.trim($Datos->rut_id).',0)"><i class="fa fa-check"></i> ACTIVO</button>';
-            }else{
-                $nuevo = '<button class="btn btn-xl btn-danger" type="button" onclick="cambiar_estado_ruta('.trim($Datos->rut_id).',1)"><i class="fa fa-times"></i> INACTIVO</button>'; 
-            }            
+                }else{
+                    $nuevo = '<button class="btn btn-xl btn-danger" type="button" onclick="cambiar_estado_ruta('.trim($Datos->rut_id).',1)"><i class="fa fa-times"></i> INACTIVO</button>'; 
+                } 
+            }
+            else
+            {
+                if ($Datos->rut_estado == 1) {
+                    $nuevo = '<button class="btn btn-xl btn-success" type="button" onclick="sin_permiso()"><i class="fa fa-check"></i> ACTIVO</button>';
+                }else{
+                    $nuevo = '<button class="btn btn-xl btn-danger" type="button" onclick="sin_permiso()"><i class="fa fa-times"></i> INACTIVO</button>'; 
+                }
+            }     
             $Lista->rows[$Index]['cell'] = array(
                 trim($Datos->rut_id),
                 trim($Datos->rut_descripcion),

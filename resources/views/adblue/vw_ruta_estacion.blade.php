@@ -1,5 +1,5 @@
 @extends('principal.p_inicio')
-
+@section('title', 'RUTA ESTACION')
 @section('content')
 <style>
     /*.modal-lg { 
@@ -20,10 +20,16 @@
     <div class="card-body">
         <div class="col-lg-12">
             <center>
-                <div id="listadoButtons">
-                    <button id="btn_vw_rtestacion_Nuevo" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS REGISTROS</button>
-                </div>
-
+                @if( $permiso[0]->btn_new == 1 )
+                    <div id="listadoButtons">
+                        <button id="btn_vw_rtestacion_Nuevo" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS REGISTROS</button>
+                    </div>
+                @else
+                    <div id="listadoButtons">
+                        <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS REGISTROS</button>
+                    </div>
+                @endif
+                
                 <div id="formularioButtons" style="display:none;">
                     <div class="row">
                         <div class="col-md-3">
@@ -150,6 +156,109 @@
 
 @section('page-js-script')
 <script language="JavaScript" type="text/javascript" src="{{ asset('archivos_js/adblue/ruta_estacion.js') }}"></script>
+<script>
+    $('#{{ $permiso[0]->men_sistema }}').addClass('menu-open');
+    $('.{{ $permiso[0]->men_sistema }}').addClass('active');
+    $('.{{ $permiso[0]->sme_ruta }}').addClass('active');
+        
+    jQuery(document).ready(function($){
+        
+        mostrarformulario(false);
+
+        jQuery("#tblrutaestacion").jqGrid({
+            url: 'ruta_estacion/0?grid=rutas',
+            datatype: 'json', mtype: 'GET',
+            height: '512px', autowidth: true,
+            colNames: ['ID', 'DESCRIPCION','FECHA REGISTRO'],
+            rowNum: 30, sortname: 'rut_id', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblruta" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - LISTA DE RUTAS -', align: "center",
+            colModel: [
+                {name: 'rut_id', index: 'rut_id', align: 'left',width: 10, hidden:true},
+                {name: 'rut_descripcion', index: 'rut_descripcion', align: 'left', width: 60},
+                {name: 'rut_fecregistro', index: 'rut_fecregistro', align: 'center', width: 25}
+            ],
+            pager: '#paginador_tblrutaestacion',
+            rowList: [10, 20, 30, 40, 50],
+            subGrid: true,
+            subGridRowExpanded: showChildGrid,
+            subGridOptions : {
+                reloadOnExpand :false,
+                selectOnExpand : true 
+            },
+            gridComplete: function () {
+                var idarray = jQuery('#tblrutaestacion').jqGrid('getDataIDs');
+                if (idarray.length > 0) {
+                var firstid = jQuery('#tblrutaestacion').jqGrid('getDataIDs')[0];
+                    $("#tblrutaestacion").setSelection(firstid);    
+                }
+            },
+            onSelectRow: function (Id){},
+            ondblClickRow: function (Id){}
+        });
+
+        jQuery.fn.preventDoubleSubmission = function() {
+            cambiar_estado_estacion();
+        };
+
+        $(".select2").select2();
+    });
+    
+    
+    jQuery(document).on("click", "#menu_push", function(){    
+        if ($("#body_push").hasClass('sidebar-mini sidebar-collapse')) 
+        {
+            setTimeout(function (){
+                var width = $('#contenedor').width();
+                $('#tblrutaestacion').setGridWidth(width);
+            }, 300);
+        }
+        else
+        {
+           setTimeout(function (){
+                var width = $('#contenedor').width();
+                $('#tblrutaestacion').setGridWidth(width);
+           }, 300);
+        } 
+    });
+
+    function showChildGrid(parentRowID, parentRowKey) {
+        var childGridID = parentRowID + "_table";
+        var childGridPagerID = parentRowID + "_pager";
+
+        $('#' + parentRowID).append('<table id=' + childGridID + '></table><div id=' + childGridPagerID + ' class=scroll></div>');
+
+        $("#" + childGridID).jqGrid({
+            url: 'ruta_estacion/0?grid=ruta_estaciones&rut_id='+parentRowKey,
+            mtype: "GET",
+            datatype: "json",
+            page: 1,
+            colNames: ['ID', 'ESTACION','CONSUMO','FECHA REGISTRO','AÑO','ESTADO'],
+            colModel: [
+                {name: 'rte_id', index: 'rte_id', align: 'left',width: 10, hidden:true},
+                {name: 'est_descripcion', index: 'est_descripcion', align: 'left', width: 60},
+                {name: 'rte_consumo', index: 'rte_consumo', align: 'center', width: 15},
+                {name: 'rte_fecregistro', index: 'rte_fecregistro', align: 'center', width: 12},
+                {name: 'rte_anio', index: 'rte_anio', align: 'center', width: 10},
+                {name: 'rte_estado', index: 'rte_estado', align: 'center', width: 10}
+            ],
+            loadonce: true,
+            autowidth: true,
+            height: '100%',
+            ondblClickRow: function (Id)
+            {
+                permiso = {!! json_encode($permiso[0]->btn_edit) !!};
+                if(permiso == 1)
+                {
+                    modificar_rtestacion(Id);
+                }
+                else
+                {
+                    sin_permiso();
+                }
+            }
+        });
+    }
+    
+</script>
 @stop
 
 @endsection

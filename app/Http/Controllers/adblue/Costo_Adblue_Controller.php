@@ -20,9 +20,13 @@ class Costo_Adblue_Controller extends Controller
     {
         if ($request->session()->has('id_usuario'))
         {
-            $menu_registro = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',1]])->orderBy('menu_id','asc')->get();
-            
-            return view('adblue/vw_costos_adblue',compact('menu_registro'));
+            $menu = DB::table('permisos.vw_rol_menu_usuario')->where([['ume_usuario',session('id_usuario')],['sist_id',session('sist_id')]])->orderBy('ume_orden','asc')->get();
+            $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_costo_adblue'],['btn_view',1]])->get();
+            if ($permiso->count() == 0) 
+            {
+                return view('errors/vw_sin_permiso',compact('menu'));
+            }
+            return view('adblue/vw_costos_adblue',compact('menu','permiso'));
         }
         else
         {

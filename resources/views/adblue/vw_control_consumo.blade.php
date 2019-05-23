@@ -1,5 +1,5 @@
 @extends('principal.p_inicio')
-
+@section('title', 'CTRL - CONSUMO')
 @section('content')
 <style>
 
@@ -124,9 +124,15 @@
                     <div class="col-lg-3" style="padding-top: 32px;">
                         <button id="btn_vw_buscar_placa" type="button" class="btn btn-xl btn-success" readonly="readonly"><i class="fa fa-search"></i> BUSCAR</button>
                     </div>
-                    <div class="col-lg-3" style="padding-top: 32px;">
-                        <button id="btn_vw_nuevos_condet" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-plus-square"></i> AGREGAR / MODIFICAR DETALLE</button>
-                    </div>
+                    @if( $permiso[0]->btn_new == 1 )
+                        <div class="col-lg-3" style="padding-top: 32px;">
+                            <button id="btn_vw_nuevos_condet" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-plus-square"></i> AGREGAR / MODIFICAR DETALLE</button>
+                        </div>
+                    @else
+                        <div class="col-lg-3" style="padding-top: 32px;">
+                            <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-plus-square"></i> AGREGAR / MODIFICAR DETALLE</button>
+                        </div>
+                    @endif
                 </div>
 
                 <div class="form-group col-md-12">
@@ -258,9 +264,16 @@
                         </div>
                     </div>
                     
-                    <div class="col-lg-3 text-center" style="padding-top: 32px;">
-                        <button id="btn_imprimir_informacion_excel" type="button" class="btn btn-xl btn-success"><i class="fa fa-download"></i> DESCARGAR INFORMACION</button>
-                    </div>
+                    @if( $permiso[0]->btn_print == 1 )
+                        <div class="col-lg-3 text-center" style="padding-top: 32px;">
+                            <button id="btn_imprimir_informacion_excel" type="button" class="btn btn-xl btn-success"><i class="fa fa-download"></i> DESCARGAR INFORMACION</button>
+                        </div>
+                    @else
+                        <div class="col-lg-3 text-center" style="padding-top: 32px;">
+                            <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-success"><i class="fa fa-download"></i> DESCARGAR INFORMACION</button>
+                        </div>
+                    @endif
+                    
                 </div>
                 
                 <div class="form-group col-md-12">
@@ -551,6 +564,406 @@
 
 @section('page-js-script')
 <script language="JavaScript" type="text/javascript" src="{{ asset('archivos_js/adblue/control_consumo.js') }}"></script>
+<script>
+    $('#{{ $permiso[0]->men_sistema }}').addClass('menu-open');
+    $('.{{ $permiso[0]->men_sistema }}').addClass('active');
+    $('.{{ $permiso[0]->sme_ruta }}').addClass('active');
+    
+    jQuery(document).ready(function ($) {
+        miFechaActual = new Date();
+        mes = parseInt(miFechaActual.getMonth()) + 1;
+        anio = miFechaActual.getFullYear();
+        $("#cbx_cde_mes").val(mes);
+        $("#cbx_cde_anio").val(anio);
+
+        $("#cbx_dat_mes").val(mes);
+        $("#cbx_dat_anio").val(anio);
+
+        $("#cbx_cost_mes").val(mes);
+        $("#cbx_cost_anio").val(anio);
+
+        jQuery("#tblcontrol_consumo").jqGrid({
+            url: 'control_consumo/0?grid=control_consumo&mes='+mes+'&anio='+anio,
+            datatype: 'json', mtype: 'GET',
+            height: '340px', autowidth: true,
+            toolbarfilter: true,
+            sortable: false,
+            shrinkToFit: false,
+            forceFit:true,  
+            scroll: false,
+            colNames: ['CCA_ID', 'CDE_ID', 'FECHA', 'PLACA', 'CONDUCTOR', 'COPILOTO', 'RUTA', 'Q - ABAST.', 'TOTAL CONSUMO REAL', 'TOTAL CONSUMO DESEADO', 'AH. - EX. CONSUMO TOTAL','MONTO OPTIMO ABASTECER','AHORRO EXCESO GRAL','AHORRO POR VIAJE','EXCESO POR VIAJE','KM.I','KM.F','KILOMETRAJE','RENDIMIENTO KM/LT','RENDIMIENTO KM/GL'],
+            rowNum: 20, sortname: 'xcde_placa', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblcontrol_consumo" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - CONTROL CONSUMO AREQUIPA -', align: "center",
+            colModel: [
+                {name: 'xcca_id', index: 'xcca_id', align: 'left', width: 10, hidden: true,frozen:true},
+                {name: 'xcde_id', index: 'xcde_id', align: 'left', width: 10, hidden: true,frozen:true},
+                {name: 'xcde_fecha', index: 'xcde_fecha', align: 'center', width: 100, formatter: 'date', formatoptions: {srcformat: 'Y-m-d', newformat: 'd/m'},frozen:true},
+                {name: 'xcde_placa', index: 'xcde_placa', align: 'center', width: 100,frozen:true},
+                {name: 'xcde_conductor', index: 'xcde_conductor', align: 'left', width: 250},
+                {name: 'xcde_copiloto', index: 'xcde_copiloto', align: 'left', width: 250},
+                {name: 'xcde_ruta', index: 'xcde_ruta', align: 'center', width: 150},
+                {name: 'xcde_qabastecida', index: 'xcde_qabastecida', align: 'center', width: 150},
+                {name: 'xcde_consumo_real', index: 'xcde_consumo_real', align: 'center', width: 100},
+                {name: 'xcde_consumo_deseado', index: 'xcde_consumo_deseado', align: 'center', width: 100},
+                {name: 'xcde_ahorro_exceso_com', index: 'xcde_ahorro_exceso_com', align: 'center', width: 100,formatter: FormatoNumeros},
+                {name: 'xcde_montoptimo', index: 'xcde_montoptimo', align: 'center', width: 100},
+                {name: 'xcde_ahex_gral', index: 'xcde_ahex_gral', align: 'center', width: 100},
+                {name: 'xcde_ahxviaje', index: 'xcde_ahxviaje', align: 'center', width: 100},
+                {name: 'xcde_exxviaje', index: 'xcde_exxviaje', align: 'center', width: 100,formatter: FormatoNumeros},
+                {name: 'xcde_kmi', index: 'xcde_kmi', align: 'center', width: 100},
+                {name: 'xcde_kmf', index: 'xcde_kmf', align: 'center', width: 100},
+                {name: 'xcde_kilometraje', index: 'xcde_kilometraje', align: 'center', width: 100},
+                {name: 'xcde_rendimiento_lt', index: 'xcde_rendimiento_lt', align: 'center', width: 100},
+                {name: 'xcde_rendimiento_gl', index: 'xcde_rendimiento_gl', align: 'center', width: 100},
+            ],
+            pager: '#paginador_tblcontrol_consumo',
+            rowList: [10, 20, 30, 40, 50],
+            subGrid: true,
+            subGridRowExpanded: mostrar_estaciones,
+            subGridOptions : {
+                reloadOnExpand :false,
+                selectOnExpand : true 
+            },
+            gridComplete: function () {
+                var idarray = jQuery('#tblcontrol_consumo').jqGrid('getDataIDs');
+                if (idarray.length > 0) {
+                var firstid = jQuery('#tblcontrol_consumo').jqGrid('getDataIDs')[0];
+                    $("#tblcontrol_consumo").setSelection(firstid);    
+                }
+            },
+            onSelectRow: function (Id){},
+            ondblClickRow: function (Id){}
+        });
+
+        $('#tblcontrol_consumo').setGroupHeaders(
+        {
+            useColSpanStyle: true,
+            groupHeaders: [
+                { "numberOfColumns": 4, "titleText": "<center><h5>RESUMEN</h5></center>", "startColumnName": "xcde_conductor",align: 'center'},
+                { "numberOfColumns": 7, "titleText": "<center><h5>CONSUMOS, AHORROS - EXCESOS</h5></center>", "startColumnName": "xcde_consumo_real",align: 'center' },
+                { "numberOfColumns": 5, "titleText": "<center><h5>KILOMETRAJES</h5></center>", "startColumnName": "xcde_kmi",align: 'center' }]
+        });
+
+        $("#tblcontrol_consumo").jqGrid("destroyFrozenColumns")
+                .jqGrid("setColProp", "xcca_id", { frozen: true })
+                .jqGrid("setColProp", "xcde_id", { frozen: true })
+                .jqGrid("setColProp", "xcde_fecha", { frozen: true })
+                .jqGrid("setColProp", "xcde_placa", { frozen: true })
+                .jqGrid("setFrozenColumns")
+                .trigger("reloadGrid", [{ current: true}]);
+
+        $("#txt_cde_placa").keypress(function (e) {
+            if (e.which == 13) {
+                buscar_placas();
+            }
+        });
+
+        //DATOS PROMEDIOS GENERALES RUTAS
+
+        jQuery("#tblprom_gen_rut").jqGrid({
+            url: 'control_consumo/0?grid=prom_gen_rut&mes='+mes+'&anio='+anio,
+            datatype: 'json', mtype: 'GET',
+            height: 'auto', autowidth: true,
+            cmTemplate: { sortable: false },
+            colNames: ['RUTA', 'CONSUMO','KILOMETRAJE','RENDIMIENTO','AHORRO','EXCESO','TOTAL A/E','N° VIAJES'],
+            rowNum: 100, sortname: 'xcde_ruta', sortorder: 'asc', align: "center",
+            colModel: [
+                {name: 'xcde_ruta', index: 'xcde_ruta', align: 'left',width:150,frozen:true},
+                {name: 'consumo', index: 'consumo', align: 'center', width: 170},
+                {name: 'kg', index: 'kg', align: 'center', width: 170},
+                {name: 'rendimiento', index: 'rendimiento', align: 'center', width: 170},
+                {name: 'ahorro', index: 'ahorro', align: 'center', width: 170},
+                {name: 'exceso', index: 'exceso', align: 'center', width: 170},
+                {name: 'totalae', index: 'totalae', align: 'center', width: 170},
+                {name: 'nro_viajes', index: 'nro_viajes', align: 'center', width: 100}
+            ],
+            rownumbers: true,
+            rownumWidth: 25,
+            loadComplete: function () {
+                var sum = jQuery("#tblprom_gen_rut").getGridParam('userData').sum;
+                if(sum==undefined){
+                    $("#total_viajes_rut").val('0');
+                }else{
+                    $("#total_viajes_rut").val(sum);
+                }
+            },
+            pager: '#paginador_tblprom_gen_rut',
+            rowList: [],       
+            pgbuttons: false,     
+            pgtext: null,       
+            viewrecords: false
+        });
+
+        $('#tblprom_gen_rut').setGroupHeaders(
+        {
+            useColSpanStyle: true,
+            groupHeaders: [
+                { "numberOfColumns": 7, "titleText": "<div class='row text-center'><div class='col-md-8'><h5>DATOS PROMEDIOS GENERALES POR TODA LA RUTA</h5></div><div class='col-md-4'><button class='btn btn-warning' @if($permiso[0]->btn_print == 1) onClick='traer_datos_desplegable(tblprom_gen_rut,1);' @else onClick='sin_permiso();' @endif><i class='fa fa-print'></i> IMPRIMIR</button</div></div>", "startColumnName": "consumo",align: 'center'}]
+        });
+
+        //DATOS GENERALES POR PLACA - SCANIA
+
+        jQuery("#tblgen_scania").jqGrid({
+            url: 'control_consumo/0?grid=dat_gen_escania&mes='+mes+'&anio='+anio,
+            datatype: 'json', mtype: 'GET',
+            height: 'auto', autowidth: true,
+            toolbarfilter: true,
+            sortable:false,
+            cmTemplate: { sortable: false },
+            colNames: ['SCANIA', 'RENDIMIENTO','AHORRO','EXCESO','TOTAL A/E','N° VIAJES'],
+            rowNum: 100, sortname: 'xcde_placa', sortorder: 'asc', viewrecords: false, align: "center",
+            colModel: [
+                {name: 'xcde_placa', index: 'xcde_placa', align: 'left',width: 100,frozen:true},
+                {name: 'rendimiento', index: 'rendimiento', align: 'center', width: 120},
+                {name: 'ahorro', index: 'ahorro', align: 'center', width: 100},
+                {name: 'exceso', index: 'exceso', align: 'center', width: 100},
+                {name: 'totalae', index: 'totalae', align: 'center', width: 100},
+                {name: 'nro_viajes', index: 'nro_viajes', align: 'center', width: 100}
+            ],
+            rownumbers: true, // show row numbers
+            rownumWidth: 25, // the width of the row numbers columns
+            loadComplete: function () {
+                var sum = jQuery("#tblgen_scania").getGridParam('userData').sum;
+                if(sum==undefined){
+                    $("#total_viajes_scania").val('0');
+                }else{
+                    $("#total_viajes_scania").val(sum);
+                }
+            },
+            pager: '#paginador_tblgen_scania',
+            rowList: [],       
+            pgbuttons: false,     
+            pgtext: null,       
+        });
+
+        $('#tblgen_scania').setGroupHeaders(
+        {
+            useColSpanStyle: true,
+            groupHeaders: [
+                { "numberOfColumns": 5, "titleText": "<div class='row text-center'><div class='col-md-8'><h5>DATOS GENERALES POR PLACA</h5></div><div class='col-md-4'><button class='btn btn-warning' @if($permiso[0]->btn_print == 1) onClick='traer_datos_desplegable(tblgen_scania,2);' @else onClick='sin_permiso();' @endif><i class='fa fa-print'></i> IMPRIMIR</button</div></div>", "startColumnName": "rendimiento",align: 'center'}]
+        });
+
+        //DATOS GENERALES POR PLACA - IRIZAR
+
+        jQuery("#tblprom_gen_irizar").jqGrid({
+            url: 'control_consumo/0?grid=dat_gen_irizar&mes='+mes+'&anio='+anio,
+            datatype: 'json', mtype: 'GET',
+            height: 'auto', autowidth: true,
+            toolbarfilter: true,
+            sortable:false,
+            cmTemplate: { sortable: false },
+            colNames: ['IRIZAR', 'RENDIMIENTO','AHORRO','EXCESO','TOTAL A/E','N° VIAJES'],
+            rowNum: 100, sortname: 'xcde_placa', sortorder: 'asc', viewrecords: false, align: "center",
+            colModel: [
+                {name: 'xcde_placa', index: 'xcde_placa', align: 'left',width: 100,frozen:true},
+                {name: 'rendimiento', index: 'rendimiento', align: 'center', width: 120},
+                {name: 'ahorro', index: 'ahorro', align: 'center', width: 100},
+                {name: 'exceso', index: 'exceso', align: 'center', width: 100},
+                {name: 'totalae', index: 'totalae', align: 'center', width: 100},
+                {name: 'nro_viajes', index: 'nro_viajes', align: 'center', width: 100}
+            ],
+            rownumbers: true, // show row numbers
+            rownumWidth: 25, // the width of the row numbers columns
+            loadComplete: function () {
+                var sum = jQuery("#tblprom_gen_irizar").getGridParam('userData').sum;
+                if(sum==undefined){
+                    $("#total_viajes_irizar").val('0');
+                }else{
+                    $("#total_viajes_irizar").val(sum);
+                }
+            },
+            pager: '#paginador_tblprom_gen_irizar',
+            rowList: [],       
+            pgbuttons: false,     
+            pgtext: null
+        });
+
+        $('#tblprom_gen_irizar').setGroupHeaders(
+        {
+            useColSpanStyle: true,
+            groupHeaders: [
+                { "numberOfColumns": 5, "titleText": "<div class='row text-center'><div class='col-md-8'><h5>DATOS GENERALES POR PLACA</h5></div><div class='col-md-4'><button class='btn btn-warning' @if($permiso[0]->btn_print == 1) onClick='traer_datos_desplegable(tblprom_gen_irizar,3);' @else onClick='sin_permiso();' @endif><i class='fa fa-print'></i> IMPRIMIR</button</div></div>", "startColumnName": "rendimiento",align: 'center'}]
+        });
+
+
+        //COSTO OPTIMO GENERAL POR ABASTECIMIENTO EN RUTA
+
+        jQuery("#tblcost_opt_ruta").jqGrid({
+            url: 'control_consumo/0?grid=cost_opt_ruta&mes='+mes+'&anio='+anio,
+            datatype: 'json', mtype: 'GET',
+            height: 'auto', autowidth: true,
+            toolbarfilter: true,
+            sortable:false,
+            cmTemplate: { sortable: false },
+            colNames: ['RUTA', 'CONSUMO DESEADO GENERAL','CONSUMO REAL AREQUIPA','TOTAL A/E','COSTO CDG','COSTO CRA','COSTO A/E'],
+            rowNum: 100, sortname: 'xrut_id', sortorder: 'asc', viewrecords: false, align: "center",
+            colModel: [
+                {name: 'xcde_ruta', index: 'xcde_ruta', align: 'left',width: 150,frozen:true},
+                {name: 'cdg', index: 'cdg', align: 'center', width: 200},
+                {name: 'cra', index: 'cra', align: 'center', width: 200},
+                {name: 'totalae', index: 'totalae', align: 'center', width: 160},
+                {name: 'costocdg', index: 'costocdg', align: 'center', width: 160,formatter: 'currency',formatoptions: {decimalPlaces: 3, prefix: 'S/.' },classes: 'costo_cdg'},
+                {name: 'costocra', index: 'costocra', align: 'center', width: 160,formatter: 'currency',formatoptions: {decimalPlaces: 3, prefix: 'S/.' },classes: 'costo_cra'},
+                {name: 'costoae', index: 'costoae', align: 'center', width: 160,formatter: 'currency',formatoptions: {decimalPlaces: 3, prefix: 'S/.' },classes: 'costo_ae'}
+            ],
+            rownumbers: true, // show row numbers
+            rownumWidth: 25, // the width of the row numbers columns
+            loadComplete: function () {
+                var $self = $(this);
+                var total_costocdg = $self.jqGrid("getCol", "costocdg", false, "sum");
+                var total_costocra = $self.jqGrid("getCol", "costocra", false, "sum");
+                var total_costoae = $self.jqGrid("getCol", "costoae", false, "sum");
+                $("#total_cdg").val("S/."+ Number(total_costocdg.toFixed(3)));
+                $("#total_cra").val("S/."+ Number(total_costocra.toFixed(3)));
+                $("#total_cae").val("S/."+ Number(total_costoae.toFixed(3)));
+            },
+            pager: '#paginador_tblcost_opt_ruta',
+            rowList: [],       
+            pgbuttons: false,     
+            pgtext: null
+        });
+
+        $('#tblcost_opt_ruta').setGroupHeaders(
+        {
+            useColSpanStyle: true,
+            groupHeaders: [
+                { "numberOfColumns": 6, "titleText": "<div class='row text-center'><div class='col-md-8'><h5>COSTO OPTIMO GENERAL POR ABASTECIMIENTO EN  RUTA</h5></div><div class='col-md-4'><button class='btn btn-warning' @if($permiso[0]->btn_print == 1) onClick='traer_datos_desplegable(tblcost_opt_ruta,4);' @else onClick='sin_permiso();' @endif><i class='fa fa-print'></i> IMPRIMIR</button</div></div>", "startColumnName": "cdg",align: 'center'}]
+        });
+
+        //COSTO GENERAL  POR ABASTECIMIENTO EN RUTA
+
+        jQuery("#tblcost_gen_abast_ruta").jqGrid({
+            url: 'control_consumo/0?grid=cost_gen_abast_ruta&mes='+mes+'&anio='+anio,
+            datatype: 'json', mtype: 'GET',
+            height: 'auto', autowidth: true,
+            toolbarfilter: true,
+            sortable:false,
+            cmTemplate: { sortable: false },
+            colNames: ['RUTA', 'AHORRO','TOTAL C/A','EXCESO','TOTAL C/E','TOTAL C/AE'],
+            rowNum: 100, sortname: 'xcde_ruta', sortorder: 'asc', viewrecords: false, align: "center",
+            colModel: [
+                {name: 'xcde_ruta', index: 'xcde_ruta', align: 'left',width: 200,frozen:true},
+                {name: 'ahorro', index: 'ahorro', align: 'center', width: 200},
+                {name: 'totalca', index: 'totalca', align: 'center', width: 200,formatter: 'currency',formatoptions: {decimalPlaces: 3, prefix: 'S/.' },classes: 'costo_cdg'},
+                {name: 'exceso', index: 'exceso', align: 'center', width: 200},
+                {name: 'totalce', index: 'totalce', align: 'center', width: 200,formatter: 'currency',formatoptions: {decimalPlaces: 3, prefix: 'S/.' },classes: 'costo_cra'},
+                {name: 'totalcae', index: 'totalcae', align: 'center', width: 200,formatter: 'currency',formatoptions: {decimalPlaces: 3, prefix: 'S/.' },classes: 'costo_ae'}
+            ],
+            rownumbers: true,
+            rownumWidth: 25, 
+            loadComplete: function () {
+                var $self = $(this);
+                var total_cta = $self.jqGrid("getCol", "totalca", false, "sum");
+                var total_cte = $self.jqGrid("getCol", "totalce", false, "sum");
+                var total_ctae = $self.jqGrid("getCol", "totalcae", false, "sum");
+                $("#total_cta").val("S/."+ Number(total_cta.toFixed(3)));
+                $("#total_cte").val("S/."+ Number(total_cte.toFixed(3)));
+                $("#total_ctae").val("S/."+ Number(total_ctae.toFixed(3)));
+            },
+            pager: '#paginador_tblcost_gen_abast_ruta',
+            rowList: [],       
+            pgbuttons: false,     
+            pgtext: null
+        });
+
+        $('#tblcost_gen_abast_ruta').setGroupHeaders(
+        {
+            useColSpanStyle: true,
+            groupHeaders: [
+                { "numberOfColumns": 5, "titleText": "<div class='row text-center'><div class='col-md-8'><h5>COSTO GENERAL  POR ABASTECIMIENTO EN RUTA</h5></div><div class='col-md-4'><button class='btn btn-warning' @if($permiso[0]->btn_print == 1) onClick='traer_datos_desplegable(tblcost_gen_abast_ruta,5);' @else onClick='sin_permiso();' @endif><i class='fa fa-print'></i> IMPRIMIR</button</div></div>", "startColumnName": "ahorro",align: 'center'}]
+        });
+
+        //COSTO GENERAL POR ABASTECIMIENTO POR PLACA
+
+        jQuery("#tblcost_gen_abast_placa").jqGrid({
+            url: 'control_consumo/0?grid=cost_gen_abast_placa&mes='+mes+'&anio='+anio,
+            datatype: 'json', mtype: 'GET',
+            height: 'auto', autowidth: true,
+            toolbarfilter: true,
+            sortable:false,
+            cmTemplate: { sortable: false },
+            colNames: ['PLACA', 'AHORRO','COSTO AHORRO','EXCESO','COSTO EXCESO'],
+            rowNum: 100, sortname: 'xcde_placa', sortorder: 'asc', viewrecords: false, align: "center",
+            colModel: [
+                {name: 'xcde_placa', index: 'xcde_placa', align: 'left',width: 200,frozen:true},
+                {name: 'ahorro', index: 'ahorro', align: 'center', width: 250},
+                {name: 'costo_ahorro', index: 'costo_ahorro', align: 'center', width: 250,formatter: 'currency',formatoptions: {decimalPlaces: 3, prefix: 'S/.' },classes: 'costo_cdg'},
+                {name: 'exceso', index: 'exceso', align: 'center', width: 250,formatter: FormatoNumeros},
+                {name: 'costo_exceso', index: 'costo_exceso', align: 'center', width: 250,formatter: 'currency',formatoptions: {decimalPlaces: 3, prefix: 'S/.' },classes: 'costo_cra'}
+            ],
+            rownumbers: true,
+            rownumWidth: 25, 
+            loadComplete: function () {
+                var $self = $(this);
+                var total_cta_placa = $self.jqGrid("getCol", "costo_ahorro", false, "sum");
+                var total_cte_placa = $self.jqGrid("getCol", "costo_exceso", false, "sum");
+                var total = total_cta_placa + total_cte_placa;
+                $("#total_cta_placa").val("S/."+ Number(total_cta_placa.toFixed(3)));
+                $("#total_cte_placa").val("S/."+ Number(total_cte_placa.toFixed(3)));
+                $("#total_ctae_placa").val("S/."+ Number(total.toFixed(3)));
+            },
+            pager: '#paginador_tblcost_gen_abast_placa',
+            rowList: [],       
+            pgbuttons: false,     
+            pgtext: null
+        });
+
+        $('#tblcost_gen_abast_placa').setGroupHeaders(
+        {
+            useColSpanStyle: true,
+            groupHeaders: [
+                { "numberOfColumns": 5, "titleText": "<div class='row text-center'><div class='col-md-8'><h5>COSTO GENERAL POR ABASTECIMIENTO POR PLACA</h5></div><div class='col-md-4'><button class='btn btn-warning' @if($permiso[0]->btn_print == 1) onClick='traer_datos_desplegable(tblcost_gen_abast_placa,6);' @else onClick='sin_permiso();' @endif><i class='fa fa-print'></i> IMPRIMIR</button</div></div>", "startColumnName": "ahorro",align: 'center'}]
+        });
+
+    });
+    
+    function mostrar_estaciones(parentRowID, parentRowKey) 
+    {
+        var childGridID = parentRowID + "_table";
+        var childGridPagerID = parentRowID + "_pager";
+
+        $('#' + parentRowID).append('<table id=' + childGridID + '></table><div id=' + childGridPagerID + ' class=scroll></div>');
+
+        $("#" + childGridID).jqGrid({
+            url: 'control_consumo/0?grid=estaciones_consumo&cca_id='+parentRowKey,
+            mtype: "GET",
+            datatype: "json",
+            page: 1,
+            colNames: ['ID', 'ESTACION','Q - ABASTECIDA'],
+            cmTemplate: { sortable: false },
+            sortname: 'cde_id', sortorder: 'asc', viewrecords: true,
+            caption: '<div class="row"><div class="col-md-2">- ESTACION CONSUMO - </div><div class="col-md-9" id=cabecera_'+childGridID+'></div></div>', align: "center",
+            colModel: [
+                {name: 'cde_id', index: 'cde_id', align: 'left',width: 10, hidden:true},
+                {name: 'est_descripcion', index: 'est_descripcion', align: 'left', width: 60},
+                {name: 'cde_qabastecida', index: 'cde_qabastecida', align: 'center', width: 20}
+            ],
+            loadonce: true,
+            width: 1300,
+            height: '100%',
+            loadComplete: function (data) {
+                console.log(data);
+                html = "";
+                for(i=0;i < data.consumos.length; i++)
+                {
+                    html = html + ' <label>'+data.consumos[i].est_descripcion+'</label> /';
+                    $("#cabecera_"+childGridID).html(html);
+                }         
+            },
+            ondblClickRow: function (Id)
+            {
+                permiso = {!! json_encode($permiso[0]->btn_edit) !!};
+                if(permiso == 1)
+                {
+                    modificar_consumo(Id);
+                }
+                else
+                {
+                    sin_permiso();
+                }
+            }
+        });
+    }
+</script>
 @stop
 
 @endsection

@@ -1,5 +1,5 @@
 @extends('principal.p_inicio')
-
+@section('title', 'CONSUMOS')
 @section('content')
 <style>
     .clsDatePicker {
@@ -16,12 +16,21 @@
             <button type="button" class="btn btn-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
         </div>
         <div class="row text-center" id="cabecera_consumo">
-            <div class="col-md-2" style="padding-top: 32px;">
-                <button id="btn_vw_nuevo_consumo_or" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVAS RUTAS</button>
-            </div>
-            <div class="col-md-2" style="padding-top: 32px;">
-                <button id="btn_vw_consumocab" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS CONSUMOS</button>
-            </div>
+            @if( $permiso[0]->btn_new == 1 )
+                <div class="col-md-2" style="padding-top: 32px;">
+                    <button id="btn_vw_nuevo_consumo_or" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVAS RUTAS</button>
+                </div>
+                <div class="col-md-2" style="padding-top: 32px;">
+                    <button id="btn_vw_consumocab" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS CONSUMOS</button>
+                </div>
+            @else
+                <div class="col-md-2" style="padding-top: 32px;">
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVAS RUTAS</button>
+                </div>
+                <div class="col-md-2" style="padding-top: 32px;">
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS CONSUMOS</button>
+                </div>
+            @endif  
             <div class="col-md-3">
                 <div class="form-group">
                     <label>FECHA DESDE:</label>
@@ -744,6 +753,130 @@
 
 @section('page-js-script')
 <script language="JavaScript" type="text/javascript" src="{{ asset('archivos_js/adblue/consumos.js') }}"></script>
+<script>
+    $('#{{ $permiso[0]->men_sistema }}').addClass('menu-open');
+    $('.{{ $permiso[0]->men_sistema }}').addClass('active');
+    $('.{{ $permiso[0]->sme_ruta }}').addClass('active');
+    jQuery(document).ready(function($){
+        
+        mostrarformulario(false);
+
+        jQuery("#tblconsumosdet").jqGrid({
+            url: 'consumo/0?grid=consumos&indice=0',
+            datatype: 'json', mtype: 'GET',
+            height: '370px', autowidth: true,
+            toolbarfilter: true,
+            sortable:false,
+            shrinkToFit: false,
+            forceFit:true,  
+            scroll: false,
+            colNames: ['ID', 'Q-PARCIAL','FECHA','IDCAB','VALE','PLACA','RUTA','ESTACION','CONDUCTOR','COPILOTO','KM','%','Q-LT','%','Q-LT','Q-ABAST','OBSERVACIONES','INGRESO','SALIDA','STOP'],
+            rowNum: 20, sortname: 'cde_id', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblconsumos" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - LISTA DE CONSUMOS -', align: "center",
+            colModel: [
+                {name: 'cde_id', index: 'cde_id', align: 'left',width: 10,hidden:true,frozen:true},
+                {name: 'cde_qparcial', index: 'cde_qparcial', align: 'center', width: 70,frozen:true,formatter: OptionFormato},
+                {name: 'cde_fecha', index: 'cde_fecha', align: 'center', width: 90,frozen:true},
+                {name: 'cca_id', index: 'cca_id', align: 'center', width: 70,hidden:true,frozen:true},
+                {name: 'nro_vale', index: 'nro_vale', align: 'center', width: 55,frozen:true},
+                {name: 'veh_placa', index: 'veh_placa', align: 'center', width: 80,frozen:true},
+                {name: 'rut_descripcion', index: 'rut_descripcion', align: 'center', width: 70},
+                {name: 'est_descripcion', index: 'est_descripcion', align: 'left', width: 110},
+                {name: 'conductor', index: 'conductor', align: 'left', width: 350},
+                {name: 'copiloto', index: 'copiloto', align: 'left', width: 350},
+                {name: 'cde_kilometros', index: 'cde_kilometros', align: 'center', width: 70},
+                {name: 'cde_xtanque', index: 'cde_xtanque', align: 'center', width: 60,formatter: 'integer',formatoptions: { suffix: '%' }},
+                {name: 'cde_qlttanque', index: 'cde_qlttanque', align: 'center', width: 70},
+                {name: 'cde_xconsumida', index: 'cde_xconsumida', align: 'center', width: 70,formatter: 'integer',formatoptions: { suffix: '%' }},
+                {name: 'cde_qltconsumida', index: 'cde_qltconsumida', align: 'center', width: 70},
+                {name: 'cde_qabastecida', index: 'cde_qabastecida', align: 'center', width: 70},
+                {name: 'cde_observaciones', index: 'cde_observaciones', align: 'left', width: 350},
+                {name: 'cde_ingreso', index: 'cde_ingreso', align: 'center', width: 70},
+                {name: 'cde_salida', index: 'cde_salida', align: 'center', width: 70},
+                {name: 'cde_stop', index: 'cde_stop', align: 'center', width: 70},
+            ],
+            pager: '#paginador_tblconsumosdet',
+            rowList: [10, 20, 30, 40, 50],
+            gridComplete: function () {
+                    var idarray = jQuery('#tblconsumosdet').jqGrid('getDataIDs');
+                    if (idarray.length > 0) {
+                    var firstid = jQuery('#tblconsumosdet').jqGrid('getDataIDs')[0];
+                        $("#tblconsumosdet").setSelection(firstid);    
+                    }
+                },
+            onSelectRow: function (Id){},
+            ondblClickRow: function (Id)
+            {
+                permiso = {!! json_encode($permiso[0]->btn_edit) !!};
+                if(permiso == 1)
+                {
+                    modificar_consumodetalle(Id);
+                }
+                else
+                {
+                    sin_permiso();
+                }
+            }
+        });
+
+        $('#tblconsumosdet').setGroupHeaders(
+        {
+            useColSpanStyle: true,
+            groupHeaders: [
+                { "numberOfColumns": 5, "titleText": "<center><h5>RESUMEN</h5></center>", "startColumnName": "rut_descripcion",align: 'center'},
+                { "numberOfColumns": 2, "titleText": "<center><h5>STOP-TANQ.</h5></center>", "startColumnName": "cde_xtanque",align: 'center' },
+                { "numberOfColumns": 2, "titleText": "<center><h5>Q-CONS.</h5></center>", "startColumnName": "cde_xconsumida",align: 'center' },
+                { "numberOfColumns": 2, "titleText": "<center><h5>ABASTECIMIENTO</h5></center>", "startColumnName": "cde_qabastecida",align: 'center' },
+                { "numberOfColumns": 3, "titleText": "<center><h5>RESERVA</h5></center>", "startColumnName": "cde_ingreso",align: 'center' }]
+        });
+
+        $("#tblconsumosdet").jqGrid("destroyFrozenColumns")
+                .jqGrid("setColProp", "cde_qparcial", { frozen: true })
+                .jqGrid("setColProp", "cde_fecha", { frozen: true })
+                .jqGrid("setColProp", "nro_vale", { frozen: true })
+                .jqGrid("setColProp", "veh_placa", { frozen: true })
+                .jqGrid("setFrozenColumns")
+                .trigger("reloadGrid", [{ current: true}]);
+
+        $(".select2").select2();
+
+        $(document).on("focus", ".otro", function(){
+            $(this).datepicker({ minDate: -5,dateFormat: 'dd-mm-yy',showAnim: 'clip' });
+
+            $.datepicker.regional['es'] = {
+            closeText: 'Cerrar',
+            prevText: '<<',
+            nextText: '>>',
+            currentText: 'Hoy',
+            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+            dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+            dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+            dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+            weekHeader: 'Sm',
+            dateFormat: 'dd/mm/yy',
+            firstDay: 1,
+            isRTL: false,
+            showMonthAfterYear: false,
+            yearSuffix: ''
+            };
+            $.datepicker.setDefaults($.datepicker.regional['es']);
+        });
+
+    });
+    
+    function OptionFormato(cellValue, options, rowObject) {
+        permiso = {!! json_encode($permiso[0]->btn_new) !!};
+        if(permiso == 1)
+        {
+            var opciones = (parseInt(cellValue) == 0) ? '<button onclick="consumo_parcial('+rowObject[0]+','+rowObject[1]+')" type="button" class="btn btn-xl btn-success"><i class="fa fa-gear"></i> </button>' : '<button onclick="consumo_parcial('+rowObject[0]+','+rowObject[1]+')" type="button" class="btn btn-xl btn-danger"><i class="fa fa-gears"></i> </button>';
+        }
+        else
+        {
+            var opciones = (parseInt(cellValue) == 0) ? '<button onclick="sin_permiso()" type="button" class="btn btn-xl btn-success"><i class="fa fa-gear"></i> </button>' : '<button onclick="sin_permiso()" type="button" class="btn btn-xl btn-danger"><i class="fa fa-gears"></i> </button>';
+        }
+        return opciones;
+    }
+</script>
 @stop
 
 @endsection

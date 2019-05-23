@@ -11,12 +11,31 @@ use App\Exports\ReportesExport;
 
 class Control_Consumo_Controller extends Controller
 {
+    public function accesos()
+    {
+        $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_control'],['btn_view',1]])->get();
+        $rol = DB::table('permisos.tblsistemasrol_sro')->where([['sro_id',$permiso[0]->sro_id],['sro_descripcion', 'like', '%ADMINISTRADOR%']])->get();
+        if ($rol->count() > 0) 
+        {
+            return 1;
+        }
+        else
+        {
+            return 0;
+        }
+    }
+    
     public function index(Request $request)
     {
         if ($request->session()->has('id_usuario'))
         {
-            $menu_registro = DB::table('tblmenu_men')->where([['menu_sist',session('menu_sist')],['menu_rol',session('menu_rol')],['menu_est',1],['menu_niv',1]])->orderBy('menu_id','asc')->get();
-            return view('adblue/vw_control_consumo',compact('menu_registro'));
+            $menu = DB::table('permisos.vw_rol_menu_usuario')->where([['ume_usuario',session('id_usuario')],['sist_id',session('sist_id')]])->orderBy('ume_orden','asc')->get();
+            $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_control_consumo'],['btn_view',1]])->get();
+            if ($permiso->count() == 0) 
+            {
+                return view('errors/vw_sin_permiso',compact('menu'));
+            }
+            return view('adblue/vw_control_consumo',compact('menu','permiso'));
         }
         else
         {
@@ -648,7 +667,7 @@ class Control_Consumo_Controller extends Controller
     public function reportes_generales(Request $request)
     {
         //echo "columa: " . $request['columna'] . " orden: " . $request['orden'] . " tipo: " .$request['tipo'] ;
-        if ($request->session()->has('id_usuario') && session('menu_rol') == 6)
+        if ($request->session()->has('id_usuario') && $this->accesos() == 1)
         {
             switch ($request['tipo']) 
             {
@@ -792,13 +811,13 @@ class Control_Consumo_Controller extends Controller
         }
         else
         {
-            return view('errors/vw_sin_acceso');
+            return view('errors/vw_sin_permiso');
         }
     }
     
     public function reportes_informacion_excel(Request $request)
     {
-        if ($request->session()->has('id_usuario') && session('menu_rol') == 6)
+        if ($request->session()->has('id_usuario') && $this->accesos() == 1)
         {
             $rep_1 = DB::table(DB::raw('taller.control_consumo()'))->select(DB::raw("xcde_ruta,round(avg(xcde_consumo_real),3) as consumo,round(avg(xcde_kilometraje),3) as kg,round(avg(xcde_rendimiento_lt),3) as rendimiento, round(sum(xcde_ahxviaje),3) as ahorro, round(sum(xcde_exxviaje),3) as exceso, 
                                 (round(sum(xcde_ahxviaje),3) + round(sum(xcde_exxviaje),3)) as totalae,count(xcde_ruta) as nro_viajes"))->where([[DB::raw('extract(month from xcde_fecha)'),$request['mes']],[DB::raw('extract(year from xcde_fecha)'),$request['anio']]])->groupBy('xcde_ruta')
@@ -830,7 +849,7 @@ class Control_Consumo_Controller extends Controller
         }
         else
         {
-            return view('errors/vw_sin_acceso');
+            return view('errors/vw_sin_permiso');
         }
     }
     

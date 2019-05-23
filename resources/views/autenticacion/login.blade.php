@@ -10,7 +10,7 @@
 <form method="POST" action="{{ route('login') }}">
     {{ csrf_field() }}
     <div class="form-group{{ $errors->has('usuario') ? ' has-error' : '' }} has-feedback">
-        <input type="text" name="usuario" class="form-control input-lg text-center" placeholder="INGRESAR NOMBRE DE USUARIO" autofocus="true" value="{{ old('usuario') }}">
+        <input type="text" name="usuario" class="form-control input-lg text-center" placeholder="INGRESAR NOMBRE DE USUARIO" autofocus="true" value="{{ old('usuario') }}" autocomplete="off">
         <span class="glyphicon glyphicon-user form-control-feedback"></span>
         {!! $errors->first('usuario', '<span class="text-danger">:message</span>') !!}
     </div>

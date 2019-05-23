@@ -1,5 +1,5 @@
 @extends('principal.p_inicio')
-
+@section('title', 'COSTO ADBLUE')
 @section('content')
 <style>
     /*.modal-lg { 
@@ -34,8 +34,16 @@
                 </div>
             </div>
             <div class="col-lg-9 text-left" style="padding-top: 32px;">
-                <button id="btn_nuevo_costo_adblue" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVO COSTO</button>
-                <button id="btn_modificar_costo_adblue" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR COSTO</button>
+                @if( $permiso[0]->btn_new == 1 )
+                    <button id="btn_nuevo_costo_adblue" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVO COSTO</button>
+                @else
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVO COSTO</button>
+                @endif
+                @if( $permiso[0]->btn_edit == 1 )
+                    <button id="btn_modificar_costo_adblue" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR COSTO</button>
+                @else
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR COSTO</button>
+                @endif  
             </div>
         </div>
         <br>
@@ -123,6 +131,56 @@
 
 @section('page-js-script')
 <script language="JavaScript" type="text/javascript" src="{{ asset('archivos_js/adblue/costo_adblue.js') }}"></script>
+<script>
+    $('#{{ $permiso[0]->men_sistema }}').addClass('menu-open');
+    $('.{{ $permiso[0]->men_sistema }}').addClass('active');
+    $('.{{ $permiso[0]->sme_ruta }}').addClass('active');
+    
+    jQuery(document).ready(function($){
+        var anio = new Date();
+        $("#cbx_coa_anio").val(anio.getFullYear());
+
+        jQuery("#tblcostos_adblue").jqGrid({
+            url: 'costo_adblue/0?grid=costos_adblue',
+            datatype: 'json', mtype: 'GET',
+            height: '450px', autowidth: true,
+            toolbarfilter: true,
+            sortable:false,
+            colNames: ['ID', 'AÑO','MES','COSTO','FECHA REGISTRO'],
+            rowNum: 10, sortname: 'coa_mes', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblcostosadblue" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - LISTA DE COSTOS ADBLUE POR LITRO -', align: "center",
+            colModel: [
+                {name: 'coa_id', index: 'cap_id', align: 'left',width: 10, hidden:true},
+                {name: 'coa_anio', index: 'coa_anio', align: 'center', width: 40},
+                {name: 'coa_mes', index: 'coa_mes', align: 'center', width: 50},
+                {name: 'coa_saldo', index: 'coa_saldo', align: 'center', width: 40},
+                {name: 'coa_fecregistro', index: 'coa_fecregistro', align: 'center', width: 40}
+            ],
+            pager: '#paginador_tblcostos_adblue',
+            rowList: [10, 20, 30, 40, 50],
+            gridComplete: function () {
+                    var idarray = jQuery('#tblcostos_adblue').jqGrid('getDataIDs');
+                    if (idarray.length > 0) {
+                    var firstid = jQuery('#tblcostos_adblue').jqGrid('getDataIDs')[0];
+                        $("#tblcostos_adblue").setSelection(firstid);    
+                    }
+                },
+            onSelectRow: function (Id){},
+            ondblClickRow: function (Id)
+            {
+                permiso = {!! json_encode($permiso[0]->btn_edit) !!};
+                if(permiso == 1)
+                {
+                    $('#btn_modificar_costo_adblue').click();
+                }
+                else
+                {
+                    sin_permiso();
+                }
+            }
+        });
+
+    });
+</script>
 @stop
 
 @endsection

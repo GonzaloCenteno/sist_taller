@@ -1,5 +1,5 @@
 @extends('principal.p_inicio')
-
+@section('title', 'RUTAS')
 @section('content')
 <style>
     /*.modal-lg { 
@@ -20,8 +20,17 @@
     <div class="card-body" id="contenedors">
         <div class="col-lg-12">
             <center>
-                <button id="btn_nueva_ruta" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> CREAR RUTA</button>
-                <button id="btn_modificar_ruta" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR RUTA</button></center>
+                @if( $permiso[0]->btn_new == 1 )
+                    <button id="btn_nueva_ruta" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> CREAR RUTA</button>
+                @else
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> CREAR RUTA</button>
+                @endif
+                @if( $permiso[0]->btn_edit == 1 )
+                    <button id="btn_modificar_ruta" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR RUTA</button>
+                @else
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR RUTA</button>
+                @endif
+            </center>
         </div>
         <br>
         <div class="form-group col-md-12">
@@ -67,6 +76,55 @@
 
 @section('page-js-script')
 <script language="JavaScript" type="text/javascript" src="{{ asset('archivos_js/adblue/rutas.js') }}"></script>
+<script>
+    $('#{{ $permiso[0]->men_sistema }}').addClass('menu-open');
+    $('.{{ $permiso[0]->men_sistema }}').addClass('active');
+    $('.{{ $permiso[0]->sme_ruta }}').addClass('active');
+    jQuery(document).ready(function($){
+        jQuery("#tblrutas").jqGrid({
+            url: 'ruta/0?grid=rutas',
+            datatype: 'json', mtype: 'GET',
+            height: '512px', autowidth: true,
+            toolbarfilter: true,
+            sortable:false,
+            colNames: ['ID', 'DESCRIPCION','FECHA REGISTRO','ESTADO'],
+            rowNum: 10, sortname: 'rut_id', sortorder: 'desc', viewrecords: true, caption: '<button id="btn_act_tblruta" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - LISTA DE RUTAS -', align: "center",
+            colModel: [
+                {name: 'rut_id', index: 'rut_id', align: 'left',width: 10, hidden:true},
+                {name: 'rut_descripcion', index: 'rut_descripcion', align: 'left', width: 60},
+                {name: 'rut_fecregistro', index: 'rut_fecregistro', align: 'center', width: 15},
+                {name: 'rut_estado', index: 'rut_estado', align: 'center', width: 10}
+            ],
+            pager: '#paginador_tblrutas',
+            rowList: [10, 20, 30, 40, 50],
+            gridComplete: function () {
+                    var idarray = jQuery('#tblrutas').jqGrid('getDataIDs');
+                    if (idarray.length > 0) {
+                    var firstid = jQuery('#tblrutas').jqGrid('getDataIDs')[0];
+                        $("#tblrutas").setSelection(firstid);    
+                    }
+                },
+            onSelectRow: function (Id){},
+            ondblClickRow: function (Id)
+            {
+                permiso = {!! json_encode($permiso[0]->btn_edit) !!};
+                if(permiso == 1)
+                {
+                    $('#btn_modificar_ruta').click();
+                }
+                else
+                {
+                    sin_permiso();
+                }
+            }
+        });
+
+        jQuery.fn.preventDoubleSubmission = function() {
+            cambiar_estado_ruta();
+        };
+
+    });
+</script>
 @stop
 
 @endsection

@@ -58,27 +58,34 @@
             <tr> 
                 <td width="50%" style="border: inset 0pt"> 
                     @foreach($meses as $mes)
-                        <h2>RUTA: {{ $mes->est_descripcion }}</h2> 
+                        <?php $cab_datos = DB::table('taller.vw_rep_ctrl_abast_irizar')->select(DB::raw('distinct rut_id,rut_descripcion'))->where([['est_id',$mes->est_id],['veh_id',$mes->veh_id],['mes',$mes->mes]])->orderBy('rut_id','asc')->get(); ?>
+                        <h2>RUTA: {{ $mes->est_descripcion }} - {{ strtoupper($mes->mes_descripcion) }} - {{ $mes->anio }}</h2> 
                         <table border="0" cellspacing="0" cellpadding="0" style="margin-bottom:20px; margin-top: 0px;  font-size: 1.4em;">
                             <thead>
                                 <tr>
-                                    <th colspan="{{ $count + 1 }}" style="width: 50%;">N° VIAJES</th>
+                                    <th colspan="{{ $cab_datos->count() + 1 }}" style="width: 50%;">N° VIAJES</th>
                                 </tr>
                             </thead>
                             <thead>
                                 <tr>
-                                    <th colspan="{{ $count + 1 }}" style="width: 50%;">{{ strtoupper($mes->mes_descripcion) }} - {{ $mes->anio }}</th>
+                                    <th colspan="{{ $cab_datos->count() + 1 }}" style="width: 50%;">{{ strtoupper($mes->mes_descripcion) }} - {{ $mes->anio }}</th>
                                 </tr>
                             </thead>
                             <thead>
                                 <tr>
                                     <th style="width: 20%;">PLACA</th>
-                                    @foreach($datos as $dat)
+                                    @foreach($cab_datos as $dat)
                                         <th style="width: 10%;">{{ $dat->rut_descripcion }}</th>
                                     @endforeach
                                 </tr>
                             </thead>
                             <tbody>
+                                <?php   $enteros='';
+                                        foreach ($cab_datos as $value_1){
+                                            $enteros .=  $value_1->rut_descripcion.' INT,';
+                                        }
+                                        $var = trim($enteros,',');
+                                ?>
                                 <?php $nro_viajes = DB::select("SELECT * FROM CROSSTAB
                                                                 (
                                                                     'select veh_placa,rut_descripcion,total 
@@ -107,7 +114,7 @@
                                 @foreach($tot_nro_viajes as $totnro_viajes)
                                 <tr>
                                     <td style="text-align: center;"><b> TOTAL: </b></td>
-                                    <td colspan="{{ $count }}" style="text-align: center;"><b>{{ $totnro_viajes->total }}</b></td>
+                                    <td colspan="{{ $cab_datos->count() }}" style="text-align: center;"><b>{{ $totnro_viajes->total }}</b></td>
                                 </tr>
                                 @endforeach
                         </table>
@@ -115,27 +122,34 @@
                 </td> 
                 <td width="50%" style="border: inset 0pt"> 
                     @foreach($meses as $mes)
-                    <h2>RUTA: {{ $mes->est_descripcion }}</h2> 
+                    <?php $det_datos = DB::table('taller.vw_rep_ctrl_abast_irizar')->select(DB::raw('distinct rut_id,rut_descripcion'))->where([['est_id',$mes->est_id],['veh_id',$mes->veh_id],['mes',$mes->mes]])->orderBy('rut_id','asc')->get(); ?>
+                    <h2>RUTA: {{ $mes->est_descripcion }} - {{ strtoupper($mes->mes_descripcion) }} - {{ $mes->anio }}</h2> 
                         <table border="0" cellspacing="0" cellpadding="0" style="margin-bottom:20px; margin-top: 0px;  font-size: 1.4em;">
                             <thead>
                                 <tr>
-                                    <th colspan="{{ $count + 1 }}" style="width: 50%;">Q - ABAST.</th>
+                                    <th colspan="{{ $det_datos->count() + 1 }}" style="width: 50%;">Q - ABAST.</th>
                                 </tr>
                             </thead>
                             <thead>
                                 <tr>
-                                    <th colspan="{{ $count + 1 }}" style="width: 50%;">{{ strtoupper($mes->mes_descripcion) }} - {{ $mes->anio }}</th>
+                                    <th colspan="{{ $det_datos->count() + 1 }}" style="width: 50%;">{{ strtoupper($mes->mes_descripcion) }} - {{ $mes->anio }}</th>
                                 </tr>
                             </thead>
                             <thead>
                                 <tr>
                                     <th style="width: 20%;">PLACA</th>
-                                    @foreach($datos as $dat)
+                                    @foreach($det_datos as $dat)
                                         <th style="width: 12%;">{{ $dat->rut_descripcion }}</th>
                                     @endforeach
                                 </tr>
                             </thead>
                             <tbody>
+                                <?php   $numeric='';
+                                        foreach ($det_datos as $value_2){
+                                            $numeric .=  $value_2->rut_descripcion.' numeric,';
+                                        }
+                                        $var_1 = trim($numeric,',');
+                                ?>
                                 <?php $q_abastecida = DB::select("SELECT * FROM CROSSTAB
                                                                 (
                                                                     'select veh_placa,rut_descripcion,total 
@@ -163,7 +177,7 @@
                                 @foreach($tot_sum_qabast as $totsum_qabast)
                                 <tr>
                                     <td style="text-align: center;"><b> TOTAL: </b></td>
-                                    <td colspan="{{ $count }}" style="text-align: center;"><b>{{ $totsum_qabast->total }}</b></td>
+                                    <td colspan="{{ $det_datos->count() }}" style="text-align: center;"><b>{{ $totsum_qabast->total }}</b></td>
                                 </tr>
                                 @endforeach
                         </table>

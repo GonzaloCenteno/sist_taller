@@ -360,6 +360,10 @@ jQuery(document).on("click", "#btn_vw_consumoscab_Guardar", function() {
                 $(".filas_consumocab").remove();
                 mostrarformulario(false);
             }
+            else if(data.msg == 'validator') 
+            {
+                MensajeAdvertencia(data.error[0]);
+            }
             else
             {
                 MensajeAdvertencia('NO SE PUDO ENVIAR LA RESPUESTA');
@@ -431,6 +435,20 @@ function modificar_consumodetalle(cde_id){
             $("#txt_cde_ingreso").val(data.cde_ingreso);
             $("#txt_cde_salida").val(data.cde_salida);
             $("#txt_cde_stop").val(data.cde_stop);
+            if(data.cde_comentario != '-')
+            {
+                $("#div_comentario").show();
+                $("#lbl_cde_comentario").text(data.cde_comentario);
+            }
+            else
+            {
+                $("#div_comentario").hide();
+            }
+            
+            if (rol_descripcion === 'ADMINISTRADOR' && data.cde_comentario != '-') 
+            {
+                fn_leer_comentario(cde_id);
+            }
             swal.close();
         },
         error: function(data) {
@@ -500,7 +518,8 @@ jQuery(document).on("click", "#btn_actualizar_consumo", function(){
             cde_ingreso:$('#txt_cde_ingreso').val(),
             cde_salida:$('#txt_cde_salida').val(),
             cde_stop:$('#txt_cde_stop').val(),
-            capacidad:$('#cbx_capacidad').val()
+            capacidad:$('#cbx_capacidad').val(),
+            tipo:1
         },
         beforeSend:function()
         {            
@@ -514,9 +533,13 @@ jQuery(document).on("click", "#btn_actualizar_consumo", function(){
                 jQuery("#tblconsumosdet").jqGrid('setGridParam', {
                     url: 'consumo/0?grid=consumos'
                 }).trigger('reloadGrid');
-                $('#btn_cerrar_modal').click();
+                $('#btn_cerrar_modal_consumo').click();
             }
-            else
+            else if(data.msg == 'validator') 
+            {
+                MensajeAdvertencia(data.error[0]);
+            }
+            else 
             {
                 MensajeAdvertencia('NO SE PUDO ENVIAR LA RESPUESTA');
                 console.log(data);
@@ -631,7 +654,8 @@ jQuery(document).on("click", "#btn_crear_nueva_ruta", function(){
             cde_ingreso:$('#txt_new_ingreso').val() || 0.0,
             cde_salida:$('#txt_new_salida').val() || 0.0,
             cde_stop:$('#txt_cde_stop').val() || 0.0,
-            capacidad:$('#cbx_capacidad').val()
+            capacidad:$('#cbx_capacidad').val(),
+            tipo:1
         },
         beforeSend:function()
         {            
@@ -649,6 +673,10 @@ jQuery(document).on("click", "#btn_crear_nueva_ruta", function(){
                 $('.modal_new').val('');
                 $("#txt_new_nrovale").val('');
                 $("#txt_new_nrovale").focus();
+            }
+            else if(data.msg == 'validator') 
+            {
+                MensajeAdvertencia(data.error[0]);
             }
             else
             {
@@ -891,6 +919,362 @@ jQuery(document).on("click", "#btn_actualizar_cqparciales", function(){
                     console.log(value);
                     MensajeAdvertencia("<li>"+value+"</li>");
                 });
+            }
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
+});
+
+jQuery(document).on("click", "#btn_agregar_comentario", function(){
+    cde_id = $('#tblconsumosdet').jqGrid ('getGridParam', 'selrow');
+    
+    $.ajax({
+        url: 'consumo/'+cde_id+'/?show=traer_datos_comentario',
+        type: 'GET',
+        beforeSend:function()
+        {            
+            MensajeEspera('RECUPERANDO INFORMACION');  
+        },
+        success: function(data) 
+        {
+            Comentario = $('#ModalComentario').modal({backdrop: 'static', keyboard: false});
+            Comentario.find('.modal-title').text('CREAR NUEVA CAPACIDAD');
+            Comentario.find('#btn_crear_comentario').html('<i class="fa fa-sign-in"></i> AGREGAR NUEVO').show();
+            $("#txt_cde_comentario").val(data[0].cde_comentario);
+            setTimeout(function (){
+                $('#txt_cde_comentario').focus();
+            }, 200);
+            swal.close();
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
+});
+
+jQuery(document).on("click", "#btn_crear_comentario", function(){
+    cde_id = $('#tblconsumosdet').jqGrid ('getGridParam', 'selrow');
+    $.ajax({
+        url: 'consumo/'+cde_id+'/edit',
+        type: 'GET',
+        data:
+        {
+            cde_comentario:$('#txt_cde_comentario').val() || '-',
+            tipo:2
+        },
+        beforeSend:function()
+        {            
+            MensajeEspera('ENVIANDO INFORMACION');  
+        },
+        success: function(data) 
+        {
+            if (data.msg == 1) 
+            {
+                MensajeConfirmacion('SE REGISTRO EL COMENTARIO CON EXITO');
+                $("#lbl_cde_comentario").text(data.respuesta.cde_comentario);
+                $("#btn_cerrar_modal_comentario").click();
+            }
+            else
+            {
+                MensajeAdvertencia('NO SE PUDO ENVIAR LA RESPUESTA');
+                console.log(data);
+            }
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
+});
+
+jQuery(document).on("click","#btn_modificar_estacion_adm",function(){
+    ModificarRuta = $('#ModalModificarRuta').modal({backdrop: 'static', keyboard: false});
+    ModificarRuta.find('.modal-title').text('MODIFICAR ESTACION');
+    ModificarRuta.find('#btn_actualizar_estacion').html('<i class="fa fa-pencil-square-o"></i> MODIFICAR').show();
+    $("#hiddentxt_cde_est_id").val('');
+    $("#txt_cde_est_id").val('');
+    setTimeout(function (){
+        $('#txt_cde_est_id').focus();
+    }, 200);
+    autocompletar_estaciones('txt_cde_est_id');
+});
+
+function fn_modificar_estacion_adm()
+{
+    cde_id = $('#tblconsumosdet').jqGrid ('getGridParam', 'selrow');
+    nro_vale = $('#tblconsumosdet').jqGrid ('getCell', cde_id, 'nro_vale');
+    rut_descripcion = $('#tblconsumosdet').jqGrid ('getCell', cde_id, 'rut_descripcion');
+    est_descripcion = $('#tblconsumosdet').jqGrid ('getCell', cde_id, 'est_descripcion');
+    if ($('#hiddentxt_cde_est_id').val() == '') {
+        mostraralertasconfoco('* EL CAMPO ESTACION ES OBLIGATORIO...', '#txt_cde_est_id');
+        return false;
+    }
+    
+    swal({
+        title: '¿ESTA SEGURO DE CAMBIAR LA ESTACION?',
+        html: "<b>N° VALE: </b>"+nro_vale+"<br> <b>RUTA: </b>"+rut_descripcion+ '<br> <b>ESTACION ANTIGUA ---> </b>'+est_descripcion+ '<br> <b>ESTACION NUEVA ---> </b>'+$("#txt_cde_est_id").val(),
+        type: 'warning',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'ACEPTAR',
+        cancelButtonText: 'CANCELAR',
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        showCancelButton: true,
+        buttonsStyling: false,
+        reverseButtons: true
+        }).then(function(result) {
+            $.ajax({
+                url: 'consumo/'+cde_id+'/edit',
+                type: 'GET',
+                data:
+                {
+                    est_id:$('#hiddentxt_cde_est_id').val(),
+                    tipo:3
+                },
+                beforeSend:function()
+                {            
+                    MensajeEspera('ENVIANDO INFORMACION');  
+                },
+                success: function(data) 
+                {
+                    if (data == 1) 
+                    {
+                        MensajeConfirmacion('SE ACTUALIZO EL REGISTRO CON EXITO');
+                        jQuery("#tblconsumosdet").jqGrid('setGridParam', {
+                            url: 'consumo/0?grid=consumos'
+                        }).trigger('reloadGrid');
+                        $('#btn_cerrar_modal_modificar_ruta').click();
+                    }
+                    else
+                    {
+                        MensajeAdvertencia('NO SE PUDO ENVIAR LA RESPUESTA');
+                        console.log(data);
+                    }
+                },
+                error: function(data) {
+                    MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+                    console.log('error');
+                    console.log(data);
+                }
+            });
+        }, function(dismiss) {
+            console.log("OPERACION CANCELADA");
+        });
+}
+
+jQuery(document).on("click", "#btn_agregar_estacion_adm", function(){
+    cde_id = $('#tblconsumosdet').jqGrid ('getGridParam', 'selrow');
+    $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: 'consumo/'+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'cca_id')+'?show=datos_estaciones',
+        type: 'GET',
+        beforeSend:function()
+        {            
+            MensajeEspera('RECUPERANDO INFORMACION');  
+        },
+        success: function(data) 
+        {
+            contNuevaRuta = 0;
+            html_detalle = "";
+            AgregarNuevaRuta = $('#ModalAgregarNuevaRutaConsumo').modal({backdrop: 'static', keyboard: false});
+            AgregarNuevaRuta.find('.modal-title').text('AGREGAR ESTACIONES NUEVAS');
+            $("#lbl_anrc_vale").html("VALE: " + "<b>"+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'nro_vale')+"</b>");
+            $("#lbl_anrc_placa").html("PLACA: " + "<b>"+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'veh_placa')+"</b>");
+            $("#lbl_anrc_ruta").html("RUTA: " + "<b>"+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'rut_descripcion')+"</b>");
+            $('#btn_act_estaciones_nuevas').attr('disabled',true);
+
+            for(i=0;i<data.length;i++)
+            {
+                html_detalle = html_detalle + '<tr class="filasRutas_'+i+'">\n\
+                                                <td><button type="button" class="btn btn-success btn-round-animate" onclick="agregar_nuevas_rutas('+i+')"><i class="fa fa-plus-square"></i></button></td>\n\
+                                                <td><input type="hidden" name="vw_consumos_cde_id[]" value="'+data[i].cde_id+'"><input type="hidden" name="id_estacion[]" value="'+data[i].est_id+'">'+data[i].est_descripcion+'</td>\n\
+                                            </tr>';
+                $("#DetalleNuevaRutaConsumo").html(html_detalle);
+            }
+            swal.close();
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
+});
+
+var contNuevaRuta = 0;
+var detallesNuevaRuta = 0;
+
+function agregar_nuevas_rutas(contador)
+{
+    var fila='<tr class="filasNuevaRuta_'+contNuevaRuta+'">\n\
+                <td><button type="button" class="btn btn-danger btn-round-animate" onclick="eliminar_nuevas_rutas('+contNuevaRuta+')"><i class="fa fa-trash"></i></button>&nbsp;&nbsp;<button type="button" class="btn btn-primary btn-round-animate" onclick="agregar_nueva_ruta('+contNuevaRuta+');"><i class="fa fa-check"></i></button></td>\n\
+                <td><input type="hidden" name="id_estacion[]" id="hiddendescripcion_estacion_'+contNuevaRuta+'"><input type="text" class="form-control text-center text-uppercase" placeholder="ESCRIBIR NOMBRE ESTACION" name=descripcion_estacion[] id="descripcion_estacion_'+contNuevaRuta+'"></td>\n\
+                </tr>';
+    
+    autocompletar_estaciones('descripcion_estacion_'+contNuevaRuta);
+    contNuevaRuta++;
+    detallesNuevaRuta=detallesNuevaRuta+1;
+    $('.filasRutas_'+contador).after(fila);
+    evaluar_nueva_ruta();
+}
+
+function eliminar_nuevas_rutas(indice)
+{
+    $(".filasNuevaRuta_"+indice).remove();
+    detallesNuevaRuta=detallesNuevaRuta-1;
+    contNuevaRuta++;
+    evaluar_nueva_ruta();
+}
+
+function evaluar_nueva_ruta()
+{
+    if (detallesNuevaRuta>0)
+    {
+        $("#btn_act_estaciones_nuevas").removeAttr('disabled');
+        $("#btn_cerrar_modal_AgregarNuevaRutaConsumo").hide();
+    }
+    else
+    {
+        $("#btn_cerrar_modal_AgregarNuevaRutaConsumo").show();
+        $('#btn_act_estaciones_nuevas').attr('disabled',true);
+        contNuevaRuta=0;
+    }
+}
+
+jQuery(document).on("click","#btn_cerrar_modal",function(){
+    jQuery("#tblconsumosdet").jqGrid('setGridParam', {
+        url: 'consumo/0?grid=consumos'
+    }).trigger('reloadGrid');
+});
+
+function fn_leer_comentario(cde_id)
+{
+    $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: 'consumo/'+cde_id+'/edit',
+        type: 'GET',
+        data:
+        {
+            tipo:4
+        },
+        success: function(data) 
+        {
+            if (data == 1) 
+            {
+                console.log(data);
+            }
+            else
+            {
+                MensajeAdvertencia('ERROR AL LEER EL COMENTARIO');
+                console.log(data);
+            }
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
+}
+
+function agregar_nueva_ruta(valor)
+{
+    cde_id = $('#tblconsumosdet').jqGrid ('getGridParam', 'selrow');
+    if ($('#hiddendescripcion_estacion_'+valor).val() == '') {
+        mostraralertasconfoco('* EL NOMBRE DE LA ESTACION ES OBLIGATORIO...', '#descripcion_estacion_'+valor);
+        return false;
+    }
+    
+    swal({
+        title: '¿ESTA SEGURO DE REGISTRAR ESTA ESTACION?',
+        html: '<b>ESTACION: '+$('#descripcion_estacion_'+valor).val()+'</b>',
+        type: 'warning',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'ACEPTAR',
+        cancelButtonText: 'CANCELAR',
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        showCancelButton: true,
+        buttonsStyling: false,
+        reverseButtons: true
+        }).then(function(result) {
+            $.ajax({
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                url: 'consumo/create',
+                type: 'GET',
+                data:
+                {
+                    cca_id:$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'cca_id'),
+                    veh_id:$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'veh_id'),
+                    est_id:$('#hiddendescripcion_estacion_'+valor).val(),
+                    tipo:2
+                },
+                beforeSend:function()
+                {            
+                    MensajeEspera('ENVIANDO INFORMACION');  
+                },
+                success: function(data) 
+                {
+                    $(".filasNuevaRuta_"+valor).empty();
+                    html_detalle_nr = ''
+                    if (data.msg == 1) 
+                    {
+                        html_detalle_nr = '<td></td>\n\
+                        <td><input type="hidden" name="vw_consumos_cde_id[]" value="'+data.respuesta.cde_id+'"><input type="text" class="form-control text-center text-uppercase" disabled="disabled" value="'+data.respuesta.est_descripcion+'"></td>';
+                        
+                        $(".filasNuevaRuta_"+valor).html(html_detalle_nr);
+                        swal.close();
+                    }
+                    else
+                    {
+                        MensajeAdvertencia('NO SE PUDO ENVIAR LA RESPUESTA');
+                        console.log(data);
+                    }
+                },
+                error: function(data) {
+                    MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+                    console.log('error');
+                    console.log(data);
+                }
+            });
+        }, function(dismiss) {
+            console.log("OPERACION CANCELADA");
+        });
+}
+
+jQuery(document).on("click", "#btn_act_estaciones_nuevas", function(){
+    var datosNuevasRutas = new FormData($("#FormularioNuevasRutasConsumo")[0]);
+    $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: 'consumo?tipo=4',
+        type: 'POST',
+        dataType: 'json',
+        processData: false,
+        contentType: false,
+        data: datosNuevasRutas,
+        success: function (data) 
+        {
+            if (data == 1) 
+            {
+                MensajeConfirmacion('EL RESPUESTA FUE ENVIADA CON EXITO');
+                jQuery("#tblconsumosdet").jqGrid('setGridParam', {
+                    url: 'consumo/0?grid=consumos'
+                }).trigger('reloadGrid');
+                $("#btn_cerrar_modal_AgregarNuevaRutaConsumo").click();
+            }
+            else
+            {
+                MensajeAdvertencia('NO SE PUDO ENVIAR LA RESPUESTA');
+                console.log(data);
             }
         },
         error: function(data) {

@@ -592,7 +592,7 @@
             forceFit:true,  
             scroll: false,
             colNames: ['CCA_ID', 'CDE_ID', 'FECHA', 'PLACA', 'CONDUCTOR', 'COPILOTO', 'RUTA', 'Q - ABAST.', 'TOTAL CONSUMO REAL', 'TOTAL CONSUMO DESEADO', 'AH. - EX. CONSUMO TOTAL','MONTO OPTIMO ABASTECER','AHORRO EXCESO GRAL','AHORRO POR VIAJE','EXCESO POR VIAJE','KM.I','KM.F','KILOMETRAJE','RENDIMIENTO KM/LT','RENDIMIENTO KM/GL'],
-            rowNum: 20, sortname: 'xcde_placa', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblcontrol_consumo" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - CONTROL CONSUMO AREQUIPA -', align: "center",
+            rowNum: 30, sortname: 'xcde_placa', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblcontrol_consumo" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - CONTROL CONSUMO AREQUIPA -', align: "center",
             colModel: [
                 {name: 'xcca_id', index: 'xcca_id', align: 'left', width: 10, hidden: true,frozen:true},
                 {name: 'xcde_id', index: 'xcde_id', align: 'left', width: 10, hidden: true,frozen:true},
@@ -616,7 +616,7 @@
                 {name: 'xcde_rendimiento_gl', index: 'xcde_rendimiento_gl', align: 'center', width: 100},
             ],
             pager: '#paginador_tblcontrol_consumo',
-            rowList: [10, 20, 30, 40, 50],
+            rowList: [30, 50, 70, 90],
             subGrid: true,
             subGridRowExpanded: mostrar_estaciones,
             subGridOptions : {

@@ -75,7 +75,7 @@
             <div class="col-lg-10">
                 <div id="listadoButtons">
                     <div class="row">
-                        <div class="col-lg-2">
+                        <div class="col-lg-3">
                             <div class="form-group">
                                 <label>ESCRIBIR N° VALE:</label>
                                 <div class="input-group">
@@ -97,7 +97,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-lg-2">
+                        <div class="col-lg-3">
                             <div class="form-group">
                                 <label>ESCRIBIR RUTA:</label>
                                 <div class="input-group">
@@ -200,7 +200,7 @@
 
             <div class="modal-header">
                 <h4 class="modal-title"></h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" id="btn_cerrar_modal_consumo" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">X</span></button>
             </div>
 
@@ -421,10 +421,31 @@
                         </div>
                     </div>
                 </div>
+                
+                <div class="card card-danger card-outline" id="div_comentario" style="display:none;">
+                    <div class="card-header">
+                        <h5 class="m-0">COMENTARIO</h5>
+                        <div class="card-tools">
+                            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label type="text" id="lbl_cde_comentario" class="form-control text-center"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
 
             </div>
 
             <div class="modal-footer">
+                @if($rol[0]->sro_descripcion == 'ASISTENTE LIMA')
+                    <button type="button" id="btn_agregar_comentario" class="btn btn-success btn-xl"><i class="fa fa-plus-square"></i> COMENTARIO</button>
+                @endif
                 <button type="button" id="btn_actualizar_consumo" class="btn btn-warning btn-xl"></button>
                 <button type="button" id="btn_cerrar_modal" class="btn btn-danger btn-xl" data-dismiss="modal"><i class="fa fa-times-rectangle-o"></i> CERRAR</button>
             </div>
@@ -657,7 +678,7 @@
 
             <div class="modal-footer">
                 <button type="button" id="btn_crear_nueva_ruta" class="btn btn-success btn-xl modal_new"></button>
-                <button type="button" id="btn_cerrar_modal" class="btn btn-danger btn-xl" data-dismiss="modal"><i class="fa fa-times-rectangle-o"></i> CERRAR</button>
+                <button type="button" id="btn_cerrar_modal_nueva_ruta" class="btn btn-danger btn-xl" data-dismiss="modal"><i class="fa fa-times-rectangle-o"></i> CERRAR</button>
             </div>
         </div>
     </div>
@@ -751,6 +772,143 @@
     </div>
 </div>
 
+<!-- MODAL COMENTARIO -->
+
+<div class="modal fade" id="ModalComentario">
+    <div class="modal-dialog modal-xs modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">X</span></button>
+            </div>
+
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>COMENTARIO:</label>
+
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-tasks"></i></span>
+                        </div>
+                        <textarea rows="12" id="txt_cde_comentario" class="form-control text-uppercase" placeholder="ESCRIBIR COMENTARIO..." style="resize: none;"></textarea>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btn_crear_comentario" class="btn btn-primary btn-xl"></button>
+                <button type="button" id="btn_cerrar_modal_comentario" class="btn btn-danger btn-xl" data-dismiss="modal"><i class="fa fa-times-rectangle-o"></i> CERRAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL EDITAR SOLAMENTE RUTA -->
+
+<div class="modal fade" id="ModalModificarRuta">
+    <div class="modal-dialog modal-xs modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">X</span></button>
+            </div>
+
+            <div class="modal-body ui-front">
+                <div class="form-group">
+                    <label>ESTACION:</label>
+
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-tasks"></i></span>
+                        </div>
+                        <input type="hidden" id="hiddentxt_cde_est_id">
+                        <input type="text" id="txt_cde_est_id" class="form-control text-center text-uppercase" placeholder="ESCRIBIR ESTACION">
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btn_actualizar_estacion" onclick="fn_modificar_estacion_adm();" class="btn btn-warning btn-xl"></button>
+                <button type="button" id="btn_cerrar_modal_modificar_ruta" class="btn btn-danger btn-xl" data-dismiss="modal"><i class="fa fa-times-rectangle-o"></i> CERRAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MODAL AGREGAR NUEVAS RUTAS -->
+
+<div class="modal fade" id="ModalAgregarNuevaRutaConsumo">
+    <div class="modal-dialog modal-xs modal-dialog-centered">
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+            </div>
+
+            <div class="modal-body ui-front">
+                <form id="FormularioNuevasRutasConsumo" name="FormularioNuevasRutasConsumo" method="post" enctype="multipart/form-data">
+                @csrf
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <div class="form-group text-center">
+
+                                <div class="input-group text-center">
+                                    <h4 id="lbl_anrc_vale"> </h4>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-5 text-center">
+                            <div class="form-group">
+
+                                <div class="input-group">
+                                    <h4 id="lbl_anrc_placa"></h4>
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-center">
+                            <div class="form-group">
+
+                                <div class="input-group">
+                                    <h4 id="lbl_anrc_ruta"></h4>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card card-danger card-outline">
+                        <div class="card-header">
+                            <h5 class="m-0">AGREGAR NUEVAS ESTACIONES</h5>
+                        </div>
+                        <div class="card-body">
+                            <table class="table table-bordered text-center" id="tabla_estaciones">
+                                <thead>
+                                    <tr>
+                                        <th>AGREGAR</th>
+                                        <th>ESTACION</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="DetalleNuevaRutaConsumo">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btn_act_estaciones_nuevas" class="btn btn-success btn-xl"><i class="fa fa-pencil-square-o"></i> ACTUALIZAR RUTA</button>
+                <button type="button" id="btn_cerrar_modal_AgregarNuevaRutaConsumo" class="btn btn-danger btn-xl" data-dismiss="modal"><i class="fa fa-times-rectangle-o"></i> CERRAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section('page-js-script')
 <script language="JavaScript" type="text/javascript" src="{{ asset('archivos_js/adblue/consumos.js') }}"></script>
 <script>
@@ -770,11 +928,13 @@
             shrinkToFit: false,
             forceFit:true,  
             scroll: false,
-            colNames: ['ID', 'Q-PARCIAL','FECHA','IDCAB','VALE','PLACA','RUTA','ESTACION','CONDUCTOR','COPILOTO','KM','%','Q-LT','%','Q-LT','Q-ABAST','OBSERVACIONES','INGRESO','SALIDA','STOP'],
-            rowNum: 20, sortname: 'cde_id', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblconsumos" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - LISTA DE CONSUMOS -', align: "center",
+            colNames: ['ID', 'Q-PARCIAL','<i class="fa fa-pencil"></i>','<i class="fa fa-plus"></i>','FECHA','IDCAB','VALE','PLACA','RUTA','ESTACION','CONDUCTOR','COPILOTO','KM','%','Q-LT','%','Q-LT','Q-ABAST','OBSERVACIONES','INGRESO','SALIDA','STOP','EST_ID','COMENTARIO','COMENT_EST','VEH_ID'],
+            rowNum: 30, sortname: 'cca_id', sortorder: 'desc', viewrecords: true, caption: '<button id="btn_act_tblconsumos" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - LISTA DE CONSUMOS -', align: "center",
             colModel: [
                 {name: 'cde_id', index: 'cde_id', align: 'left',width: 10,hidden:true,frozen:true},
-                {name: 'cde_qparcial', index: 'cde_qparcial', align: 'center', width: 70,frozen:true,formatter: OptionFormato},
+                {name: 'cde_qparcial', index: 'cde_qparcial', align: 'center', width: 70,frozen:true,formatter: OptionFormato,sortable: false},
+                {name: 'modificar_estacion', index: 'modificar_estacion', align: 'center', width: 42,frozen:true,formatter: ModificarEstacion,sortable: false},
+                {name: 'agregar_estaciones', index: 'agregar_estaciones', align: 'center', width: 42,frozen:true,formatter: AgregarEstacion,sortable: false},
                 {name: 'cde_fecha', index: 'cde_fecha', align: 'center', width: 90,frozen:true},
                 {name: 'cca_id', index: 'cca_id', align: 'center', width: 70,hidden:true,frozen:true},
                 {name: 'nro_vale', index: 'nro_vale', align: 'center', width: 55,frozen:true},
@@ -793,23 +953,42 @@
                 {name: 'cde_ingreso', index: 'cde_ingreso', align: 'center', width: 70},
                 {name: 'cde_salida', index: 'cde_salida', align: 'center', width: 70},
                 {name: 'cde_stop', index: 'cde_stop', align: 'center', width: 70},
+                {name: 'est_id', index: 'est_id', align: 'left',width: 10,hidden:true},
+                {name: 'cde_comentario', index: 'cde_comentario', align: 'left',width: 10,hidden:true},
+                {name: 'cde_coment_est', index: 'cde_coment_est', align: 'left',width: 10,hidden:true},
+                {name: 'veh_id', index: 'veh_id', align: 'left',width: 10,hidden:true},
             ],
             pager: '#paginador_tblconsumosdet',
-            rowList: [10, 20, 30, 40, 50],
+            rowList: [30, 50, 70, 90],
             gridComplete: function () {
-                    var idarray = jQuery('#tblconsumosdet').jqGrid('getDataIDs');
-                    if (idarray.length > 0) {
-                    var firstid = jQuery('#tblconsumosdet').jqGrid('getDataIDs')[0];
-                        $("#tblconsumosdet").setSelection(firstid);    
+                var idarray = jQuery('#tblconsumosdet').jqGrid('getDataIDs');
+                for (var i = 0; i < idarray.length; i++) 
+                {
+                    if($("#tblconsumosdet").getCell(idarray[i], "cde_coment_est") == 1)
+                    {
+                        $("#" + idarray[i]).find("td").css("background-color","rgba(230, 0, 10, 0.85)");
+                        $("#" + idarray[i]).find("td").css("color", "black");
                     }
-                },
+                }
+            },
             onSelectRow: function (Id){},
             ondblClickRow: function (Id)
             {
                 permiso = {!! json_encode($permiso[0]->btn_edit) !!};
                 if(permiso == 1)
                 {
-                    modificar_consumodetalle(Id);
+                    @if($rol[0]->sro_descripcion == 'ASISTENTE LIMA')
+                        if($("#tblconsumosdet").getCell(Id, "est_id") == 2)
+                        {
+                            modificar_consumodetalle(Id);
+                        }
+                        else
+                        {
+                            mostraralertasconfoco('NO PUEDES ACCEDER A ESTE REGISTRO');
+                        }
+                    @else
+                        modificar_consumodetalle(Id);
+                    @endif   
                 }
                 else
                 {
@@ -840,7 +1019,7 @@
         $(".select2").select2();
 
         $(document).on("focus", ".otro", function(){
-            $(this).datepicker({ minDate: -5,dateFormat: 'dd-mm-yy',showAnim: 'clip' });
+            $(this).datepicker({ minDate: -30,dateFormat: 'dd-mm-yy',showAnim: 'clip' });
 
             $.datepicker.regional['es'] = {
             closeText: 'Cerrar',
@@ -868,13 +1047,57 @@
         permiso = {!! json_encode($permiso[0]->btn_new) !!};
         if(permiso == 1)
         {
-            var opciones = (parseInt(cellValue) == 0) ? '<button onclick="consumo_parcial('+rowObject[0]+','+rowObject[1]+')" type="button" class="btn btn-xl btn-success"><i class="fa fa-gear"></i> </button>' : '<button onclick="consumo_parcial('+rowObject[0]+','+rowObject[1]+')" type="button" class="btn btn-xl btn-danger"><i class="fa fa-gears"></i> </button>';
+            var opciones = (parseInt(cellValue) == 0) ? '<button onclick="consumo_parcial('+rowObject[0]+','+rowObject[1]+')" type="button" class="btn btn-xl btn-success"><i class="fa fa-gear"></i> </button>' : '<button onclick="consumo_parcial('+rowObject[0]+','+rowObject[1]+')" type="button" class="btn btn-xl btn-primary"><i class="fa fa-gears"></i> </button>';
         }
         else
         {
-            var opciones = (parseInt(cellValue) == 0) ? '<button onclick="sin_permiso()" type="button" class="btn btn-xl btn-success"><i class="fa fa-gear"></i> </button>' : '<button onclick="sin_permiso()" type="button" class="btn btn-xl btn-danger"><i class="fa fa-gears"></i> </button>';
+            var opciones = (parseInt(cellValue) == 0) ? '<button onclick="sin_permiso()" type="button" class="btn btn-xl btn-success"><i class="fa fa-gear"></i> </button>' : '<button onclick="sin_permiso()" type="button" class="btn btn-xl btn-primary"><i class="fa fa-gears"></i> </button>';
         }
         return opciones;
+    }
+    
+    function ModificarEstacion(cellValue, options, rowObject) {
+        permiso = {!! json_encode($permiso[0]->btn_edit) !!};
+        if(permiso == 1)
+        {
+            @if($rol[0]->sro_descripcion == 'ASISTENTE LIMA')
+                var estaciones = '<button onclick="sin_permiso()" type="button" class="btn btn-xl btn-round-animate btn-warning"><i class="fa fa-pencil"></i></button>';
+            @else
+                var estaciones = '<button id="btn_modificar_estacion_adm" type="button" class="btn btn-xl btn-round-animate btn-warning"><i class="fa fa-pencil"></i></button>';
+            @endif  
+        }
+        else
+        {
+            var estaciones = '<button onclick="sin_permiso()" type="button" class="btn btn-xl btn-round-animate btn-warning"><i class="fa fa-pencil"></i></button>';
+        }
+        return estaciones;
+    }
+    
+    function AgregarEstacion(cellValue, options, rowObject) {
+        permiso = {!! json_encode($permiso[0]->btn_new) !!};
+        if(permiso == 1)
+        {
+            if (cellValue == 'agregar_estaciones') 
+            {
+                var agr_estaciones = '<button id="btn_agregar_estacion_adm" type="button" class="btn btn-xl btn-round-animate btn-info"><i class="fa fa-plus-square"></i></button>';
+            }
+            else
+            {
+                var agr_estaciones = '';
+            }
+        }
+        else
+        {
+            if (cellValue == 'agregar_estaciones') 
+            {
+                var agr_estaciones = '<button onclick="sin_permiso()" type="button" class="btn btn-xl btn-round-animate btn-info"><i class="fa fa-plus-square"></i></button>';
+            }
+            else
+            {
+                var agr_estaciones = '';
+            }
+        }
+        return agr_estaciones;
     }
 </script>
 @stop

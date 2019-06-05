@@ -49,7 +49,7 @@ class LoginController extends Controller
                     session(['id_usuario'=>$user_cn]);
                     session(['nomb_usuario'=>$nomb_usu]);
                     session(['sist_id'=>$sist_id[0]->sist_id]);
-                    return redirect('estacion');
+                    return redirect('consumo');
                 }
             }
             else

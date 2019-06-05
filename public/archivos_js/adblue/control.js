@@ -7,7 +7,7 @@ jQuery(document).ready(function ($) {
         toolbarfilter: true,
         sortable: false,
         colNames: ['ID', 'FECHA', 'INGRESO ISOTANQUE AL AREA', 'TOTAL SALIDA POR ISOTANQUE', 'STOP', 'EXCEDENTE POR ISOTANQUE','CANTIDAD','OBSERVACIONES'],
-        rowNum: 20, sortname: 'xcon_id', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblcontrol" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - CONTROL DIARIO DE ADBLUE AREQUIPA LITROS -', align: "center",
+        rowNum: 30, sortname: 'xcon_id', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblcontrol" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - CONTROL DIARIO DE ADBLUE AREQUIPA LITROS -', align: "center",
         colModel: [
             {name: 'xcon_id', index: 'xcon_id', align: 'left', width: 10, hidden: true},
             {name: 'xfecha', index: 'xfecha', align: 'center', width: 10, formatter: 'date', formatoptions: {srcformat: 'Y-m-d', newformat: 'd/m/Y'}},
@@ -19,7 +19,7 @@ jQuery(document).ready(function ($) {
             {name: 'xcon_observacion', index: 'xcon_observacion', align: 'center', width: 35}
         ],
         pager: '#paginador_tblcontrol',
-        rowList: [10, 20, 30, 40, 50]
+        rowList: [30, 50, 70, 90]
     });
 });
 

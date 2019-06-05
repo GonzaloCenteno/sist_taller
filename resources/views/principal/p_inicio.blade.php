@@ -66,6 +66,8 @@
               .ui-jqgrid-bdiv {
                   overflow: auto
               }
+              
+              .btn-round-animate {border-radius: 50%;}
         </style>
     </head>
     <body class="hold-transition sidebar-mini" id="body_push">
@@ -84,9 +86,19 @@
                 <ul class="navbar-nav ml-auto">
                     <!-- Messages Dropdown Menu -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link" data-toggle="dropdown" href="#" style="padding-bottom: 40px;">
+                        <a class="nav-link" data-toggle="dropdown" href="#" style="padding-bottom: 36px;">
                             <i class="fa fa-cog fa-spin fa-3x fa-fw"></i>
-                            <span class="sr-only">Loading...</span>{{ session('id_usuario') }}
+                            <span class="sr-only">Loading...</span>
+                            <label>
+                                BIENVENIDO: {{ session('id_usuario') }} | 
+                                <?php $sql = DB::table('permisos.vw_rol_menu_usuario')->select('sro_id')->where([['sist_id',session('sist_id')],['ume_usuario',session('id_usuario')]])->first(); 
+                                if($sql)
+                                {
+                                    $cargo = DB::table('permisos.tblsistemasrol_sro')->select('sro_descripcion')->where('sro_id',$sql->sro_id)->first();  
+                                    echo 'ROL : '.$cargo->sro_descripcion; 
+                                }
+                                ?>
+                            </label>
                         </a>
                         
                         <div class="dropdown-menu dropdown-menu-xl dropdown-menu-right">
@@ -114,11 +126,14 @@
                 <!-- Sidebar -->
                 <div class="sidebar">
                     <!-- Sidebar user panel (optional) -->
-                    <div class="user-panel mt-3 pb-3 mb-3 d-flex">
-                        <div class="info">
+                    <hr>
+                    <div class="col-md-12 text-center user-panel">
+                        <div class="info text-center">
                             <b><a href="#" class="d-block">{{ session('nomb_usuario') }}</a></b>
+                            @if(isset($cargo->sro_descripcion))<b><a href="#" class="d-block">{{ $cargo->sro_descripcion }}</a></b>@else<b><a href="#" class="d-block"></a></b>@endif
                         </div>
                     </div>
+                    <hr>
 
                     <!-- Sidebar Menu -->
                     <nav class="mt-2">
@@ -205,6 +220,10 @@
         <script type="text/javascript" src="{{ asset('js/sweetalert2.js') }}"></script>
         <script type="text/javascript" src="{{ asset('plugins/select2/select2.full.min.js') }}"></script>
         <script type="text/javascript" src="{{ asset('archivos_js/funciones_globales.js') }}"></script>
+        
+        <script>
+            var rol_descripcion = '{{ isset($cargo->sro_descripcion) ? $cargo->sro_descripcion : '' }}';
+        </script>
         @yield('page-js-script')
     </body>
 </html>

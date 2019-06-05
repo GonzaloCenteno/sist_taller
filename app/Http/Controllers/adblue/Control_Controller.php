@@ -190,28 +190,11 @@ class Control_Controller extends Controller
     {
         if ($request->session()->has('id_usuario') && $this->accesos() == 1)
         {
-            $meses = DB::select("select distinct veh_id,est_descripcion,mes,TO_CHAR(cde_fecha,'YYYY') as anio,mes_descripcion from taller.vw_rep_ctrl_abast_irizar where est_id = $est_id and veh_id = $veh_id group by veh_id,est_descripcion,cde_fecha,mes,mes_descripcion order by est_descripcion asc");
+            $meses = DB::select("select distinct est_id,veh_id,est_descripcion,mes,anio,mes_descripcion from taller.vw_rep_ctrl_abast_irizar where est_id = $est_id and veh_id = $veh_id group by est_id,veh_id,est_descripcion,anio,mes,mes_descripcion order by est_descripcion asc");
             $totales = DB::table('taller.vw_consumos')->select(DB::raw('SUM(cde_qabastecida) as sum_qabastecida,count(veh_id) as count_vehid'))->where([['est_id',$est_id],['veh_id',$veh_id]])->get();
-            
-            $datos = DB::table('taller.vw_rep_ctrl_abast_irizar')->select(DB::raw('distinct rut_id,rut_descripcion'))->where([['est_id',$est_id],['veh_id',$veh_id]])->orderBy('rut_id','asc')->get();
-            //dd($datos);
-            $enteros='';
-            foreach ($datos as $value_1){
-                $enteros .=  $value_1->rut_descripcion.' INT,';
-            }
-            $var = trim($enteros,',');
-            
-            $numeric='';
-            foreach ($datos as $value_2){
-                $numeric .=  $value_2->rut_descripcion.' numeric,';
-            }
-            $var_1 = trim($numeric,',');
-            
-            $count = $datos->count();
-            
             if (count($meses) > 0 && $totales->count() > 0) 
             {
-                $view = \View::make('adblue.reportes.vw_control_abast_xplaca',compact('meses','totales','datos','var','var_1','count'))->render();
+                $view = \View::make('adblue.reportes.vw_control_abast_xplaca',compact('meses','totales'))->render();
                 $pdf = \App::make('dompdf.wrapper');
                 $pdf->loadHTML($view)->setPaper('a3','landscape');
                 return $pdf->stream("CONTROL IRIZAR".".pdf");

@@ -1094,7 +1094,7 @@ jQuery(document).on("click", "#btn_agregar_estacion_adm", function(){
             for(i=0;i<data.length;i++)
             {
                 html_detalle = html_detalle + '<tr class="filasRutas_'+i+'">\n\
-                                                <td><button type="button" class="btn btn-success btn-round-animate" onclick="agregar_nuevas_rutas('+i+')"><i class="fa fa-plus-square"></i></button></td>\n\
+                                                <td><button type="button" title="AGREGAR REGISTRO" class="btn btn-success btn-round-animate" onclick="agregar_nuevas_rutas('+i+')"><i class="fa fa-plus-square"></i></button></td>\n\
                                                 <td><input type="hidden" name="vw_consumos_cde_id[]" value="'+data[i].cde_id+'"><input type="hidden" name="id_estacion[]" value="'+data[i].est_id+'">'+data[i].est_descripcion+'</td>\n\
                                             </tr>';
                 $("#DetalleNuevaRutaConsumo").html(html_detalle);
@@ -1115,9 +1115,9 @@ var detallesNuevaRuta = 0;
 function agregar_nuevas_rutas(contador)
 {
     var fila='<tr class="filasNuevaRuta_'+contNuevaRuta+'">\n\
-                <td><button type="button" class="btn btn-danger btn-round-animate" onclick="eliminar_nuevas_rutas('+contNuevaRuta+')"><i class="fa fa-trash"></i></button>&nbsp;&nbsp;<button type="button" class="btn btn-primary btn-round-animate" onclick="agregar_nueva_ruta('+contNuevaRuta+');"><i class="fa fa-check"></i></button></td>\n\
-                <td><input type="hidden" name="id_estacion[]" id="hiddendescripcion_estacion_'+contNuevaRuta+'"><input type="text" class="form-control text-center text-uppercase" placeholder="ESCRIBIR NOMBRE ESTACION" name=descripcion_estacion[] id="descripcion_estacion_'+contNuevaRuta+'"></td>\n\
-                </tr>';
+                <td><button type="button" title="BORRAR REGISTRO" class="btn btn-danger btn-round-animate" onclick="eliminar_nuevas_rutas('+contNuevaRuta+')"><i class="fa fa-trash"></i></button>&nbsp;&nbsp;<button type="button" title="AGREGAR ESTACION" class="btn btn-primary btn-round-animate btn_validacion_ruta" onclick="agregar_nueva_ruta('+contNuevaRuta+');"><i class="fa fa-check"></i></button></td>\n\
+                <td><input type="hidden" name="id_estacion[]" class="validar_ruta" id="hiddendescripcion_estacion_'+contNuevaRuta+'"><input type="text" class="form-control text-center text-uppercase" placeholder="ESCRIBIR NOMBRE ESTACION" name=descripcion_estacion[] id="descripcion_estacion_'+contNuevaRuta+'"></td>\n\
+            </tr>';
     
     autocompletar_estaciones('descripcion_estacion_'+contNuevaRuta);
     contNuevaRuta++;
@@ -1252,6 +1252,17 @@ function agregar_nueva_ruta(valor)
 }
 
 jQuery(document).on("click", "#btn_act_estaciones_nuevas", function(){
+    
+    if ($('.validar_ruta').val() == '') {
+        mostraralertasconfoco('* EL CAMPO ESTACION NO PUEDE ESTAR VACIO...');
+        return false;
+    }
+    
+    if ($('.btn_validacion_ruta').length > 0) {
+        mostraralertasconfoco('* DEBES GUARDAR LA ESTACION SELECCIONADA...');
+        return false;
+    }
+    
     var datosNuevasRutas = new FormData($("#FormularioNuevasRutasConsumo")[0]);
     $.ajax({
         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
@@ -1269,6 +1280,7 @@ jQuery(document).on("click", "#btn_act_estaciones_nuevas", function(){
                 jQuery("#tblconsumosdet").jqGrid('setGridParam', {
                     url: 'consumo/0?grid=consumos'
                 }).trigger('reloadGrid');
+                detallesNuevaRuta = 0;
                 $("#btn_cerrar_modal_AgregarNuevaRutaConsumo").click();
             }
             else

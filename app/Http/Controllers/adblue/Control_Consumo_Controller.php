@@ -13,7 +13,7 @@ class Control_Consumo_Controller extends Controller
 {
     public function accesos()
     {
-        $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_control'],['btn_view',1]])->get();
+        $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id'),['ume_estado',1]],['sme_sistema','li_config_control'],['btn_view',1]])->get();
         $rol = DB::table('permisos.tblsistemasrol_sro')->where([['sro_id',$permiso[0]->sro_id],['sro_descripcion', 'like', '%ADMINISTRADOR%']])->get();
         if ($rol->count() > 0) 
         {
@@ -29,7 +29,7 @@ class Control_Consumo_Controller extends Controller
     {
         if ($request->session()->has('id_usuario'))
         {
-            $menu = DB::table('permisos.vw_rol_menu_usuario')->where([['ume_usuario',session('id_usuario')],['sist_id',session('sist_id')]])->orderBy('ume_orden','asc')->get();
+            $menu = DB::table('permisos.vw_rol_menu_usuario')->where([['ume_usuario',session('id_usuario')],['sist_id',session('sist_id')],['ume_estado',1]])->orderBy('ume_orden','asc')->get();
             $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_control_consumo'],['btn_view',1]])->get();
             if ($permiso->count() == 0) 
             {

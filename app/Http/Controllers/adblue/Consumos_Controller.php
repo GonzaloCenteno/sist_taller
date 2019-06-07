@@ -16,12 +16,15 @@ class Consumos_Controller extends Controller
     {
         if ($request->session()->has('id_usuario'))
         {
-            $menu = DB::table('permisos.vw_rol_menu_usuario')->where([['ume_usuario',session('id_usuario')],['sist_id',session('sist_id')]])->orderBy('ume_orden','asc')->get();
+            $menu = DB::table('permisos.vw_rol_menu_usuario')->where([['ume_usuario',session('id_usuario')],['sist_id',session('sist_id')],['ume_estado',1]])->orderBy('ume_orden','asc')->get();
             $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_consumo'],['btn_view',1]])->get();
             $capacidad = DB::table('taller.tblcapacidad_cap')->where('cap_estado',1)->orderby('cap_id','asc')->get();
             $placas = DB::table('taller.tblvehiculos_veh')->get();
             $tripulantes = DB::table('taller.tbltripulantes_tri')->select('tri_id','tri_nombre','tri_apaterno','tri_amaterno')->get();
-            $rol = DB::table('permisos.tblsistemasrol_sro')->select('sro_descripcion')->where('sro_id',$menu[0]->sro_id)->get();
+            if ($menu->count() > 0) 
+            {
+                $rol = DB::table('permisos.tblsistemasrol_sro')->select('sro_descripcion')->where('sro_id',$menu[0]->sro_id)->get();
+            }
             if ($permiso->count() == 0) 
             {
                 return view('errors/vw_sin_permiso',compact('menu'));

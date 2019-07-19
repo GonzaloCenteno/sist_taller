@@ -1,5 +1,5 @@
 <?php
-
+use Illuminate\Http\Request;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -11,8 +11,15 @@
 |
 */
 
-Route::get('/', function () {
-    return view('autenticacion/login');
+Route::get('/', function (Request $request) {
+    if ($request->session()->has('id_usuario'))
+    {
+        return redirect('consumo');
+    }
+    else
+    {
+        return view('autenticacion/login');  
+    }
 });
 
 Route::get('adm', function () {
@@ -38,4 +45,9 @@ Route::group(['namespace' => 'adblue'], function()
     Route::resource('control_consumo', 'Control_Consumo_Controller');
     Route::resource('capacidad', 'Capacidad_Controller');
     Route::resource('costo_adblue', 'Costo_Adblue_Controller');
+});
+
+Route::group(['namespace' => 'grifo'], function() 
+{
+    Route::resource('almacen_combustible', 'Almacen_Combustible_Controller');
 });

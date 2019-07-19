@@ -20,7 +20,7 @@ class Consumos_Controller extends Controller
             $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_consumo'],['btn_view',1]])->get();
             $capacidad = DB::table('taller.tblcapacidad_cap')->where('cap_estado',1)->orderby('cap_id','asc')->get();
             $placas = DB::table('taller.tblvehiculos_veh')->get();
-            $tripulantes = DB::table('taller.tbltripulantes_tri')->select('tri_id','tri_nombre','tri_apaterno','tri_amaterno')->get();
+            //$tripulantes = DB::table('taller.tbltripulantes_tri')->select('tri_id','tri_nombre','tri_apaterno','tri_amaterno')->get();
             if ($menu->count() > 0) 
             {
                 $rol = DB::table('permisos.tblsistemasrol_sro')->select('sro_descripcion')->where('sro_id',$menu[0]->sro_id)->get();
@@ -90,7 +90,7 @@ class Consumos_Controller extends Controller
         foreach ($conductores as $Datos) {
             $Lista = new \stdClass();
             $Lista->value = $Datos->tri_id;
-            $Lista->label = $Datos->tri_apaterno ." ". $Datos->tri_amaterno ." ". $Datos->tri_nombre;
+            $Lista->label = $Datos->tri_nombre ." ". $Datos->tri_apaterno ." ". $Datos->tri_amaterno;
             array_push($todo, $Lista);
         }
         return response()->json($todo);

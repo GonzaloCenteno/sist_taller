@@ -6,11 +6,16 @@
     .column_red {
         background-color: #c83839;
     }
+    
     th.ui-th-column div{
-    white-space:normal !important;
-    height:auto !important;
-    padding:2px;
-
+        white-space:normal !important;
+        height:auto !important;
+        padding:2px;
+    }
+    
+    .clsDatePicker {
+        z-index: 100000 !important;
+    }
 </style>
 <br>
 <div class="card card-danger card-outline">
@@ -229,12 +234,140 @@
     </div>
 </div>
 
+<div class="modal fade" id="ModalCambiarFecha">
+    <div class="modal-dialog modal-xs modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">X</span></button>
+            </div>
+
+            <div class="modal-body ui-front">
+                <div class="form-group">
+                    <label>FECHA INGRESO:</label>
+
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                        </div>
+                        <input type="text" id="txt_con_fecregistro" class="form-control text-center FechaControl clsDatePicker" readonly="readonly">
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" id="btn_actualizar_fecha" class="btn btn-warning btn-xl"></button>
+                <button type="button" id="btn_cerrar_modal_fecha" class="btn btn-danger btn-xl" data-dismiss="modal"><i class="fa fa-times-rectangle-o"></i> CERRAR</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 @section('page-js-script')
 <script language="JavaScript" type="text/javascript" src="{{ asset('archivos_js/adblue/control.js') }}"></script>
 <script>
     $('#{{ $permiso[0]->men_sistema }}').addClass('menu-open');
     $('.{{ $permiso[0]->men_sistema }}').addClass('active');
     $('.{{ $permiso[0]->sme_ruta }}').addClass('active');
+    
+    jQuery(document).ready(function ($) {
+    
+        jQuery("#tblcontrol").jqGrid({
+            url: 'control/0?grid=control',
+            datatype: 'json', mtype: 'GET',
+            height: '450px', autowidth: true,
+            toolbarfilter: true,
+            sortable: false,
+            colNames: ['ID', 'FECHA', 'INGRESO ISOTANQUE AL AREA', 'TOTAL SALIDA POR ISOTANQUE', 'STOP', 'EXCEDENTE POR ISOTANQUE','CANTIDAD','OBSERVACIONES'],
+            rowNum: 30, sortname: 'xcon_id', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblcontrol" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - CONTROL DIARIO DE ADBLUE AREQUIPA LITROS -', align: "center",
+            colModel: [
+                {name: 'xcon_id', index: 'xcon_id', align: 'left', width: 10, hidden: true},
+                {name: 'xfecha', index: 'xfecha', align: 'center', width: 10, formatter: 'date', formatoptions: {srcformat: 'Y-m-d', newformat: 'd/m/Y'}},
+                {name: 'xing_isotanque', index: 'xing_isotanque', align: 'center', width: 15},
+                {name: 'xtotal_sal_isotanq', index: 'xtotal_sal_isotanq', align: 'center', width: 15},
+                {name: 'xstop', index: 'xstop', align: 'center', width: 10},
+                {name: 'xexce_isotanq', index: 'xexce_isotanq', align: 'center', width: 15},
+                {name: 'xcantidad', index: 'xcantidad', align: 'center', width: 10, classes: 'column_red'},
+                {name: 'xcon_observacion', index: 'xcon_observacion', align: 'center', width: 35}
+            ],
+            pager: '#paginador_tblcontrol',
+            rowList: [30, 50, 70, 90],
+            subGrid: true,
+            subGridRowExpanded: MostrarDetalle,
+            subGridOptions : {
+                reloadOnExpand :false,
+                selectOnExpand : true 
+            },
+            ondblClickRow: function ()
+            {
+                permiso = {!! json_encode($permiso[0]->btn_edit) !!};
+                if(permiso == 1)
+                {
+                    modificar_fecha_control();
+                }
+                else
+                {
+                    sin_permiso();
+                }
+            }
+        });
+        
+    });
+    
+    function MostrarDetalle(parentRowID, parentRowKey) {
+        var childGridID = parentRowID + "_table";
+        var childGridPagerID = parentRowID + "_pager";
+
+        $('#' + parentRowID).append('<table id=' + childGridID + '></table><div id=' + childGridPagerID + ' class=scroll></div>');
+
+        $("#" + childGridID).jqGrid({
+            url: 'control/0?grid=detalle_control&con_id='+parentRowKey,
+            mtype: "GET",
+            datatype: "json",
+            toolbarfilter: true,rowNum: 10,
+            sortable: false,
+            viewrecords: true,
+            rownumbers: true,
+            sortname: 'cde_fecha', sortorder: 'asc',
+            colNames: ['ID', 'FECHA','ESTACION','PLACA','CONSUMO DEL DIA'],
+            colModel: [
+                {name: 'cde_id', index: 'cde_id', align: 'left',width: 10, hidden:true},
+                {name: 'cde_fecha', index: 'cde_fecha', align: 'center', width: 10},
+                {name: 'est_descripcion', index: 'est_descripcion', align: 'left', width: 20},
+                {name: 'veh_placa', index: 'veh_placa', align: 'center', width: 10},
+                {name: 'cde_qabastecida', index: 'cde_qabastecida', align: 'center', width: 15}
+            ],
+            pager: childGridPagerID,
+            rowList: [10, 20, 30, 40],
+            width: 1250,
+            height: '200%',
+        });
+    }
+    
+    $(document).on("focus", ".FechaControl", function(){
+        $(this).datepicker({ minDate: -7,dateFormat: 'dd-mm-yy',showAnim: 'clip' });
+
+        $.datepicker.regional['es'] = {
+        closeText: 'Cerrar',
+        prevText: '<<',
+        nextText: '>>',
+        currentText: 'Hoy',
+        monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        monthNamesShort: ['Ene','Feb','Mar','Abr', 'May','Jun','Jul','Ago','Sep', 'Oct','Nov','Dic'],
+        dayNames: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
+        dayNamesShort: ['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],
+        dayNamesMin: ['Do','Lu','Ma','Mi','Ju','Vi','Sá'],
+        weekHeader: 'Sm',
+        dateFormat: 'dd/mm/yy',
+        firstDay: 1,
+        isRTL: false,
+        showMonthAfterYear: false,
+        yearSuffix: ''
+        };
+        $.datepicker.setDefaults($.datepicker.regional['es']);
+    });
 </script>
 @stop
 

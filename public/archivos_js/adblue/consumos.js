@@ -410,11 +410,10 @@ function modificar_consumodetalle(cde_id){
             $("#lbl_cde_placa").html("PLACA: " + "<b>"+data.veh_placa+"</b>");
             $("#lbl_cde_ruta").html("RUTA: " + "<b>"+data.rut_descripcion+"</b>");
             $("#lbl_cde_estacion").html("ESTACION: " + "<b>"+data.est_descripcion+"</b>");
-            $("#txt_cde_conductor").val(data.idconductor);
-            $("#txt_cde_copiloto").val(data.idcopiloto);
-
-            $("#txt_cde_copiloto").change();
-            $("#txt_cde_conductor").change();      
+            $("#hiddentxt_cde_conductor").val(data.idconductor);
+            $("#hiddentxt_cde_copiloto").val(data.idcopiloto);
+            $("#txt_cde_conductor").val(data.conductor);
+            $("#txt_cde_copiloto").val(data.copiloto);      
 
             $("#txt_cde_fecha").val(data.cde_fecha);
             $("#txt_cde_km").val(data.cde_kilometros);
@@ -449,6 +448,8 @@ function modificar_consumodetalle(cde_id){
             {
                 fn_leer_comentario(cde_id);
             }
+            autocompletar_personas('txt_cde_conductor');
+            autocompletar_personas('txt_cde_copiloto');
             swal.close();
         },
         error: function(data) {
@@ -466,11 +467,11 @@ jQuery(document).on("click", "#btn_actualizar_consumo", function(){
         mostraralertasconfoco('* EL CAMPO FECHA ES OBLIGATORIO...', '#txt_cde_fecha');
         return false;
     }
-    if ($('#txt_cde_conductor').val() == '') {
+    if ($('#hiddentxt_cde_conductor').val() == '') {
         mostraralertasconfoco('* EL CAMPO CONDUCTOR ES OBLIGATORIO...', '#txt_cde_conductor');
         return false;
     }
-    if ($('#txt_cde_copiloto').val() == '') {
+    if ($('#hiddentxt_cde_copiloto').val() == '') {
         mostraralertasconfoco('* EL CAMPO COPILOTO ES OBLIGATORIO...', '#txt_cde_copiloto');
         return false;
     }
@@ -508,8 +509,8 @@ jQuery(document).on("click", "#btn_actualizar_consumo", function(){
         type: 'GET',
         data:
         {
-            tri_idconductor:$('#txt_cde_conductor').val(),
-            tri_idcopiloto:$('#txt_cde_copiloto').val(),
+            tri_idconductor:$('#hiddentxt_cde_conductor').val(),
+            tri_idcopiloto:$('#hiddentxt_cde_copiloto').val(),
             cde_fecha:$('#txt_cde_fecha').val(),
             cde_kilometros:$('#txt_cde_km').val(),
             cde_xtanque:$('#txt_cde_xtanque').val(),

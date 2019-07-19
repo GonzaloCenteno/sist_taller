@@ -68,6 +68,12 @@
               }
               
               .btn-round-animate {border-radius: 50%;}
+              
+              a.nav-link p{
+                white-space:normal !important;
+                height:auto !important;
+                padding:2px;
+            }
         </style>
     </head>
     <body class="hold-transition sidebar-mini" id="body_push">

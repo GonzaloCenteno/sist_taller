@@ -88,7 +88,7 @@
             toolbarfilter: true,
             sortable:false,
             colNames: ['ID', 'DESCRIPCION','FECHA REGISTRO','ESTADO'],
-            rowNum: 10, sortname: 'rut_id', sortorder: 'desc', viewrecords: true, caption: '<button id="btn_act_tblruta" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - LISTA DE RUTAS -', align: "center",
+            rowNum: 30, sortname: 'rut_id', sortorder: 'desc', viewrecords: true, caption: '<button id="btn_act_tblruta" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - LISTA DE RUTAS -', align: "center",
             colModel: [
                 {name: 'rut_id', index: 'rut_id', align: 'left',width: 10, hidden:true},
                 {name: 'rut_descripcion', index: 'rut_descripcion', align: 'left', width: 60},
@@ -96,7 +96,7 @@
                 {name: 'rut_estado', index: 'rut_estado', align: 'center', width: 10}
             ],
             pager: '#paginador_tblrutas',
-            rowList: [10, 20, 30, 40, 50],
+            rowList: [30, 40, 50],
             gridComplete: function () {
                     var idarray = jQuery('#tblrutas').jqGrid('getDataIDs');
                     if (idarray.length > 0) {

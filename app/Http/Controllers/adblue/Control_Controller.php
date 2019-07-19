@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Crypt;
+use App\Http\Models\Tblcontrol_con;
 
 class Control_Controller extends Controller
 {
@@ -57,18 +58,79 @@ class Control_Controller extends Controller
             {
                 return $this->autocompletar_placas($request);
             }
+            if($request['grid'] == 'detalle_control')
+            {
+                return $this->crear_tabla_detalle_control($request);
+            }
         }
     }
 
     public function create(Request $request)
     {
-        $function = DB::select("select taller.control_salida(1,".round($request['cantidad'],3).",'".strtoupper($request['observacion'])."')");
-        return $function;
+        if($request->ajax())
+        {
+            $error = null;
+
+            DB::beginTransaction();
+            try{
+                
+                Tblcontrol_con::insert([
+                    'est_id' => 1,
+                    'con_fecregistro' => date('d-m-Y'),
+                    'con_usuregistro' => session('id_usuario'),
+                    'con_cantidad' => trim($request['cantidad']),
+                    'con_observacion' => trim(strtoupper($request['observacion'])),
+                ]);
+                $success = 1;
+                
+                DB::commit();
+            } catch (\Exception $ex) {
+                $success = 2;
+                $error = $ex->getMessage();
+                DB::rollback();
+            }
+        }
+
+        if ($success == 1) 
+        {
+            return $success;
+        }
+        else
+        {
+            return $error;
+        } 
     }
 
-    public function edit($est_id,Request $request)
+    public function edit($con_id,Request $request)
     {
-        
+        if($request->ajax())
+        {
+            $error = null;
+
+            DB::beginTransaction();
+            try{
+                Tblcontrol_con::where('con_id',$con_id)->update([
+                    'con_fecregistro' => trim($request['con_fecregistro']),
+                    'con_usumodificacion' => session('id_usuario'),
+                    'con_fecmodificacion' => date('Y-m-d H:i:s')
+                ]);
+                $success = 1;
+                DB::commit();
+            } catch (\Exception $ex) {
+                $success = 2;
+                $error = $ex->getMessage();
+                DB::rollback();
+            }
+        }
+
+        if ($success == 1) 
+        {
+            return $success;
+        }
+        else
+        {
+            return $error;
+        }
     }
 
     public function destroy(Request $request)
@@ -105,7 +167,7 @@ class Control_Controller extends Controller
         if ($start < 0) {
             $start = 0;
         }
-        
+
         $totalg = DB::select("select count(*) as total from taller.fn_control_diario_adblue()");
         $sql = DB::select("select * from taller.fn_control_diario_adblue() order by ".$sidx." ".$sord." limit ".$limit." offset ".$start);
 
@@ -135,6 +197,50 @@ class Control_Controller extends Controller
                 trim($Datos->xexce_isotanq),
                 trim($Datos->xcantidad),
                 trim($Datos->xcon_observacion),
+            );
+        }
+        return response()->json($Lista);
+    }
+    
+    public function crear_tabla_detalle_control(Request $request)
+    {
+        header('Content-type: application/json');
+        $page = $_GET['page'];
+        $limit = $_GET['rows'];
+        $sidx = $_GET['sidx'];
+        $sord = $_GET['sord'];
+        $start = ($limit * $page) - $limit;  
+        if ($start < 0) {
+            $start = 0;
+        }
+        
+        $consulta = DB::select("select * from taller.fn_control_diario_adblue() where xcon_id = ".$request['con_id']);
+        $totalg = DB::select("select count(*) as total from taller.vw_consumos where cde_fecha between '".$consulta[0]->xcon_fecinicio."' and '".$consulta[0]->xcon_fecfin."' and est_id = 1");
+        $sql = DB::select("select * from taller.vw_consumos where cde_fecha between '".$consulta[0]->xcon_fecinicio."' and '".$consulta[0]->xcon_fecfin."' and est_id = 1 order by ".$sidx." ".$sord." limit ".$limit." offset ".$start);
+
+        $total_pages = 0;
+        if (!$sidx) {
+            $sidx = 1;
+        }
+        $count = $totalg[0]->total;
+        if ($count > 0) {
+            $total_pages = ceil($count / $limit);
+        }
+        if ($page > $total_pages) {
+            $page = $total_pages;
+        }
+        $Lista = new \stdClass();
+        $Lista->page = $page;
+        $Lista->total = $total_pages;
+        $Lista->records = $count;
+        foreach ($sql as $Index => $Datos) {
+            $Lista->rows[$Index]['id'] = $Datos->cde_id;           
+            $Lista->rows[$Index]['cell'] = array(
+                trim($Datos->cde_id),
+                trim(\Carbon\Carbon::parse($Datos->cde_fecha)->format('d/m/Y')),
+                trim($Datos->est_descripcion),
+                trim($Datos->veh_placa),
+                trim($Datos->cde_qabastecida),
             );
         }
         return response()->json($Lista);

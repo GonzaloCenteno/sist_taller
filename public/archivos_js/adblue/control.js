@@ -1,27 +1,3 @@
-jQuery(document).ready(function ($) {
-    
-    jQuery("#tblcontrol").jqGrid({
-        url: 'control/0?grid=control',
-        datatype: 'json', mtype: 'GET',
-        height: '450px', autowidth: true,
-        toolbarfilter: true,
-        sortable: false,
-        colNames: ['ID', 'FECHA', 'INGRESO ISOTANQUE AL AREA', 'TOTAL SALIDA POR ISOTANQUE', 'STOP', 'EXCEDENTE POR ISOTANQUE','CANTIDAD','OBSERVACIONES'],
-        rowNum: 30, sortname: 'xcon_id', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblcontrol" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - CONTROL DIARIO DE ADBLUE AREQUIPA LITROS -', align: "center",
-        colModel: [
-            {name: 'xcon_id', index: 'xcon_id', align: 'left', width: 10, hidden: true},
-            {name: 'xfecha', index: 'xfecha', align: 'center', width: 10, formatter: 'date', formatoptions: {srcformat: 'Y-m-d', newformat: 'd/m/Y'}},
-            {name: 'xing_isotanque', index: 'xing_isotanque', align: 'center', width: 15},
-            {name: 'xtotal_sal_isotanq', index: 'xtotal_sal_isotanq', align: 'center', width: 15},
-            {name: 'xstop', index: 'xstop', align: 'center', width: 10},
-            {name: 'xexce_isotanq', index: 'xexce_isotanq', align: 'center', width: 15},
-            {name: 'xcantidad', index: 'xcantidad', align: 'center', width: 10, classes: 'column_red'},
-            {name: 'xcon_observacion', index: 'xcon_observacion', align: 'center', width: 35}
-        ],
-        pager: '#paginador_tblcontrol',
-        rowList: [30, 50, 70, 90]
-    });
-});
 
 jQuery(document).on("click", "#menu_push", function(){    
     if ($("#body_push").hasClass('sidebar-mini sidebar-collapse')) 
@@ -130,14 +106,19 @@ function generar_control()
         },
         success: function (data)
         {
-            if (data[0].control_salida == 'OK')
+            if (data == 1) 
             {
-                MensajeConfirmacion('SE GENERO EL CONTROL CON EXITO');
                 $("#txt_cingreso").val('');
                 $("#txt_cobservaciones").val('');
+                MensajeConfirmacion('SE GENERO EL CONTROL CON EXITO');
                 jQuery("#tblcontrol").jqGrid('setGridParam', {
                     url: 'control/0?grid=control'
                 }).trigger('reloadGrid');
+            }
+            else
+            {
+                MensajeAdvertencia('NO SE PUDO ENVIAR LA RESPUESTA');
+                console.log(data);
             }
         },
         error: function (data) {
@@ -196,3 +177,55 @@ jQuery(document).on("click", "#btn_ctr_consumo", function(){
 jQuery(document).on("click", "#btn_abrir_reporte_ctrlcon", function(){
     window.open('control_consumo_rep/'+$("#cbx_ctrlcon_anio").val()+'/'+$("#cbx_ctrlcon_mes").val());
 });
+
+function modificar_fecha_control()
+{
+    ModificarControl = $('#ModalCambiarFecha').modal({backdrop: 'static', keyboard: false});
+    ModificarControl.find('.modal-title').text('EDITAR FECHA CONTROL');
+    ModificarControl.find('#btn_actualizar_fecha').html('<i class="fa fa-pencil-square-o"></i> MODIFICAR').show();
+    $('#txt_con_fecregistro').val('');
+}
+
+jQuery(document).on("click", "#btn_actualizar_fecha", function(){
+    con_id = $('#tblcontrol').jqGrid ('getGridParam', 'selrow');
+
+    if ($('#txt_con_fecregistro').val() == '') {
+        mostraralertasconfoco('* EL CAMPO FECHA ES OBLIGATORIO...', '#txt_con_fecregistro');
+        return false;
+    }
+    
+    $.ajax({
+        url: 'control/'+con_id+'/edit',
+        type: 'GET',
+        data:
+        {
+            con_fecregistro:$('#txt_con_fecregistro').val(),
+        },
+        beforeSend:function()
+        {            
+            MensajeEspera('ENVIANDO INFORMACION');  
+        },
+        success: function(data) 
+        {
+            if (data == 1) 
+            {
+                MensajeConfirmacion('SE ACTUALIZO EL REGISTRO CON EXITO');
+                jQuery("#tblcontrol").jqGrid('setGridParam', {
+                    url: 'control/0?grid=control'
+                }).trigger('reloadGrid');
+                $('#btn_cerrar_modal_fecha').click();
+            }
+            else
+            {
+                MensajeAdvertencia('NO SE PUDO ENVIAR LA RESPUESTA');
+                console.log(data);
+            }
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
+});
+    

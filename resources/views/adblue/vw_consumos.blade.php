@@ -204,7 +204,7 @@
                     <span aria-hidden="true">X</span></button>
             </div>
 
-            <div class="modal-body">
+            <div class="modal-body ui-front">
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group">
@@ -270,11 +270,8 @@
                                 <div class="form-group">
                                     <label>CONDUCTOR:</label>
 
-                                    <select class="form-control select2" style="width: 100%;" id="txt_cde_conductor" name="txt_cde_conductor">
-                                        @foreach($tripulantes as $tri)
-                                        <option value="{{ $tri->tri_id }}"> {{ $tri->tri_nombre }} {{ $tri->tri_apaterno }} {{ $tri->tri_amaterno }} </option>
-                                        @endforeach
-                                    </select>
+                                    <input type="hidden" id="hiddentxt_cde_conductor" name="hiddentxt_cde_conductor">
+                                    <input type="text" id="txt_cde_conductor" class="form-control text-center text-uppercase" onClick="this.select()">
 
                                 </div>
                             </div>
@@ -283,11 +280,8 @@
                                 <div class="form-group">
                                     <label>COPILOTO:</label>
 
-                                    <select class="form-control select2" style="width: 100%;" id="txt_cde_copiloto" name="txt_cde_copiloto">
-                                        @foreach($tripulantes as $tri)
-                                        <option value="{{ $tri->tri_id }}"> {{ $tri->tri_nombre }} {{ $tri->tri_apaterno }} {{ $tri->tri_amaterno }} </option>
-                                        @endforeach
-                                    </select>
+                                    <input type="hidden" id="hiddentxt_cde_copiloto" name="hiddentxt_cde_copiloto">
+                                    <input type="text" id="txt_cde_copiloto" class="form-control text-center text-uppercase" onClick="this.select()">
 
                                 </div>
                             </div>
@@ -316,7 +310,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-tasks"></i></span>
                                         </div>
-                                        <input type="text" id="txt_cde_km" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="6" placeholder="0">
+                                        <input type="text" id="txt_cde_km" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="6">
                                     </div>
 
                                 </div>
@@ -330,7 +324,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-percent"></i></span>
                                         </div>
-                                        <input type="text" id="txt_cde_xtanque" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0">
+                                        <input type="text" id="txt_cde_xtanque" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8">
                                     </div>
 
                                 </div>
@@ -344,7 +338,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-tasks"></i></span>
                                         </div>
-                                        <input type="text" id="txt_cde_qabast" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000">
+                                        <input type="text" id="txt_cde_qabast" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8">
                                     </div>
 
                                 </div>
@@ -384,7 +378,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-gear"></i></span>
                                         </div>
-                                        <input type="text" id="txt_cde_ingreso" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000">
+                                        <input type="text" id="txt_cde_ingreso" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8">
                                     </div>
 
                                 </div>
@@ -398,7 +392,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-gear"></i></span>
                                         </div>
-                                        <input type="text" id="txt_cde_salida" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000">
+                                        <input type="text" id="txt_cde_salida" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8">
                                     </div>
 
                                 </div>
@@ -412,7 +406,7 @@
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="fa fa-gear"></i></span>
                                         </div>
-                                        <input type="text" id="txt_cde_stop" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000">
+                                        <input type="text" id="txt_cde_stop" class="form-control text-center text-uppercase" onkeypress="return soloNumeroTab(event);" maxlength="8">
                                     </div>
 
                                 </div>
@@ -940,7 +934,7 @@
                 {name: 'nro_vale', index: 'nro_vale', align: 'center', width: 55,frozen:true},
                 {name: 'veh_placa', index: 'veh_placa', align: 'center', width: 80,frozen:true},
                 {name: 'rut_descripcion', index: 'rut_descripcion', align: 'center', width: 70},
-                {name: 'est_descripcion', index: 'est_descripcion', align: 'left', width: 110},
+                {name: 'est_descripcion', index: 'est_descripcion', align: 'left', width: 110,formatter: EstilosEstacion},
                 {name: 'conductor', index: 'conductor', align: 'left', width: 350},
                 {name: 'copiloto', index: 'copiloto', align: 'left', width: 350},
                 {name: 'cde_kilometros', index: 'cde_kilometros', align: 'center', width: 70},
@@ -1098,6 +1092,38 @@
             }
         }
         return agr_estaciones;
+    }
+    
+    function EstilosEstacion(cellValue, options, rowObject) {
+        switch(cellValue) 
+        {
+            case 'AREQUIPA':
+                return '<b>'+cellValue+'</b>';
+                break;
+            case 'LIMA ARRIOLA':
+                return '<font color="#FF0000"><b>'+cellValue+'</b></font>';
+                break;
+            case 'CUZCO':
+                return '<font color="#04FE1B"><b>'+cellValue+'</b></font>';
+                break;
+            case 'TRUJILLO':
+                return '<font color="#FC9812"><b>'+cellValue+'</b></font>';
+                break;
+            case 'CHICLAYO':
+                return '<font color="#120FFC"><b>'+cellValue+'</b></font>';
+                break;
+            case 'TUMBES':
+                return '<font color="#00FEFE"><b>'+cellValue+'</b></font>';
+                break;
+            case 'TACNA':
+                return '<font color="#9A10FC"><b>'+cellValue+'</b></font>';
+                break;
+            case 'TALARA':
+                return '<font color="#FF11FD"><b>'+cellValue+'</b></font>';
+                break;
+            default: 
+                return '<font color="#FF0000"><b>'+cellValue+'</b></font>';
+        }
     }
 </script>
 @stop

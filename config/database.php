@@ -69,6 +69,19 @@ return [
             'schema' => 'public',
             'sslmode' => 'prefer',
         ],
+        
+        'cromotex' => [
+            'driver' => 'pgsql',
+            'host' => env('DB_CROMOTEX_HOST', '127.0.0.1'),
+            'port' => env('DB_CROMOTEX_PORT', '5432'),
+            'database' => env('DB_CROMOTEX_DATABASE', 'forge'),
+            'username' => env('DB_CROMOTEX_USERNAME', 'forge'),
+            'password' => env('DB_CROMOTEX_PASSWORD', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'schema' => 'public',
+            'sslmode' => 'prefer',
+        ],
 
         'sqlsrv' => [
             'driver' => 'sqlsrv',

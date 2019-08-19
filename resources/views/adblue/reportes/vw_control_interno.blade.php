@@ -75,9 +75,9 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php $control = DB::select("select * from taller.fn_control_diario_adblue() where TO_CHAR(xfecha,'MM') = '$mes->xmes' order by xfecha asc"); ?>
+                        <?php $control = DB::select("select * from taller.fn_control_diario_adblue() where extract(month from xfecha) = $mes->xmes order by xfecha asc"); ?>
                         @foreach ($control as $con)
-                            <?php $detalle = DB::table('taller.vw_consumos')->select('cde_fecha', 'cde_qabastecida','est_id','cde_estado','veh_placa','est_descripcion')->where([['est_id',1],['cde_fecha','>=',$con->xcon_fecinicio],['cde_fecha','<=',$con->xcon_fecfin],['cde_estado',1]])->orderBy('cde_fecha','asc')->get(); ?>
+                            <?php $detalle = DB::table('taller.vw_control_consumo')->where([['cde_fecha','>=',$con->xcon_fecinicio],['cde_fecha','<',$con->xcon_fecfin]])->orderBy('cde_fecha','asc')->get(); ?>
                             <tr>
                                 <td style="text-align: center;">{{ \Carbon\Carbon::parse($con->xfecha)->format('d/m/Y') }}</td>
                                 <td></td>

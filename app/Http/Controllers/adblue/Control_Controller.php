@@ -76,7 +76,7 @@ class Control_Controller extends Controller
                 
                 Tblcontrol_con::insert([
                     'est_id' => 1,
-                    'con_fecregistro' => date('d-m-Y'),
+                    'con_fecregistro' => date('d-m-Y H:i:s'),
                     'con_usuregistro' => session('id_usuario'),
                     'con_cantidad' => trim($request['cantidad']),
                     'con_observacion' => trim(strtoupper($request['observacion'])),
@@ -110,7 +110,7 @@ class Control_Controller extends Controller
             DB::beginTransaction();
             try{
                 Tblcontrol_con::where('con_id',$con_id)->update([
-                    'con_fecregistro' => trim($request['con_fecregistro']),
+                    'con_fecregistro' => trim($request['con_fecregistro']).' '.date('H:i:s'),
                     'con_usumodificacion' => session('id_usuario'),
                     'con_fecmodificacion' => date('Y-m-d H:i:s')
                 ]);
@@ -215,8 +215,8 @@ class Control_Controller extends Controller
         }
         
         $consulta = DB::select("select * from taller.fn_control_diario_adblue() where xcon_id = ".$request['con_id']);
-        $totalg = DB::select("select count(*) as total from taller.vw_consumos where cde_fecha between '".$consulta[0]->xcon_fecinicio."' and '".$consulta[0]->xcon_fecfin."' and est_id = 1");
-        $sql = DB::select("select * from taller.vw_consumos where cde_fecha between '".$consulta[0]->xcon_fecinicio."' and '".$consulta[0]->xcon_fecfin."' and est_id = 1 order by ".$sidx." ".$sord." limit ".$limit." offset ".$start);
+        $totalg = DB::select("select count(*) as total from taller.vw_control_consumo where cde_fecha >= '".$consulta[0]->xcon_fecinicio."' and cde_fecha < '".$consulta[0]->xcon_fecfin."' ");
+        $sql = DB::select("select * from taller.vw_control_consumo where cde_fecha >= '".$consulta[0]->xcon_fecinicio."' and cde_fecha < '".$consulta[0]->xcon_fecfin."' order by ".$sidx." ".$sord." limit ".$limit." offset ".$start);
 
         $total_pages = 0;
         if (!$sidx) {

@@ -5,6 +5,13 @@ namespace App\Http\Controllers\grifo;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Http\Models\Tblbombas_bom;
+use App\Http\Models\Tblestacion_est;
+use App\Http\Models\Tblcentrocostos_cec;
+use App\Http\Models\Tblalmacenes_alm;
+use App\Http\Models\Tblvehiculos_veh;
+use App\Http\Models\Tblvalecabecera_vca;
+use App\Http\Models\Tblvaledetalle_vde;
 
 class Almacen_Combustible_Controller extends Controller
 {   
@@ -14,11 +21,15 @@ class Almacen_Combustible_Controller extends Controller
         {
             $menu = DB::table('permisos.vw_rol_menu_usuario')->where([['ume_usuario',session('id_usuario')],['sist_id',session('sist_id')],['ume_estado',1]])->orderBy('ume_orden','asc')->get();
             $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_almacen_combustible'],['btn_view',1]])->get();
+            $bombas = Tblbombas_bom::orderBy('bom_id','asc')->get();
+            $estaciones = Tblestacion_est::orderBy('est_id','asc')->get();
+            $ctr_costo = Tblcentrocostos_cec::where('cec_id',1)->first();
+            $almacen = Tblalmacenes_alm::where('alm_id',1)->first();
             if ($permiso->count() == 0) 
             {
                 return view('errors/vw_sin_permiso',compact('menu'));
             }
-            return view('grifo/vw_almacen_general',compact('menu','permiso'));
+            return view('grifo/vw_almacen_general',compact('menu','permiso','bombas','estaciones','ctr_costo','almacen'));
         }
         else
         {
@@ -30,11 +41,49 @@ class Almacen_Combustible_Controller extends Controller
     {
         if ($id > 0) 
         {
-            
+            if ($request['show'] == 'imprimir_vale') 
+            {
+                return $this->imprimir_vales($id,$request);
+            }
+            if ($request['show'] == 'verificar_vale') 
+            {
+                return $this->verificar_vale($id,$request);
+            }
         }
         else
         {
-            
+            if ($request['busqueda'] == 'vehiculos') 
+            {
+                return $this->recuperar_datos_vehiculos($request);
+            }
+            if ($request['busqueda'] == 'trp_nrodoc') 
+            {
+                return $this->recuperar_datos_tripulantes_nrodoc($request);
+            }
+            if ($request['busqueda'] == 'trp_nombres') 
+            {
+                return $this->recuperar_datos_tripulantes_nombres($request);
+            }
+            if ($request['datos'] == 'datos_nrovale') 
+            {
+                return $this->recuperar_datos_nrovale($request);
+            }
+            if ($request['tabla'] == 'tblvaledetalle_vde') 
+            {
+                return $this->crear_tabla_valesdetalle($request);
+            }
+            if ($request['datos'] == 'datos_topkat') 
+            {
+                return $this->recuperar_datos_topkat($request);
+            }
+            if ($request['seleccionar'] == 'datos_placa') 
+            {
+                return $this->buscar_informacion_placa($request);
+            }
+            if ($request['tabla'] == 'tbltransaccioneshistoricas_trh') 
+            {
+                return $this->recuperar_datos_tabla_valesdetalle($request);
+            }
         }
     }
 
@@ -55,7 +104,441 @@ class Almacen_Combustible_Controller extends Controller
 
     public function store(Request $request)
     {
-       
+        if($request['tipo'] == 1)
+        {
+            return $this->crear_vale($request);
+        }
+        if($request['tipo'] == 2)
+        {
+            return $this->editar_vale($request);
+        }
     }
+    
+    public function recuperar_datos_vehiculos(Request $request)
+    {
+        $vehiculos = DB::table('taller.tblvehiculos_veh')->where('veh_placa', 'like', '%'.strtoupper($request['datos']).'%')->get();
+        $todo = array();
+        foreach ($vehiculos as $Datos) {
+            $Lista = new \stdClass();
+            $Lista->value = $Datos->veh_id;
+            $Lista->label = $Datos->veh_placa;
+            $Lista->veh_vehiculo = $Datos->veh_clase ." ". $Datos->veh_marca ." ". $Datos->mod_nombre ." ". $Datos->cat_nombre;
+            array_push($todo, $Lista);
+        }
+        return response()->json($todo);
+    }
+    
+    public function recuperar_datos_tripulantes_nrodoc(Request $request)
+    {
+        $tripulantes = DB::table('taller.tbltripulantes_tri')->where('tri_nrodoc','like','%'.$request['nro_doc'].'%')->get();
+        $todo = array();
+        foreach ($tripulantes as $Datos) {
+            $Lista = new \stdClass();
+            $Lista->value = $Datos->tri_id;
+            $Lista->label = $Datos->tri_nrodoc;
+            $Lista->tripulante = $Datos->tri_nombre ." ". $Datos->tri_apaterno ." ". $Datos->tri_amaterno;
+            array_push($todo, $Lista);
+        }
+        return response()->json($todo);
+    }
+    
+    public function recuperar_datos_tripulantes_nombres(Request $request)
+    {
+        $tripulantes = DB::table('taller.tbltripulantes_tri')
+                        ->where('tri_nombre','like','%'.strtoupper($request['nombres']).'%')
+                        ->orWhere('tri_apaterno','like','%'.strtoupper($request['nombres']).'%')
+                        ->orWhere('tri_amaterno','like','%'.strtoupper($request['nombres']).'%')
+                        ->get();
+        $todo = array();
+        foreach ($tripulantes as $Datos) {
+            $Lista = new \stdClass();
+            $Lista->value = $Datos->tri_id;
+            $Lista->label = $Datos->tri_nombre ." ". $Datos->tri_apaterno ." ". $Datos->tri_amaterno;
+            $Lista->documento = $Datos->tri_nrodoc;
+            array_push($todo, $Lista);
+        }
+        return response()->json($todo); 
+    }
+    
+    public function recuperar_datos_nrovale(Request $request)
+    {
+        $vales = DB::table('grifo.vw_vale_cabecera')->where('vca_numvale',$request['nrovale'])->first();
+        if ($vales) 
+        {
+            return response()->json([
+                'msg' => 1,
+                'vca_id' => $vales->vca_id,
+                'vale_cntmtri' => $vales->vca_cntmtri,
+                'vale_cntmtrf' => $vales->vca_cntmtrf,
+                'vale_klmtrj' => $vales->vca_kilometraje,
+                'vale_estado' => $vales->vca_estado,
+                'vale_bomba' => $vales->bom_id,
+                'vale_numvale' => $vales->vca_numvale,
+                'tri_id' => $vales->tri_id,
+                'tripulante' => $vales->tripulante,
+                'dni' => $vales->tri_nrodoc,
+                'veh_id' => $vales->veh_id,
+                'est_id' => $vales->est_id,
+                'vehiculo' => $vales->vehiculo,
+                'veh_placa' => $vales->veh_placa,
+                'vale_referencia' => $vales->vca_referencia,
+                'vale_fecemision' => \Carbon\Carbon::parse($vales->vca_fecemision)->format('d/m/Y'),
+            ]);
+        }
+        else
+        {
+            return response()->json([
+                'msg' => 0
+            ]);
+        }
+    }
+    
+    public function crear_tabla_valesdetalle(Request $request)
+    {
+        header('Content-type: application/json');
+        $page = $_GET['page'];
+        $limit = $_GET['rows'];
+        $sidx = $_GET['sidx'];
+        $sord = $_GET['sord'];
+        $start = ($limit * $page) - $limit;
+        if ($start < 0) {
+            $start = 0;
+        }
+        
+        $totalg = DB::select("select count(*) as total from grifo.vw_vale_detalle where vca_numvale = ".$request['vale_numvale']);
+        $sql = DB::select("select * from grifo.vw_vale_detalle where vca_numvale = ".$request['vale_numvale']);
 
+        $total_pages = 0;
+        if (!$sidx) {
+            $sidx = 1;
+        }
+        $count = $totalg[0]->total;
+        if ($count > 0) {
+            $total_pages = ceil($count / $limit);
+        }
+        if ($page > $total_pages) {
+            $page = $total_pages;
+        }
+        $Lista = new \stdClass();
+        $Lista->page = $page;
+        $Lista->total = $total_pages;
+        $Lista->records = $count;
+        foreach ($sql as $Index => $Datos) {
+            $Lista->rows[$Index]['id'] = $Datos->codigo;      
+            $Lista->rows[$Index]['cell'] = array(
+                trim($Datos->codigo),
+                trim($Datos->descripcion),
+                trim($Datos->unidad),
+                trim($Datos->cantidad),
+                trim($Datos->tanquep),
+                trim($Datos->tanques),
+                trim($Datos->tanquea)
+            );
+        }
+        return response()->json($Lista);
+    }
+    
+    public function recuperar_datos_topkat(Request $request)
+    {
+//        $indice = DB::table('topkat.tbltransaccioneshistoricas_trh')->select('trh_vehiclenumber')->where('trh_datex','=',substr(date('Ymd'),2))->get();
+//        if ($indice->count() > 0) 
+//        {
+//            $arreglito = array();
+//            for($i=0;$i<$indice->count();$i++)
+//            {
+//                $arreglito[$i] = Tblvehiculos_veh::select('veh_placa')->where('veh_placa','like','%'.substr($indice[$i]->trh_vehiclenumber, 2).'%')->get();
+//            }
+//            return $arreglito;
+//        }
+//        else
+//        {
+//            return 0;
+//        }
+        
+//        $fec_ini = str_split($datos[0]->trh_datex,2);
+//        return response()->json([
+//            'fec_ini' => $datos[0]->trh_datex,
+//            'fec_fin' => '20'.$fec_ini[0]."-".$fec_ini[1]."-".$fec_ini[2],
+//        ]);
+        
+        $indice = DB::table('topkat.tbltransaccioneshistoricas_trh')->select('trh_ntransaccion','trh_vehiclenumber')->where([['trh_datex','=',substr(date('Ymd'),2)],['trh_estado',0]])->orderBy('trh_ntransaccion','asc')->first();
+        if ($indice) 
+        {
+            $vehiculo = Tblvehiculos_veh::select('veh_id','veh_placa','veh_marca','veh_clase')->where('veh_placa','like','%'.substr($indice->trh_vehiclenumber, 2).'%')->get();
+            if ($vehiculo->count() > 0) 
+            {
+                return response()->json([
+                    'data' => $vehiculo,
+                    'id_trans' => $indice->trh_ntransaccion,
+                ]);
+            }
+            else
+            {
+                return response()->json([
+                    'msg' => 1,
+                ]);
+            }
+        }
+        else
+        {
+            return response()->json([
+                'msg' => 0,
+            ]);
+        }
+    }
+    
+    public function buscar_informacion_placa(Request $request)
+    {
+        $correlativo = Tblvalecabecera_vca::select('vca_numvale')->orderBy('vca_numvale','desc')->take(1)->first();
+        $tran_historica = DB::table('topkat.tbltransaccioneshistoricas_trh')->where('trh_ntransaccion',$request['id_trans'])->first();
+        $vca_cntmtrf = Tblvalecabecera_vca::select('vca_cntmtrf')->where('bom_id',$tran_historica->trh_pumpnumber)->orderBy('vca_numvale','desc')->take(1)->first();
+        $vehiculo = DB::table('grifo.vw_vale_cabecera')->where('veh_id',$request['veh_id'])->orderBy('vca_numvale','desc')->take(1)->first();    
+        
+        if(!isset($vehiculo))
+        {
+            return 0;
+        }
+        
+        return response()->json([
+            'vale' => $correlativo->vca_numvale + 1,
+            'veh_id' => $vehiculo->veh_id,
+            'veh_vehiculo' => $vehiculo->vehiculo,
+            'veh_placa' => $vehiculo->veh_placa,
+            'vale_cntmtri' => $vca_cntmtrf->vca_cntmtrf,
+            'vca_bomba' => intval($tran_historica->trh_pumpnumber),
+            'kilometraje' => $vehiculo->vca_kilometraje,
+            'vale_cntmtrf' => round($vca_cntmtrf->vca_cntmtrf + (double)number_format($tran_historica->trh_transactionquantity,0,",",".")),
+            'referencia' => $vehiculo->vca_referencia,
+            'vale_estado' => $vehiculo->vca_estado,
+            'id_trans' => $request['id_trans']
+        ]);
+    }
+    
+    public function recuperar_datos_tabla_valesdetalle(Request $request)
+    {
+        header('Content-type: application/json');
+        $page = $_GET['page'];
+        $limit = $_GET['rows'];
+        $sidx = $_GET['sidx'];
+        $sord = $_GET['sord'];
+        $start = ($limit * $page) - $limit;
+        if ($start < 0) {
+            $start = 0;
+        }
+        
+        $totalg = DB::select("select count(*) as total from topkat.tbltransaccioneshistoricas_trh where trh_ntransaccion=".$request['id_trans']);
+        $sql = DB::table('topkat.tbltransaccioneshistoricas_trh')->where([['trh_ntransaccion',$request['id_trans']],['trh_estado',0]])->orderBy($sidx, $sord)->limit($limit)->offset($start)->get();
+
+        $total_pages = 0;
+        if (!$sidx) {
+            $sidx = 1;
+        }
+        $count = $totalg[0]->total;
+        if ($count > 0) {
+            $total_pages = ceil($count / $limit);
+        }
+        if ($page > $total_pages) {
+            $page = $total_pages;
+        }
+        $Lista = new \stdClass();
+        $Lista->page = $page;
+        $Lista->total = $total_pages;
+        $Lista->records = $count;
+        foreach ($sql as $Index => $Datos) {
+            $Lista->rows[$Index]['id'] = '0180010001019';      
+            $Lista->rows[$Index]['cell'] = array(
+                '0180010001019',
+                'PETROLEO DIESEL 2',
+                'GL',
+                (double)number_format($Datos->trh_transactionquantity,0,",","."),
+                (double)number_format($Datos->trh_transactionquantity,0,",","."),
+                0,
+                0
+            );
+        }
+        return response()->json($Lista);
+    }
+    
+    public function imprimir_vales($vca_id,Request $request)
+    {
+        $vale_cabecera = DB::table('grifo.vw_vale_cabecera')->where('vca_id',$vca_id)->first();
+        $vale_detalle = DB::table('grifo.vw_vale_detalle')->where('vca_numvale',$vale_cabecera->vca_numvale)->first();
+        $sucursal = DB::table('grifo.tblsucursales_suc')->first();
+        $almacen = DB::table('grifo.tblalmacenes_alm')->first();
+        if ($vale_cabecera && $vale_detalle) 
+        {
+            $view = \View::make('grifo.reportes.vw_vale',compact('sucursal','vale_cabecera','vale_detalle','almacen'))->render();
+            $pdf = \App::make('dompdf.wrapper');
+            $pdf->loadHTML($view)->setPaper('a4','landscape');
+            \Storage::put('public/vales/'.$vale_cabecera->vca_numvale, $pdf->output());
+            return $pdf->stream("ABASTECIMIENTO VALE N° ".$vale_cabecera->vca_numvale." ".".pdf");
+        }
+        else
+        {
+            return "NO SE ENCONTRARON DATOS PARA ESTE N°-VALE";
+        }
+    }
+    
+    public function verificar_vale($vca_id, Request $request)
+    {
+        $sql = Tblvalecabecera_vca::select('vca_numvale')->where('vca_id',$vca_id)->first();
+        $data = storage_path('app/public/vales/' . $sql->vca_numvale);
+        if(file_exists($data))
+        {
+            return response()->json([
+                'msg' => 1,
+                'ruta' => chunk_split(base64_encode(file_get_contents($data)))
+            ]);
+        }
+        else
+        {
+            return 0;
+        }
+        
+        //****CREAR PDFS****//
+//        $datos = Tblvalecabecera_vca::select('vca_id')->get();
+//        $contador = Tblvalecabecera_vca::count();
+//        for($i = 0; $i < $contador; $i++)
+//        {
+//            $vale_cabecera = DB::table('grifo.vw_vale_cabecera')->where('vca_id',$datos[$i]->vca_id)->first();
+//            $vale_detalle = DB::table('grifo.vw_vale_detalle')->where('vca_numvale',$vale_cabecera->vca_numvale)->first();
+//            $sucursal = DB::table('grifo.tblsucursales_suc')->first();
+//            $almacen = DB::table('grifo.tblalmacenes_alm')->first();
+//
+//            
+//            set_time_limit(0);
+//            ini_set('memory_limit', '5G');
+//            $view = \View::make('grifo.reportes.vw_vale',compact('sucursal','vale_cabecera','vale_detalle','almacen'))->render();
+//            $pdf = \App::make('dompdf.wrapper');
+//            $pdf->loadHTML($view)->setPaper('a4','landscape');
+//            \Storage::put('public/vales/'.$vale_cabecera->vca_numvale, $pdf->output());
+//        }
+//        return 1;
+    }
+    
+    public function crear_vale(Request $request)
+    {
+        if($request->ajax())
+        {
+            $error = null;
+
+            DB::beginTransaction();
+            try{
+                $Tblvalecabecera_vca = new Tblvalecabecera_vca;
+                $Tblvalecabecera_vca->suc_id            = 1;
+                $Tblvalecabecera_vca->alm_id            = 1;
+                $Tblvalecabecera_vca->tri_id            = $request['hiddentxt_tri_nrodoc'];
+                $Tblvalecabecera_vca->veh_id            = $request['hiddentxt_veh_placa'];
+                $Tblvalecabecera_vca->vca_numvale       = $request['txt_vca_numvale'];
+                $Tblvalecabecera_vca->vca_fecemision    = $request['txt_vca_fecemision'].' '.date('H:i:s');
+                $Tblvalecabecera_vca->vca_referencia    = trim($request['txt_referencia']) ? $request['txt_referencia'] : '-';
+                $Tblvalecabecera_vca->vca_cntmtri       = $request['txt_cntmtri'];
+                $Tblvalecabecera_vca->vca_cntmtrf       = $request['txt_cntmtrf'];
+                $Tblvalecabecera_vca->vca_kilometraje   = $request['txt_kilometraje'];
+                $Tblvalecabecera_vca->bom_id            = $request['cbx_bomba'];
+                $Tblvalecabecera_vca->est_id            = $request['cbx_ruta_area'];
+                $Tblvalecabecera_vca->vca_usucreacion   = session('id_usuario');
+                $Tblvalecabecera_vca->save();
+                
+                $Tblvaledetalle_vde = new Tblvaledetalle_vde;
+                $Tblvaledetalle_vde->vca_id             = $Tblvalecabecera_vca->vca_id;
+                $Tblvaledetalle_vde->pro_id             = 1;
+                $Tblvaledetalle_vde->vde_cantidad       = $request['cantidad'];
+                $Tblvaledetalle_vde->vde_tanquep        = $request['cantidad'];
+                $Tblvaledetalle_vde->vde_tanques        = 0;
+                $Tblvaledetalle_vde->vde_tanquea        = 0;
+                $Tblvaledetalle_vde->vde_usucreacion    = session('id_usuario');
+                $Tblvaledetalle_vde->save();
+                
+                DB::table('topkat.tbltransaccioneshistoricas_trh')->where('trh_ntransaccion',$request['id_trans'])
+                    ->update([
+                        'trh_estado' => 1,
+                    ]);
+                
+                $vale_cabecera = DB::table('grifo.vw_vale_cabecera')->where('vca_id',$Tblvalecabecera_vca->vca_id)->first();
+                $vale_detalle = DB::table('grifo.vw_vale_detalle')->where('vca_numvale',$vale_cabecera->vca_numvale)->first();
+                $sucursal = DB::table('grifo.tblsucursales_suc')->first();
+                $almacen = DB::table('grifo.tblalmacenes_alm')->first();
+                $view = \View::make('grifo.reportes.vw_vale',compact('sucursal','vale_cabecera','vale_detalle','almacen'))->render();
+                $pdf = \App::make('dompdf.wrapper');
+                $pdf->loadHTML($view)->setPaper('a4','landscape');
+                \Storage::put('public/vales/'.$vale_cabecera->vca_numvale, $pdf->output());
+
+                $success = 1;
+                
+                DB::commit();
+            } catch (\Exception $ex) {
+                $success = 2;
+                $error = $ex->getMessage();
+                DB::rollback();
+            }
+        }
+
+        if ($success == 1) 
+        {
+            return response()->json([
+                'msg' => 1,
+                'vca_id' => $Tblvalecabecera_vca->vca_id,
+                'pdf' => chunk_split(base64_encode(file_get_contents(storage_path('app/public/vales/' . $vale_cabecera->vca_numvale))))
+            ]);
+        }
+        else
+        {
+            return $error;
+        }
+    }
+    
+    public function editar_vale(Request $request)
+    {
+        if($request->ajax())
+        {
+            $error = null;
+
+            DB::beginTransaction();
+            try{
+                Tblvalecabecera_vca::where('vca_id',$request['vca_id'])->update([
+                    'tri_id'                =>  $request['hiddentxt_tri_nrodoc'],
+                    'veh_id'                =>  $request['hiddentxt_veh_placa'],
+                    'vca_fecemision'        =>  $request['txt_vca_fecemision'].' '.date('H:i:s'),
+                    'vca_referencia'        =>  trim($request['txt_referencia']) ? $request['txt_referencia'] : '-',
+                    'vca_kilometraje'       =>  $request['txt_kilometraje'],
+                    'bom_id'                =>  $request['cbx_bomba'],
+                    'est_id'                =>  $request['cbx_ruta_area'],
+                    'vca_usumodificacion'   =>  session('id_usuario'),
+                    'vca_fecmodificacion'   =>  date('Y-m-d H:i:s')
+                ]);
+                
+                $vale_cabecera = DB::table('grifo.vw_vale_cabecera')->where('vca_id',$request['vca_id'])->first();
+                $vale_detalle = DB::table('grifo.vw_vale_detalle')->where('vca_numvale',$vale_cabecera->vca_numvale)->first();
+                $sucursal = DB::table('grifo.tblsucursales_suc')->first();
+                $almacen = DB::table('grifo.tblalmacenes_alm')->first();
+                $view = \View::make('grifo.reportes.vw_vale',compact('sucursal','vale_cabecera','vale_detalle','almacen'))->render();
+                $pdf = \App::make('dompdf.wrapper');
+                $pdf->loadHTML($view)->setPaper('a4','landscape');
+                \Storage::put('public/vales/'.$vale_cabecera->vca_numvale, $pdf->output());
+
+                $success = 1;
+                
+                DB::commit();
+            } catch (\Exception $ex) {
+                $success = 2;
+                $error = $ex->getMessage();
+                DB::rollback();
+            }
+        }
+
+        if ($success == 1) 
+        {
+            return response()->json([
+                'msg' => 1,
+                'vca_id' => $request['vca_id'],
+                'pdf' => chunk_split(base64_encode(file_get_contents(storage_path('app/public/vales/' . $vale_cabecera->vca_numvale))))
+            ]);
+        }
+        else
+        {
+            return $error;
+        }
+    }
+    
 }

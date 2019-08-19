@@ -735,9 +735,14 @@ function consumo_parcial(cde_id,cde_qparcial)
                 
                 for(i=0;i<data.length;i++)
                 {
-                    html_detalle = html_detalle+'<div class="col-md-12 text-center">\n\
-                                                    <div class="form-group text-center">\n\
-                                                        <h4>'+data[i].cdp_qparcial+'</h4>\n\
+                    html_detalle = html_detalle+'<div class="col-md-3 text-center">\n\
+                                                    <div class="form-group">\n\
+                                                        <div class="input-group">\n\
+                                                            <h3>'+data[i].cdp_qparcial+'</h3>\n\
+                                                            <div class="input-group-prepend">\n\
+                                                                <i style="width:100%" id="identificador_'+data[i].cdp_id+'" class="fa fa-square-o fa-3x" aria-hidden="true" onclick="cambiar_hora_qparcial('+data[i].cdp_id+')"></i>\n\
+                                                            </div>\n\
+                                                        </div>\n\
                                                     </div>\n\
                                                 </div>';
                     $("#detalle_qabast_parcial_2").html(html_detalle);
@@ -755,6 +760,38 @@ function consumo_parcial(cde_id,cde_qparcial)
             }
         });
     }
+}
+
+function cambiar_hora_qparcial(cdp_id)
+{
+    $.ajax({
+        headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+        url: 'consumo/'+cdp_id+'/edit',
+        type: 'GET',
+        data:
+        {
+            tipo:5
+        },
+        success: function(data) 
+        {
+            if (data == 1) 
+            {
+                MensajeConfirmacion('SE ACTUALIZO EL REGISTRO CON EXITO');
+                $('#identificador_'+cdp_id).removeClass('fa fa-square-o fa-3x');
+                $('#identificador_'+cdp_id).addClass('fa fa-check-square-o fa-3x');
+            }
+            else
+            {
+                MensajeAdvertencia('NO SE PUDO ENVIAR LA RESPUESTA');
+                console.log(data);
+            }
+        },
+        error: function(data) {
+            MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+            console.log('error');
+            console.log(data);
+        }
+    });
 }
 
 var cont_qparcial=0;
@@ -806,7 +843,7 @@ jQuery(document).on("click", "#btn_agregar_cqparciales", function(){
     var QabastPart = new FormData($("#FormularioQabastParcial")[0]);
     $.ajax({
         headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-        url: 'consumo?tipo=2&cde_id='+cde_id,
+        url: 'consumo?tipo=2&cde_id='+cde_id+'&cca_id='+$('#tblconsumosdet').jqGrid ('getCell', cde_id, 'cca_id'),
         type: 'POST',
         dataType: 'json',
         processData: false,
@@ -1030,6 +1067,9 @@ function fn_modificar_estacion_adm()
         cancelButtonClass: 'btn btn-danger',
         showCancelButton: true,
         buttonsStyling: false,
+        allowOutsideClick: false,
+        allowEscapeKey:false,
+        allowEnterKey:false,
         reverseButtons: true
         }).then(function(result) {
             $.ajax({
@@ -1206,6 +1246,9 @@ function agregar_nueva_ruta(valor)
         cancelButtonClass: 'btn btn-danger',
         showCancelButton: true,
         buttonsStyling: false,
+        allowOutsideClick: false,
+        allowEscapeKey:false,
+        allowEnterKey:false,
         reverseButtons: true
         }).then(function(result) {
             $.ajax({
@@ -1297,3 +1340,76 @@ jQuery(document).on("click", "#btn_act_estaciones_nuevas", function(){
         }
     });
 });
+
+function fn_anular_vale()
+{
+    if ($('#txt_nro_vale_anular').val() == '') {
+        mostraralertasconfoco('* EL NRO DE VALE ES OBLIGATORIO...', '#txt_nro_vale_anular');
+        return false;
+    }
+    
+    swal({
+        title: '¿ESTA SEGURO ANULAR ESTE VALE?',
+        html: '<b>VALE N°: '+$('#txt_nro_vale_anular').val()+'</b>',
+        type: 'warning',
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'ACEPTAR',
+        cancelButtonText: 'CANCELAR',
+        confirmButtonClass: 'btn btn-success',
+        cancelButtonClass: 'btn btn-danger',
+        showCancelButton: true,
+        buttonsStyling: false,
+        allowOutsideClick: false,
+        allowEscapeKey:false,
+        allowEnterKey:false,
+        reverseButtons: true
+        }).then(function(result) {
+            $.ajax({
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                url: 'consumo/create',
+                type: 'POST',
+                data:
+                {
+                    _method: 'delete',
+                    _token:$('meta[name="csrf-token"]').attr('content'),
+                    nro_vale:$('#txt_nro_vale_anular').val()
+                },
+                beforeSend:function()
+                {            
+                    MensajeEspera('ENVIANDO INFORMACION');  
+                },
+                success: function(data) 
+                {
+                    if (data == 1) 
+                    {
+                        MensajeConfirmacion('EL VALE FUE ANULADO');
+                        jQuery("#tblconsumosdet").jqGrid('setGridParam', {
+                            url: 'consumo/0?grid=consumos'
+                        }).trigger('reloadGrid');
+                        $('#txt_nro_vale_anular').val('');
+                    }
+                    else if (data == 0)
+                    {
+                        MensajeAdvertencia('EL VALE YA FUE ANULADO');
+                    }
+                    else if (data == 3)
+                    {
+                        MensajeAdvertencia('EL N° DE VALE NO EXISTE');
+                    }
+                    else
+                    {
+                        MensajeAdvertencia('NO SE PUDO ENVIAR LA RESPUESTA');
+                        console.log(data);
+                    }
+                },
+                error: function(data) {
+                    MensajeAdvertencia("hubo un error, Comunicar al Administrador");
+                    console.log('error');
+                    console.log(data);
+                }
+            });
+        }, function(dismiss) {
+            console.log("OPERACION CANCELADA");
+        });
+}

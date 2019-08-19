@@ -19,7 +19,7 @@ class Consumos_Controller extends Controller
             $menu = DB::table('permisos.vw_rol_menu_usuario')->where([['ume_usuario',session('id_usuario')],['sist_id',session('sist_id')],['ume_estado',1]])->orderBy('ume_orden','asc')->get();
             $permiso = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['sme_sistema','li_config_consumo'],['btn_view',1]])->get();
             $capacidad = DB::table('taller.tblcapacidad_cap')->where('cap_estado',1)->orderby('cap_id','asc')->get();
-            $placas = DB::table('taller.tblvehiculos_veh')->get();
+            $placas = DB::table('taller.tblvehiculos_veh')->whereIn('veh_placa',['VEC-963','VEC-966','VEC-967','VED-951','VED-959','VEF-961','VDZ-957','VDZ-966','VDZ-967','VEA-952'])->get();
             //$tripulantes = DB::table('taller.tbltripulantes_tri')->select('tri_id','tri_nombre','tri_apaterno','tri_amaterno')->get();
             if ($menu->count() > 0) 
             {
@@ -126,11 +126,67 @@ class Consumos_Controller extends Controller
         {
             return $this->modificar_estado_comentario($cde_id,$request);
         }
+        if ($request['tipo'] == 5) 
+        {
+            return $this->modificar_hora_qparcial($cde_id,$request);
+        }
     }
 
     public function destroy(Request $request)
     {
-        
+        if($request->ajax())
+        {
+            $error = null;
+
+            DB::beginTransaction();
+            try{
+                
+                $Tblconsumocabecera_cca = new Tblconsumocabecera_cca;
+                $Tblconsumodetalle_cde = new Tblconsumodetalle_cde;
+                $Tblconsumodetparcial_cdp = new Tblconsumodetparcial_cdp;
+                
+                $cabecera = $Tblconsumocabecera_cca::where("cca_nrovale","=",$request['nro_vale'])->first();
+                if($cabecera)
+                {
+                    if($cabecera->cca_estado == 0)
+                    {
+                        $success = 0;
+                    }
+                    else
+                    {
+                        $cabecera->cca_estado = 0;
+                        $cabecera->save();
+
+                        $Tblconsumodetalle_cde::where('cca_id', $cabecera->cca_id)->update([
+                            'cde_estado' => 0,
+                        ]);
+
+                        $Tblconsumodetparcial_cdp::where('cca_id', $cabecera->cca_id)->update([
+                            'cdp_estado' => 0,
+                        ]);
+                        $success = 1;
+                    }
+                }
+                else
+                {
+                    $success = 3;
+                }
+                DB::commit();
+            } catch (\Exception $ex) {
+                $success = 2;
+                $error = $ex->getMessage();
+                DB::rollback();
+            }
+        }
+
+        if ($success) 
+        {
+            return $success;
+        }
+        else
+        {
+            return $error;
+        }
     }
 
     public function store(Request $request)
@@ -167,7 +223,7 @@ class Consumos_Controller extends Controller
     
     public function recuperar_datos_qparcial($cde_id, Request $request)
     {
-        $qparcial = DB::table('taller.tblconsumodetparcial_cdp')->select('cdp_qparcial')->where('cde_id',$cde_id)->get();
+        $qparcial = DB::table('taller.tblconsumodetparcial_cdp')->select('cdp_id','cdp_qparcial')->where('cde_id',$cde_id)->get();
         return $qparcial;
     }
     
@@ -237,7 +293,7 @@ class Consumos_Controller extends Controller
                     for($i=0; $i<$filas; $i++)
                     {
                         $Tblconsumodetalle_cde = new Tblconsumodetalle_cde;
-                        $Tblconsumodetalle_cde->cde_fecha = isset($request['fecha'][$i]) ? $request['fecha'][$i] : date('d-m-Y');
+                        $Tblconsumodetalle_cde->cde_fecha = isset($request['fecha'][$i]) ? $request['fecha'][$i].' '.date('H:i:s') : date('d-m-Y H:i:s');
                         $Tblconsumodetalle_cde->cca_id = $Tblconsumocabecera_cca->cca_id;
                         $Tblconsumodetalle_cde->veh_id = $request['cbx_placa'];
                         $Tblconsumodetalle_cde->rut_id = $request['cbx_consumo_ruta'];
@@ -365,7 +421,7 @@ class Consumos_Controller extends Controller
             
             if($fdesde!='' && $fhasta!='')
             {
-                $where.= " AND cde_fecha between '$fdesde' and '$fhasta'";
+                $where.= " AND cde_fecha between '$fdesde 00:00:00'  and '$fhasta 23:59:59'";
             }
             
             if($ruta!='')
@@ -415,7 +471,7 @@ class Consumos_Controller extends Controller
                 trim($Datos->cde_qparcial),
                 'modificar_estacion',
                 $marcas,
-                trim($Datos->cde_fecha),
+                trim(\Carbon\Carbon::parse($Datos->cde_fecha)->format('d/m/Y')),
                 trim($Datos->cca_id),
                 trim($Datos->nro_vale),
                 trim($Datos->veh_placa),
@@ -467,6 +523,7 @@ class Consumos_Controller extends Controller
                         $Tblconsumodetparcial_cdp->cde_id = $request['cde_id'];
                         $Tblconsumodetparcial_cdp->cdp_qparcial = isset($request['cdp_qparcial'][$i]) ? round($request['cdp_qparcial'][$i],3) : 0.0;
                         $Tblconsumodetparcial_cdp->cdp_usucreacion = session('id_usuario');
+                        $Tblconsumodetparcial_cdp->cca_id = $request['cca_id'];
                         $Tblconsumodetparcial_cdp->save();
                     }
 
@@ -613,7 +670,7 @@ class Consumos_Controller extends Controller
                     {
                         $detalle->tri_idconductor = $request['tri_idconductor'];
                         $detalle->tri_idcopiloto = $request['tri_idcopiloto'];
-                        $detalle->cde_fecha = $request['cde_fecha'];
+                        $detalle->cde_fecha = $request['cde_fecha'].' '.date('H:i:s');
                         $detalle->cde_kilometros = $request['cde_kilometros'];
                         $detalle->cde_observaciones = strtoupper($request['cde_observaciones']);
                         $detalle->cde_xtanque = $request['cde_xtanque'];
@@ -840,7 +897,7 @@ class Consumos_Controller extends Controller
                 try{
                     $orden = DB::table('taller.tblconsumodetalle_cde')->select('cde_orden')->where('cca_id',$request['cca_id'])->orderby('cde_orden','desc')->take(1)->get();
                     $Tblconsumodetalle_cde = new Tblconsumodetalle_cde;
-                    $Tblconsumodetalle_cde->cde_fecha = $request['cde_fecha'];
+                    $Tblconsumodetalle_cde->cde_fecha = $request['cde_fecha'].' '.date('H:i:s');
                     $Tblconsumodetalle_cde->cca_id = $request['cca_id'];
                     $Tblconsumodetalle_cde->veh_id = $request['veh_id'];
                     $Tblconsumodetalle_cde->rut_id = $request['rut_id'];
@@ -900,7 +957,7 @@ class Consumos_Controller extends Controller
             DB::beginTransaction();
             try{
                 $Tblconsumodetalle_cde = new Tblconsumodetalle_cde;
-                $Tblconsumodetalle_cde->cde_fecha = date('d-m-Y');
+                $Tblconsumodetalle_cde->cde_fecha = date('d-m-Y H:i:s');
                 $Tblconsumodetalle_cde->cca_id = $request['cca_id'];
                 $Tblconsumodetalle_cde->veh_id = $request['veh_id'];
                 $Tblconsumodetalle_cde->est_id = $request['est_id'];
@@ -930,6 +987,38 @@ class Consumos_Controller extends Controller
         {
             return $error;
         }     
+    }
+    
+    public function modificar_hora_qparcial($cdp_id,Request $request)
+    {
+        if($request->ajax())
+        {
+            $error = null;
+
+            DB::beginTransaction();
+            try{
+                Tblconsumodetparcial_cdp::where('cdp_id',$cdp_id)->update([
+                    'cdp_usumodificacion' => session('id_usuario'),
+                    'cdp_feccreacion' => date('Y-m-d H:i:s'),
+                    'cdp_fecmodificacion' => date('Y-m-d')
+                ]);
+                $success = 1;
+                DB::commit();
+            } catch (\Exception $ex) {
+                $success = 2;
+                $error = $ex->getMessage();
+                DB::rollback();
+            }
+        }
+
+        if ($success == 1) 
+        {
+            return $success;
+        }
+        else
+        {
+            return $error;
+        }
     }
     
 }

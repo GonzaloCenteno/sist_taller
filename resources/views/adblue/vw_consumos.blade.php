@@ -3,8 +3,11 @@
 @section('content')
 <style>
     .clsDatePicker {
-    z-index: 100000 !important;
-}
+        z-index: 100000 !important;
+    }
+    .fa-square-o{
+        cursor: pointer;
+    }
 </style>
 <br>
 <div class="card card-danger card-outline">
@@ -17,44 +20,44 @@
         </div>
         <div class="row text-center" id="cabecera_consumo">
             @if( $permiso[0]->btn_new == 1 )
-                <div class="col-md-2" style="padding-top: 32px;">
-                    <button id="btn_vw_nuevo_consumo_or" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVAS RUTAS</button>
+                <div class="col-md-2" style="padding-top: 37px;">
+                    <button id="btn_vw_nuevo_consumo_or" type="button" class="btn btn-xl btn-warning btn-sm btn-block" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVAS RUTAS</button>
                 </div>
-                <div class="col-md-2" style="padding-top: 32px;">
-                    <button id="btn_vw_consumocab" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS CONSUMOS</button>
+                <div class="col-md-2" style="padding-top: 37px;">
+                    <button id="btn_vw_consumocab" type="button" class="btn btn-xl btn-danger btn-sm btn-block" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS CONSUMOS</button>
                 </div>
             @else
-                <div class="col-md-2" style="padding-top: 32px;">
-                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVAS RUTAS</button>
+                <div class="col-md-2" style="padding-top: 37px;">
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-warning btn-sm btn-block" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVAS RUTAS</button>
                 </div>
-                <div class="col-md-2" style="padding-top: 32px;">
-                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS CONSUMOS</button>
+                <div class="col-md-2" style="padding-top: 37px;">
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-danger btn-sm btn-block" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS CONSUMOS</button>
                 </div>
             @endif  
             <div class="col-md-3">
                 <div class="form-group">
-                    <label>FECHA DESDE:</label>
+                    <label class="form-control-sm">FECHA DESDE:</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fa fa-calendar"></i></span>
                         </div>
-                        <input type="date" id="txt_buscar_fdesde" class="form-control text-center text-uppercase">
+                        <input type="date" id="txt_buscar_fdesde" class="form-control form-control-sm text-center text-uppercase">
                     </div>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="form-group">
-                    <label>FECHA HASTA:</label>
+                    <label class="form-control-sm">FECHA HASTA:</label>
                     <div class="input-group">
                         <div class="input-group-prepend">
                             <span class="input-group-text"><i class="fa fa-calendar"></i></span>
                         </div>
-                        <input type="date" id="txt_buscar_fhasta" class="form-control text-center text-uppercase">
+                        <input type="date" id="txt_buscar_fhasta" class="form-control form-control-sm text-center text-uppercase">
                     </div>
                 </div>
             </div>
-            <div class="col-lg-2" style="padding-top: 32px;">
-                <button id="btn_vw_buscar_consumos" type="button" class="btn btn-xl btn-success" readonly="readonly"><i class="fa fa-search"></i> BUSCAR</button>
+            <div class="col-lg-2" style="padding-top: 37px;">
+                <button id="btn_vw_buscar_consumos" type="button" class="btn btn-xl btn-success btn-sm btn-block" readonly="readonly"><i class="fa fa-search"></i> BUSCAR</button>
             </div>
         </div>
     </div>
@@ -62,9 +65,9 @@
         <div class="form-row">
             <div class="col-lg-2">
                 <div class="form-group">
-                    <label>SELECCIONAR CAPACIDAD:</label>
+                    <label class="form-control-sm">CAPACIDAD:</label>
 
-                    <select class="form-control" style="width: 100%;" id="cbx_capacidad" name="cbx_capacidad">
+                    <select class="form-control form-control-sm" style="width: 100%;" id="cbx_capacidad" name="cbx_capacidad">
                         @foreach($capacidad as $cap)
                         <option value="{{ $cap->cap_val }}"> {{ $cap->cap_val }} </option>
                         @endforeach
@@ -77,45 +80,45 @@
                     <div class="row">
                         <div class="col-lg-3">
                             <div class="form-group">
-                                <label>ESCRIBIR N° VALE:</label>
+                                <label class="form-control-sm">ESCRIBIR N° VALE:</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="fa fa-tasks"></i></span>
                                     </div>
-                                    <input type="text" id="txt_buscar_nrovale" class="form-control text-center text-uppercase">
+                                    <input type="text" id="txt_buscar_nrovale" class="form-control form-control-sm text-center text-uppercase" autocomplete="off" onClick="this.select()">
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-3">
                             <div class="form-group">
-                                <label>ESCRIBIR N° PLACA:</label>
+                                <label class="form-control-sm">ESCRIBIR N° PLACA:</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="fa fa-th-list"></i></span>
                                     </div>
-                                    <input type="text" id="txt_buscar_placa" class="form-control text-center text-uppercase">
+                                    <input type="text" id="txt_buscar_placa" class="form-control form-control-sm text-center text-uppercase" autocomplete="off" onClick="this.select()">
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-3">
                             <div class="form-group">
-                                <label>ESCRIBIR RUTA:</label>
+                                <label class="form-control-sm">ESCRIBIR RUTA:</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="fa fa-tasks"></i></span>
                                     </div>
-                                    <input type="text" id="txt_buscar_ruta" class="form-control text-center text-uppercase">
+                                    <input type="text" id="txt_buscar_ruta" class="form-control form-control-sm text-center text-uppercase" autocomplete="off" onClick="this.select()">
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-3">
                             <div class="form-group">
-                                <label>ESCRIBIR ESTACION:</label>
+                                <label class="form-control-sm">ESCRIBIR ESTACION:</label>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text"><i class="fa fa-tasks"></i></span>
                                     </div>
-                                    <input type="text" id="txt_buscar_estacion" class="form-control text-center text-uppercase">
+                                    <input type="text" id="txt_buscar_estacion" class="form-control form-control-sm text-center text-uppercase" autocomplete="off" onClick="this.select()">
                                 </div>
                             </div>
                         </div>
@@ -923,7 +926,7 @@
             forceFit:true,  
             scroll: false,
             colNames: ['ID', 'Q-PARCIAL','<i class="fa fa-pencil"></i>','<i class="fa fa-plus"></i>','FECHA','IDCAB','VALE','PLACA','RUTA','ESTACION','CONDUCTOR','COPILOTO','KM','%','Q-LT','%','Q-LT','Q-ABAST','OBSERVACIONES','INGRESO','SALIDA','STOP','EST_ID','COMENTARIO','COMENT_EST','VEH_ID'],
-            rowNum: 30, sortname: 'cca_id', sortorder: 'desc', viewrecords: true, caption: '<button id="btn_act_tblconsumos" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - LISTA DE CONSUMOS -', align: "center",
+            rowNum: 30, sortname: 'cca_id', sortorder: 'desc', viewrecords: true, caption: '<div class="row"><div class="col-md-2 text-center"><button id="btn_act_tblconsumos" type="button" class="btn btn-danger btn-block"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button></div><div class="col-md-2 text-left"> - LISTA DE FACTURAS -</div><div class="col-md-2"><div class="form-group"><div class="input-group"><input type="text" id="txt_nro_vale_anular" class="form-control text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="ESCRIBIR N° VALE"><div class="input-group-prepend">@if($permiso[0]->btn_del == 1)<button  onclick="fn_anular_vale();" class="btn btn-danger"><i class="fa fa-trash"></i></button>@else<button  onclick="sin_permiso();" class="btn btn-danger"><i class="fa fa-trash"></i></button>@endif</div></div></div></div>', align: "center",
             colModel: [
                 {name: 'cde_id', index: 'cde_id', align: 'left',width: 10,hidden:true,frozen:true},
                 {name: 'cde_qparcial', index: 'cde_qparcial', align: 'center', width: 70,frozen:true,formatter: OptionFormato,sortable: false},

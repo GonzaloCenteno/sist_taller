@@ -215,25 +215,6 @@ table td h3{
 }
 
 
-
-
-
-
-table tfoot tr:first-child td {
-  border-top: none; 
-}
-
-table tfoot tr:last-child td {
-  color: #449d44;
-  font-size: 1.4em;
-  border-top: 1px solid #449d44; 
-
-}
-
-table tfoot tr td:first-child {
-  border: none;
-}
-
 #thanks{
   font-size: 2em;
   margin-bottom: 50px;

@@ -34,6 +34,7 @@
         <link href="{{ asset('css/ui.jqgrid-bootstrap4.css') }}" rel="stylesheet">
         <link href="{{ asset('css/sweetalert2.css') }}" rel="stylesheet"> 
         <link href="{{ asset('plugins/select2/select2.min.css') }}" rel="stylesheet">
+        <link href="{{ asset('css/jquery-confirm.css') }}" rel="stylesheet"> 
         
         <style>
             .ui-jqgrid {
@@ -124,7 +125,7 @@
             <aside class="main-sidebar elevation-4 sidebar-light-danger">
                 <!-- Brand Logo -->
                 <a href="#" class="brand-link bg-danger">
-                    <img src="dist/img/AdminLTELogo.png" alt="AdminLTE Logo" class="brand-image img-circle elevation-3"
+                    <img src="{{ asset('img/bus-home.png') }}" alt="SISTEMA TALLER - CROMOTEX" class="brand-image img-circle elevation-3"
                          style="opacity: .8">
                     <span class="brand-text font-weight-light">Sist - Taller</span>
                 </a>
@@ -205,6 +206,8 @@
         <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
         <script type="text/javascript" src="{{ asset('js/jquery.jqGrid.min.js') }}"></script>
         <script type="text/javascript" src="{{ asset('js/grid.locale-es.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/block_ui.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/jquery-confirm.js') }}"></script>
         <script>
             $.widget.bridge('uibutton', $.ui.button)
         </script>
@@ -226,7 +229,9 @@
         <script type="text/javascript" src="{{ asset('js/sweetalert2.js') }}"></script>
         <script type="text/javascript" src="{{ asset('plugins/select2/select2.full.min.js') }}"></script>
         <script type="text/javascript" src="{{ asset('archivos_js/funciones_globales.js') }}"></script>
-        
+        <script type="text/javascript" src="{{ asset('js/qz/qz-tray.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/qz/dependencies/rsvp-3.1.0.min.js') }}"></script>
+        <script type="text/javascript" src="{{ asset('js/qz/dependencies/sha-256.min.js') }}"></script>
         <script>
             var rol_descripcion = '{{ isset($cargo->sro_descripcion) ? $cargo->sro_descripcion : '' }}';
         </script>

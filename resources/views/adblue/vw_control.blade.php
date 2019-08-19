@@ -347,7 +347,7 @@
     }
     
     $(document).on("focus", ".FechaControl", function(){
-        $(this).datepicker({ minDate: -7,dateFormat: 'dd-mm-yy',showAnim: 'clip' });
+        $(this).datepicker({ minDate: -20,dateFormat: 'dd-mm-yy',showAnim: 'clip' });
 
         $.datepicker.regional['es'] = {
         closeText: 'Cerrar',

@@ -169,16 +169,8 @@ class Costo_Adblue_Controller extends Controller
             $start = 0;
         }
         
-        if(isset($request['anio']))
-        {
-            $totalg = $this->TblCostoAdblue_Coa()->where('coa_anio',$request['anio'])->tblcostoadbluecount()->get();
-            $sql = $this->TblCostoAdblue_Coa()->where('coa_anio',$request['anio'])->paginacion($sidx,$sord,$limit,$start)->get();
-        }
-        else
-        {
-            $totalg = $this->TblCostoAdblue_Coa()->tblcostoadbluecount()->get();
-            $sql = $this->TblCostoAdblue_Coa()->paginacion($sidx,$sord,$limit,$start)->get();
-        }
+        $totalg = $this->TblCostoAdblue_Coa()->where('coa_anio',$request['anio'])->tblcostoadbluecount()->get();
+        $sql = $this->TblCostoAdblue_Coa()->where('coa_anio',$request['anio'])->paginacion($sidx,$sord,$limit,$start)->get();
         
         $total_pages = 0;
         if (!$sidx) {

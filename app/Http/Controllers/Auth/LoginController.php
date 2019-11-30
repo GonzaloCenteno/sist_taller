@@ -69,6 +69,7 @@ class LoginController extends Controller
     
     public function logout()
     {
+        ldap_unbind(ldap_connect("cromotex.com.pe",389));
         \Session::flush();
         return redirect('/');
     }

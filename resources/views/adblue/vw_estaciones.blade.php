@@ -9,26 +9,21 @@
 </style>
 <br>
 <div class="card card-danger card-outline">
-    <div class="card-header">
-        <h4 class="m-0">REGISTRO DE ESTACIONES</h4>
-
-        <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-            <button type="button" class="btn btn-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
-        </div>
+    <div class="card-header align-self-center">
+        <h4 class="m-0"><i class="fa fa-map-marker fa-2x" aria-hidden="true"></i> REGISTRO DE ESTACIONES</h4>
     </div>
     <div class="card-body">
         <div class="col-lg-12">
             <center>
                 @if( $permiso[0]->btn_new == 1 )
-                    <button id="btn_nueva_estacion" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> CREAR ESTACION</button>
+                    <button id="btn_nueva_estacion" type="button" class="btn btn-xl btn-outline-danger" readonly="readonly"><i class="fa fa-plus-square"></i> CREAR ESTACION</button>
                 @else
-                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> CREAR ESTACION</button>
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-outline-danger" readonly="readonly"><i class="fa fa-plus-square"></i> CREAR ESTACION</button>
                 @endif
                 @if( $permiso[0]->btn_edit == 1 )
-                    <button id="btn_modificar_estacion" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR ESTACION</button>
+                    <button id="btn_modificar_estacion" type="button" class="btn btn-xl btn-outline-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR ESTACION</button>
                 @else
-                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR ESTACION</button>
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-outline-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR ESTACION</button>
                 @endif
             </center>
         </div>
@@ -79,13 +74,13 @@
 <script>
     $('#{{ $permiso[0]->men_sistema }}').addClass('menu-open');
     $('.{{ $permiso[0]->men_sistema }}').addClass('active');
-    $('.{{ $permiso[0]->sme_ruta }}').addClass('active');
+    $('.{{ $permiso[0]->sme_ruta }}').addClass('submenu');
     
     jQuery(document).ready(function($){
         jQuery("#tblestaciones").jqGrid({
             url: 'estacion/0?grid=estaciones',
             datatype: 'json', mtype: 'GET',
-            height: '512px', autowidth: true,
+            height: '480px', autowidth: true,
             toolbarfilter: true,
             sortable:false,
             colNames: ['ID', 'DESCRIPCION','FECHA REGISTRO','ESTADO'],

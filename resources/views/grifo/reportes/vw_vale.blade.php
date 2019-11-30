@@ -43,7 +43,7 @@
                 </tr>
                 <tr>
                     <td style="text-align: left;width: 25%;" class="bordes-pagina">FECHA EMISION</td>
-                    <td colspan="3" style="text-align: left;width: 75%;" class="bordes-pagina">:  {{ \Carbon\Carbon::parse($vale_cabecera->vca_fecemision)->format('d/m/Y') }} - HORA :  {{ \Carbon\Carbon::parse($vale_cabecera->vca_fecemision)->format('H:i') }} - RUTA :  {{ $vale_cabecera->est_descripcion }}</td>
+                    <td colspan="3" style="text-align: left;width: 75%;" class="bordes-pagina">:  {{ $vale_cabecera->vca_fecha }} - HORA :  {{ $vale_cabecera->vca_hora }} - RUTA :  {{ $vale_cabecera->est_descripcion }}</td>
                 </tr>
                 <tr>
                     <td style="text-align: left;width: 25%;" class="bordes-pagina">VELOCIMETRO(KM)</td>
@@ -107,7 +107,7 @@
             <tfoot>
                 <tr>
                     <td style="text-align: center;width: 25%;border-right:0px;border-left:0px;border-bottom:0px;border-top-style: dashed">SOLICITADO POR</td>
-                    <td style="text-align: center;width: 25%;border-right:0px;border-left:0px;border-bottom:0px;border-top-style: dashed">VOBO</td>
+                    <td style="text-align: center;width: 25%;border-right:0px;border-left:0px;border-bottom:0px;border-top-style: dashed">V<sup>o</sup>B<sup>o</sup></td>
                     <td style="text-align: center;width: 25%;border-right:0px;border-left:0px;border-bottom:0px;border-top-style: dashed">DESPACHADO POR</td>
                     <td style="text-align: center;width: 25%;border-right:0px;border-left:0px;border-bottom:0px;border-top-style: dashed">RECIBIDO POR</td>
                 </tr>

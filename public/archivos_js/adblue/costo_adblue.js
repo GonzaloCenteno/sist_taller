@@ -63,7 +63,7 @@ jQuery(document).on("click", "#btn_crear_costo_adblue", function() {
             {
                 MensajeConfirmacion('EL RESPUESTA FUE ENVIADA CON EXITO');
                 jQuery("#tblcostos_adblue").jqGrid('setGridParam', {
-                    url: 'costo_adblue/0?grid=costos_adblue'
+                    url: 'costo_adblue/0?grid=costos_adblue&anio='+$("#cbx_coa_anio").val(),
                 }).trigger('reloadGrid');
                 $('#btn_cerrar_modal').click();
             }
@@ -150,7 +150,7 @@ jQuery(document).on("click", "#btn_actualizar_costo_adblue", function() {
             {
                 MensajeConfirmacion('SE ACTUALIZO EL REGISTRO CON EXITO');
                 jQuery("#tblcostos_adblue").jqGrid('setGridParam', {
-                    url: 'costo_adblue/0?grid=costos_adblue'
+                    url: 'costo_adblue/0?grid=costos_adblue&anio='+$("#cbx_coa_anio").val(),
                 }).trigger('reloadGrid');
                 $('#btn_cerrar_modal').click();
             }
@@ -175,9 +175,10 @@ jQuery(document).on("click", "#btn_actualizar_costo_adblue", function() {
 });
 
 jQuery(document).on("click", "#btn_act_tblcostosadblue", function(){
-    jQuery("#tblcostos_adblue").jqGrid('setGridParam', {
-        url: 'costo_adblue/0?grid=costos_adblue'
-    }).trigger('reloadGrid');
+    var anio_actual = new Date();
+    $("#cbx_coa_anio").val(anio_actual.getFullYear());
+    $("#cbx_coa_anio").change();
+
 });
 
 jQuery(document).on("change", "#cbx_coa_anio", function(){

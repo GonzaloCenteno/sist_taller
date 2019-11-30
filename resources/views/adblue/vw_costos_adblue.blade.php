@@ -9,13 +9,8 @@
 </style>
 <br>
 <div class="card card-danger card-outline">
-    <div class="card-header">
-        <h4 class="m-0">COSTOS DE ADBLUE POR LITRO</h4>
-
-        <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-            <button type="button" class="btn btn-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
-        </div>
+    <div class="card-header align-self-center">
+        <h4 class="m-0"><i class="fa fa-usd fa-2x" aria-hidden="true"></i> COSTOS DE ADBLUE POR LITRO</h4>
     </div>
     <div class="card-body" id="contenedors">
         <div class="form-row">
@@ -35,14 +30,14 @@
             </div>
             <div class="col-lg-9 text-left" style="padding-top: 32px;">
                 @if( $permiso[0]->btn_new == 1 )
-                    <button id="btn_nuevo_costo_adblue" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVO COSTO</button>
+                    <button id="btn_nuevo_costo_adblue" type="button" class="btn btn-xl btn-outline-danger" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVO COSTO</button>
                 @else
-                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVO COSTO</button>
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-outline-danger" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVO COSTO</button>
                 @endif
                 @if( $permiso[0]->btn_edit == 1 )
-                    <button id="btn_modificar_costo_adblue" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR COSTO</button>
+                    <button id="btn_modificar_costo_adblue" type="button" class="btn btn-xl btn-outline-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR COSTO</button>
                 @else
-                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR COSTO</button>
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-outline-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR COSTO</button>
                 @endif  
             </div>
         </div>
@@ -134,16 +129,16 @@
 <script>
     $('#{{ $permiso[0]->men_sistema }}').addClass('menu-open');
     $('.{{ $permiso[0]->men_sistema }}').addClass('active');
-    $('.{{ $permiso[0]->sme_ruta }}').addClass('active');
+    $('.{{ $permiso[0]->sme_ruta }}').addClass('submenu');
     
     jQuery(document).ready(function($){
         var anio = new Date();
         $("#cbx_coa_anio").val(anio.getFullYear());
 
         jQuery("#tblcostos_adblue").jqGrid({
-            url: 'costo_adblue/0?grid=costos_adblue',
+            url: 'costo_adblue/0?grid=costos_adblue&anio='+$("#cbx_coa_anio").val(),
             datatype: 'json', mtype: 'GET',
-            height: '450px', autowidth: true,
+            height: '430px', autowidth: true,
             toolbarfilter: true,
             sortable:false,
             colNames: ['ID', 'AÑO','MES','COSTO','FECHA REGISTRO'],

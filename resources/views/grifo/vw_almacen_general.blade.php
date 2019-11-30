@@ -85,7 +85,7 @@
                         <label>CODIGO TRABAJADOR:</label>
                         <div class="input-group">
                             <input type="hidden" id="hiddentxt_tri_nrodoc" name="hiddentxt_tri_nrodoc">
-                            <input type="text" id="txt_tri_nrodoc" name="txt_tri_nrodoc" class="form-control text-center text-uppercase" onClick="this.select()" style="font-weight: bold;">
+                            <input type="text" id="txt_tri_nrodoc" name="txt_tri_nrodoc" autocomplete="off" class="form-control text-center text-uppercase" onClick="this.select()" style="font-weight: bold;">
                             <div class="input-group-prepend">
                                 <button type="button" class="btn btn-danger"><i class="fa fa-search"></i></button>
                             </div>
@@ -97,7 +97,7 @@
                     <div class="form-group">
                         <label>NOMBRE TRABAJADOR:</label>
                         <div class="input-group">
-                            <input type="text" id="txt_tri_nombres" name="txt_tri_nombres" class="form-control text-center text-uppercase" onClick="this.select()" style="font-weight: bold;">
+                            <input type="text" id="txt_tri_nombres" name="txt_tri_nombres" autocomplete="off" class="form-control text-center text-uppercase" onClick="this.select()" style="font-weight: bold;">
                             <div class="input-group-prepend">
                                 <button type="button" class="btn btn-danger"><i class="fa fa-search"></i></button>
                             </div>
@@ -110,7 +110,7 @@
                         <label>PLACA:</label>
                         <div class="input-group">
                             <input type="hidden" id="hiddentxt_veh_placa" name="hiddentxt_veh_placa">
-                            <input type="text" id="txt_veh_placa" name="txt_veh_placa" class="form-control text-center text-uppercase" onClick="this.select()" style="font-weight: bold;">
+                            <input type="text" id="txt_veh_placa" name="txt_veh_placa" autocomplete="off" class="form-control text-center text-uppercase" onClick="this.select()" style="font-weight: bold;">
                             <div class="input-group-prepend">
                                 <button type="button" class="btn btn-danger"><i class="fa fa-search"></i></button>
                             </div>
@@ -225,7 +225,7 @@
                 <button id="btn_nueva_capacidad" type="button" class="btn btn-xl btn-outline-dark btn-block" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVO</button>
             </div>
             <div class="col-md-2 col-xs-3">
-                <button id="btn_nueva_capacidad" type="button" class="btn btn-xl btn-outline-primary btn-block" readonly="readonly"><i class="fa fa-folder-open-o"></i> ABRIR</button>
+                <button id="btn_abrir" type="button" class="btn btn-xl btn-outline-primary btn-block" readonly="readonly"><i class="fa fa-folder-open-o"></i> ABRIR</button>
             </div>
             <div class="col-md-2 col-xs-3">
                 @if( $permiso[0]->btn_new == 1 )
@@ -245,7 +245,7 @@
                 @endif
             </div>
             <div class="col-md-2 col-xs-3">
-                @if( $permiso[0]->btn_edit == 1 )
+                @if( $permiso[0]->btn_print == 1 )
                     <button id="btn_imprimir" type="button" class="btn btn-xl btn-outline-success btn-block" readonly="readonly"><i class="fa fa-print"></i> IMPRIMIR</button>
                 @else
                     <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-outline-success btn-block" readonly="readonly"><i class="fa fa-print"></i> IMPRIMIR</button>
@@ -430,7 +430,7 @@ function updateConfig() {
 <script>
     $('#{{ $permiso[0]->men_sistema }}').addClass('menu-open');
     $('.{{ $permiso[0]->men_sistema }}').addClass('active');
-    $('.{{ $permiso[0]->sme_ruta }}').addClass('active');
+    $('.{{ $permiso[0]->sme_ruta }}').addClass('submenu');
     
     
     $("#txt_vca_fecemision").datepicker({ dateFormat: "dd/mm/yy", minDate: -5}).datepicker("setDate", new Date());
@@ -466,7 +466,7 @@ function updateConfig() {
             sortable:false,
             cmTemplate: { sortable: false },
             colNames: ['CODIGO', 'DESCRIPCION','UNIDAD','CANTIDAD','TANQUE P.','TANQUE S.','TANQUE A.'],
-            rowNum: 100, sortname: 'trh_ntransaccion', sortorder: 'asc', viewrecords: false, align: "center",
+            rowNum: 100, sortname: 'gri_id', sortorder: 'asc', viewrecords: false, align: "center",
             colModel: [
                 {name: 'codigo', index: 'codigo', align: 'center',width: 50},
                 {name: 'descripcion', index: 'descripcion', align: 'left', width: 80},

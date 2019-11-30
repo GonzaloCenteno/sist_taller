@@ -2,11 +2,6 @@
 @section('title', 'CONTROL')
 @section('content')
 <style>
-
-    .column_red {
-        background-color: #c83839;
-    }
-    
     th.ui-th-column div{
         white-space:normal !important;
         height:auto !important;
@@ -19,13 +14,8 @@
 </style>
 <br>
 <div class="card card-danger card-outline">
-    <div class="card-header">
-        <h4 class="m-0">CONTROL DIARIO DE ADBLUE - AREQUIPA LITROS</h4>
-
-        <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-            <button type="button" class="btn btn-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
-        </div>
+    <div class="card-header align-self-center">
+        <h4 class="m-0"><i class="fa fa-calendar-check-o fa-2x" aria-hidden="true"></i> CONTROL DIARIO DE ADBLUE - AREQUIPA LITROS</h4>
     </div>
     <div class="card-body">
         <div class="row">
@@ -53,17 +43,17 @@
             </div>
             @if( $permiso[0]->btn_new == 1 )
                 <div class="col-md-2 text-center" style="padding-top: 31px;">
-                    <button id="btn_nuevo_control" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> AGREGAR</button>
+                    <button id="btn_nuevo_control" type="button" class="btn btn-xl btn-outline-danger" readonly="readonly"><i class="fa fa-plus-square"></i> AGREGAR</button>
                 </div>
             @else
                 <div class="col-md-2 text-center" style="padding-top: 31px;">
-                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> AGREGAR</button>
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-outline-danger" readonly="readonly"><i class="fa fa-plus-square"></i> AGREGAR</button>
                 </div>
             @endif
             <div class="col-md-3" style="padding-top: 31px;">
                 <div class="btn-group">
-                    <button type="button" class="btn btn-warning"><i class="fa fa-print"></i> IMPRIMIR</button>
-                    <button type="button" class="btn btn-warning dropdown-toggle" data-toggle="dropdown">
+                    <button type="button" class="btn btn-outline-warning"><i class="fa fa-print"></i> IMPRIMIR</button>
+                    <button type="button" class="btn btn-outline-warning dropdown-toggle" data-toggle="dropdown">
                         <span class="caret"></span>
                         <span class="sr-only">Toggle Dropdown</span>
                     </button>
@@ -270,14 +260,14 @@
 <script>
     $('#{{ $permiso[0]->men_sistema }}').addClass('menu-open');
     $('.{{ $permiso[0]->men_sistema }}').addClass('active');
-    $('.{{ $permiso[0]->sme_ruta }}').addClass('active');
+    $('.{{ $permiso[0]->sme_ruta }}').addClass('submenu');
     
     jQuery(document).ready(function ($) {
     
         jQuery("#tblcontrol").jqGrid({
             url: 'control/0?grid=control',
             datatype: 'json', mtype: 'GET',
-            height: '450px', autowidth: true,
+            height: '430px', autowidth: true,
             toolbarfilter: true,
             sortable: false,
             colNames: ['ID', 'FECHA', 'INGRESO ISOTANQUE AL AREA', 'TOTAL SALIDA POR ISOTANQUE', 'STOP', 'EXCEDENTE POR ISOTANQUE','CANTIDAD','OBSERVACIONES'],
@@ -289,7 +279,7 @@
                 {name: 'xtotal_sal_isotanq', index: 'xtotal_sal_isotanq', align: 'center', width: 15},
                 {name: 'xstop', index: 'xstop', align: 'center', width: 10},
                 {name: 'xexce_isotanq', index: 'xexce_isotanq', align: 'center', width: 15},
-                {name: 'xcantidad', index: 'xcantidad', align: 'center', width: 10, classes: 'column_red'},
+                {name: 'xcantidad', index: 'xcantidad', align: 'center', width: 10},
                 {name: 'xcon_observacion', index: 'xcon_observacion', align: 'center', width: 35}
             ],
             pager: '#paginador_tblcontrol',

@@ -75,6 +75,15 @@
                 height:auto !important;
                 padding:2px;
             }
+            
+            .submenu{
+                background-color: rgba(244,53,70,0.10) !important;
+            }
+            
+            .submenu:hover
+            {
+                background-color: rgba(244,53,70,0.10) !important;
+            }
         </style>
     </head>
     <body class="hold-transition sidebar-mini" id="body_push">
@@ -149,11 +158,11 @@
                                 @foreach($menu as $men)
                                 <li class="nav-item has-treeview" id="{{ $men->men_sistema }}">
                                     <a href="#" class="nav-link {{ $men->men_sistema }}">
-                                        <i class="nav-icon fa fa-edit"></i>
-                                        <p>
+                                        <i class="nav-icon fa fa-sign-in"></i>
+                                        <small style="font-size: 16px;">
                                             {{ $men->men_titulo }}
-                                            <i class="right fa fa-angle-left"></i>
-                                        </p>
+                                        </small>
+                                        <i class="float-right right fa fa-arrow-left"></i>
                                     </a>
                                     <ul class="nav nav-treeview">
                                         <?php $submenu = DB::table('permisos.vw_rol_submenu_usuario')->where([['usm_usuario',session('id_usuario')],['sist_id',session('sist_id')],['men_id',$men->men_id],['btn_view',1]])->orderBy('usm_orden','asc')->get();?>
@@ -161,7 +170,7 @@
                                         <li class="nav-item">
                                             <a href="{{ $sub->sme_ruta }}" class="nav-link {{ $sub->sme_ruta }}">
                                                 <i class="fa fa-circle-o nav-icon"></i>
-                                                <p>{{ $sub->sme_titulo }}</p>
+                                                <small style="font-size: 14px;">{{ $sub->sme_titulo }}</small>
                                             </a>
                                         </li>
                                         @endforeach

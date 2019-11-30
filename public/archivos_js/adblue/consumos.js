@@ -153,46 +153,23 @@ jQuery(document).on("click", "#btn_generar_consumodet", function(){
                     $("#btn_generar_consumodet").attr('disabled',true);
                     $("#cbx_consumo_ruta").attr('disabled',true);
 
-                    html = '<div class="form-row">\n\
-                                <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">\n\
-                                    <table id="consumodet" class="table table-striped table-bordered table-condensed table-hover">\n\
-                                       <thead style="background-color:#A9D0F5">\n\
-                                        <th style="width: 5%;"></th>\n\
-                                        <th style="width: 10%;">FECHA</th>\n\
-                                        <th style="width: 5%;">ESTACION</th>\n\
-                                        <th style="width: 15%;">CONDUCTOR</th>\n\
-                                        <th style="width: 15%;">PILOTO</th>\n\
-                                        <th style="width: 10%;">KM</th>\n\
-                                        <th style="width: 10%;">%STOP EN TANQUE</th>\n\
-                                        <th style="width: 10%;">Q-ABAST.</th>\n\
-                                        <th style="width: 15%;">OBSERVACIONES</th>\n\
-                                        <th style="width: 8%;">INGRESO</th>\n\
-                                        <th style="width: 10%;">SALIDA</th>\n\
-                                        <th style="width: 10%;">STOP</th>\n\
-                                        </thead>\n\
-                                        <tbody id="cuerpodet">\n\
-                                            <tr class="filas_consumocab" id="filas_consumocab">\n\
-                                                <td><button type="button" id="agregar_otrasrutas" class="btn btn-success"><i class="fa fa-plus-square"></i></button></td>\n\
-                                                <td><input type="text" name="fecha[]" class="form-control text-uppercase text-center otro" readonly="readonly"></td>\n\
-                                                <td><input type="hidden" name="contador[]"><input type="hidden" name="estacion[]" id="hiddenestacion_'+num+'"><input type="text" id="estacion_'+num+'" class="form-control text-uppercase text-center"></td>\n\
-                                                <td><input type="hidden" name="conductor[]" id="hiddenconductor_'+num+'"><input type="text" id="conductor_'+num+'" class="form-control conductor text-uppercase text-center"></td>\n\
-                                                <td><input type="hidden" name="piloto[]" id="hiddenpiloto_'+num+'"><input type="text" id="piloto_'+num+'" class="form-control piloto text-uppercase text-center"></td>\n\
-                                                <td><input type="text" name="km[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="6" placeholder="0"></td>\n\
-                                                <td><input type="text" name="xtanque[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0"></td>\n\
-                                                <td><input type="text" name="qabast[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
-                                                <td><input type="text" name="observ[]" class="form-control text-uppercase text-center" maxlength="255"></td>\n\
-                                                <td><input type="text" name="ingreso[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
-                                                <td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
-                                                <td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
-                                            </tr>\n\
-                                        </tbody>\n\
-                                    </table>\n\
-                                </div>\n\
-                            </div>';
+                    html = '<tr class="filas_consumocab" id="filas_consumocab">\n\
+                                <td><div class="form-group"><div class="input-group"><div class="input-group-prepend"><button type="button" id="agregar_otrasrutas" class="btn btn-success"><i class="fa fa-plus-square"></i></button></div><input type="text" name="fecha[]" class="form-control text-uppercase text-center otro" readonly="readonly"></div></div></td>\n\
+                                <td><input type="hidden" name="contador[]"><input type="hidden" name="estacion[]" id="hiddenestacion_'+num+'"><input type="text" id="estacion_'+num+'" class="form-control text-uppercase text-center"></td>\n\
+                                <td><input type="hidden" name="conductor[]" id="hiddenconductor_'+num+'"><input type="text" id="conductor_'+num+'" class="form-control conductor text-uppercase text-center"></td>\n\
+                                <td><input type="hidden" name="piloto[]" id="hiddenpiloto_'+num+'"><input type="text" id="piloto_'+num+'" class="form-control piloto text-uppercase text-center"></td>\n\
+                                <td><input type="text" name="km[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="6" placeholder="0"></td>\n\
+                                <td><input type="text" name="xtanque[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0"></td>\n\
+                                <td><input type="text" name="qabast[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
+                                <td><input type="text" name="observ[]" class="form-control text-uppercase text-center" maxlength="255"></td>\n\
+                                <td><input type="text" name="ingreso[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
+                                <td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
+                                <td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
+                            </tr>';
                     autocompletar_estaciones('estacion_'+num);
                     autocompletar_personas('conductor_'+num);
                     autocompletar_personas('piloto_'+num);
-                    $("#consumodet").html(html);
+                    $("#cuerpodet").html(html);
                     cont++;
                     detalles=detalles+1;
                     evaluar();
@@ -200,25 +177,6 @@ jQuery(document).on("click", "#btn_generar_consumodet", function(){
                 }
                 else
                 {
-                    html = '<div class="form-row">\n\
-                                <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">\n\
-                                    <table id="consumodet" class="table table-striped table-bordered table-condensed table-hover">\n\
-                                       <thead style="background-color:#A9D0F5">\n\
-                                        <th style="width: 10%;">FECHA</th>\n\
-                                        <th style="width: 5%;">ESTACION</th>\n\
-                                        <th style="width: 15%;">CONDUCTOR</th>\n\
-                                        <th style="width: 15%;">PILOTO</th>\n\
-                                        <th style="width: 10%;">KM</th>\n\
-                                        <th style="width: 10%;">%STOP EN TANQUE</th>\n\
-                                        <th style="width: 10%;">Q-ABAST.</th>\n\
-                                        <th style="width: 15%;">OBSERVACIONES</th>\n\
-                                        <th style="width: 8%;">INGRESO</th>\n\
-                                        <th style="width: 10%;">SALIDA</th>\n\
-                                        <th style="width: 10%;">STOP</th>\n\
-                                        </thead>\n\
-                                    </table>\n\
-                                </div>\n\
-                            </div>';
                     for(i=1;i<data.length;i++)
                     {
                         num++;
@@ -235,7 +193,7 @@ jQuery(document).on("click", "#btn_generar_consumodet", function(){
                             <td><input type="text" name="salida[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"></td>\n\
                             <td><input type="text" name="stop[]" class="form-control text-uppercase text-center" onkeypress="return soloNumeroTab(event);" maxlength="8" placeholder="0.000"><input type="hidden" name="consumo[]" value="'+data[i].rte_consumo+'"></td>\n\
                             </tr>';
-                        $("#consumodet").html(html);
+                        $("#cuerpodet").html(html);
                     }
                     for(j=1;j<=num;j++)
                     {
@@ -279,8 +237,7 @@ function eliminarDetalle(indice)
 
 jQuery(document).on("click", "#agregar_otrasrutas", function(){
     var fila='<tr class="filas_consumocab" id="filas_consumocab_'+cont+'">'+
-            '<td><button type="button" class="btn btn-danger" onclick="eliminarDetalle('+cont+')"><i class="fa fa-trash-o"></i></button></td>'+
-            '<td><input type="text" name="fecha[]" class="form-control text-uppercase text-center otro" readonly="readonly"></td>'+
+            '<td><div class="form-group"><div class="input-group"><div class="input-group-prepend"><button type="button" class="btn btn-danger" onclick="eliminarDetalle('+cont+')"><i class="fa fa-trash-o"></i></button></div><input type="text" name="fecha[]" class="form-control text-uppercase text-center otro" readonly="readonly"></div></div></td>'+
             '<td><input type="hidden" name="contador[]"><input type="hidden" name="estacion[]" id="hiddenestacion_'+cont+'"><input type="text" id="estacion_'+cont+'" class="form-control text-uppercase text-center"></td>'+
             '<td><input type="hidden" name="conductor[]" id="hiddenconductor_'+cont+'"><input type="text" id="conductor_'+cont+'" class="form-control conductor text-uppercase text-center"></td>'+
             '<td><input type="hidden" name="piloto[]" id="hiddenpiloto_'+cont+'"><input type="text" id="piloto_'+cont+'" class="form-control piloto text-uppercase text-center"></td>'+
@@ -321,6 +278,10 @@ jQuery(document).on("click", "#btn_vw_otrosconsumos_Guardar", function(){
                 }).trigger('reloadGrid');
                 $(".filas_consumocab").remove();
                 mostrarformulario(false);
+            }
+            else if(data.msg == 'validator') 
+            {
+                MensajeAdvertencia(data.error[0]);
             }
             else
             {
@@ -415,7 +376,7 @@ function modificar_consumodetalle(cde_id){
             $("#txt_cde_conductor").val(data.conductor);
             $("#txt_cde_copiloto").val(data.copiloto);      
 
-            $("#txt_cde_fecha").val(data.cde_fecha);
+            $("#txt_cde_fecha").val(data.fecha);
             $("#txt_cde_km").val(data.cde_kilometros);
             $("#txt_cde_xtanque").val(data.cde_xtanque);
             if (data.cde_qparcial === 1) 
@@ -1367,7 +1328,7 @@ function fn_anular_vale()
         }).then(function(result) {
             $.ajax({
                 headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
-                url: 'consumo/create',
+                url: 'consumo/destroy',
                 type: 'POST',
                 data:
                 {

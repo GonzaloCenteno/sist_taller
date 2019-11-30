@@ -53,13 +53,8 @@
 </style>
 <br>
 <div class="card card-danger card-outline">
-    <div class="card-header">
-        <h4 class="m-0">CONTROL CONSUMO - AREQUIPA</h4>
-
-        <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-            <button type="button" class="btn btn-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
-        </div>
+    <div class="card-header align-self-center">
+        <h4 class="m-0"><i class="fa fa-list-ol fa-2x" aria-hidden="true"></i> CONTROL CONSUMO - AREQUIPA</h4>
     </div>
     <div class="card-body">
         <nav>
@@ -122,15 +117,15 @@
                         </div>
                     </div>
                     <div class="col-lg-3" style="padding-top: 32px;">
-                        <button id="btn_vw_buscar_placa" type="button" class="btn btn-xl btn-success" readonly="readonly"><i class="fa fa-search"></i> BUSCAR</button>
+                        <button id="btn_vw_buscar_placa" type="button" class="btn btn-xl btn-outline-success" readonly="readonly"><i class="fa fa-search"></i> BUSCAR</button>
                     </div>
                     @if( $permiso[0]->btn_new == 1 )
                         <div class="col-lg-3" style="padding-top: 32px;">
-                            <button id="btn_vw_nuevos_condet" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-plus-square"></i> AGREGAR / MODIFICAR DETALLE</button>
+                            <button id="btn_vw_nuevos_condet" type="button" class="btn btn-xl btn-outline-warning" readonly="readonly"><i class="fa fa-plus-square"></i> AGREGAR / MODIFICAR DETALLE</button>
                         </div>
                     @else
                         <div class="col-lg-3" style="padding-top: 32px;">
-                            <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-plus-square"></i> AGREGAR / MODIFICAR DETALLE</button>
+                            <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-outline-warning" readonly="readonly"><i class="fa fa-plus-square"></i> AGREGAR / MODIFICAR DETALLE</button>
                         </div>
                     @endif
                 </div>
@@ -567,7 +562,7 @@
 <script>
     $('#{{ $permiso[0]->men_sistema }}').addClass('menu-open');
     $('.{{ $permiso[0]->men_sistema }}').addClass('active');
-    $('.{{ $permiso[0]->sme_ruta }}').addClass('active');
+    $('.{{ $permiso[0]->sme_ruta }}').addClass('submenu');
     
     jQuery(document).ready(function ($) {
         miFechaActual = new Date();

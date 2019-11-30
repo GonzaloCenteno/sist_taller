@@ -11,27 +11,23 @@
 </style>
 <br>
 <div class="card card-danger card-outline">
-    <div class="card-header">
-        <h4 class="m-0">REGISTRO DE CONSUMOS</h4>
-
-        <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-            <button type="button" class="btn btn-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
-        </div>
+    <div class="card-header align-self-center text-center">
+        <h4 class="m-0"><i class="fa fa-th-list fa-2x" aria-hidden="true"></i> REGISTRO DE CONSUMOS</h4>
+        
         <div class="row text-center" id="cabecera_consumo">
             @if( $permiso[0]->btn_new == 1 )
                 <div class="col-md-2" style="padding-top: 37px;">
-                    <button id="btn_vw_nuevo_consumo_or" type="button" class="btn btn-xl btn-warning btn-sm btn-block" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVAS RUTAS</button>
+                    <button id="btn_vw_nuevo_consumo_or" type="button" class="btn btn-xl btn-outline-warning btn-sm btn-block" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVAS RUTAS</button>
                 </div>
                 <div class="col-md-2" style="padding-top: 37px;">
-                    <button id="btn_vw_consumocab" type="button" class="btn btn-xl btn-danger btn-sm btn-block" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS CONSUMOS</button>
+                    <button id="btn_vw_consumocab" type="button" class="btn btn-xl btn-outline-danger btn-sm btn-block" readonly="readonly"><i class="fa fa-plus"></i> CONSUMOS</button>
                 </div>
             @else
                 <div class="col-md-2" style="padding-top: 37px;">
-                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-warning btn-sm btn-block" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVAS RUTAS</button>
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-outline-warning btn-sm btn-block" readonly="readonly"><i class="fa fa-plus-square"></i> NUEVAS RUTAS</button>
                 </div>
                 <div class="col-md-2" style="padding-top: 37px;">
-                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-danger btn-sm btn-block" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS CONSUMOS</button>
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-outline-danger btn-sm btn-block" readonly="readonly"><i class="fa fa-plus"></i> CONSUMOS</button>
                 </div>
             @endif  
             <div class="col-md-3">
@@ -57,7 +53,7 @@
                 </div>
             </div>
             <div class="col-lg-2" style="padding-top: 37px;">
-                <button id="btn_vw_buscar_consumos" type="button" class="btn btn-xl btn-success btn-sm btn-block" readonly="readonly"><i class="fa fa-search"></i> BUSCAR</button>
+                <button id="btn_vw_buscar_consumos" type="button" class="btn btn-xl btn-outline-success btn-sm btn-block" readonly="readonly"><i class="fa fa-search"></i> BUSCAR</button>
             </div>
         </div>
     </div>
@@ -125,8 +121,8 @@
                     </div>
                 </div>
                 <div id="formularioButtons" style="display:none; padding-top: 32px;">
-                    <button id="btn_vw_consumoscab_Guardar" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-save"></i> GUARDAR REGISTROS</button>
-                    <button id="btn_vw_consumoscab_Cancelar" type="button" class="btn btn-xl btn-default" readonly="readonly"><i class="fa fa-arrow-circle-left"></i> REGRESAR</button>
+                    <button id="btn_vw_consumoscab_Guardar" type="button" class="btn btn-xl btn-outline-danger" readonly="readonly"><i class="fa fa-save"></i> GUARDAR REGISTROS</button>
+                    <button id="btn_vw_consumoscab_Cancelar" type="button" class="btn btn-xl btn-outline-dark" readonly="readonly"><i class="fa fa-arrow-circle-left"></i> REGRESAR</button>
                 </div> 
             </div>
         </div>
@@ -157,28 +153,28 @@
                     </div>
                     <div class="col-md-3" style="padding-top: 25px;">
                         <div class="form-group">
-                            <button id="btn_generar_consumodet" type="button" class="btn btn-xl btn-danger btn-block" readonly="readonly"><i class="fa fa-plus-square"></i> GENERAR</button>
+                            <button id="btn_generar_consumodet" type="button" class="btn btn-xl btn-outline-primary btn-block" readonly="readonly"><i class="fa fa-plus-square"></i> GENERAR</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-row">
-                    <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
-                        <table id="consumodet" class="table table-striped table-bordered table-condensed table-hover">
-                            <thead style="background-color:#A9D0F5">
-                            <th style="width: 10%;">FECHA</th>
+                    <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12 table-responsive">
+                        <table class="table table-bordered table-condensed table-hover">
+                            <thead style="background-color:#DC3546; color: #ffffff">
+                            <th style="width: 13%;">FECHA</th>
                             <th style="width: 5%;">ESTACION</th>
                             <th style="width: 15%;">CONDUCTOR</th>
                             <th style="width: 15%;">PILOTO</th>
                             <th style="width: 10%;">KM</th>
                             <th style="width: 10%;">%STOP EN TANQUE</th>
                             <th style="width: 10%;">Q-ABAST.</th>
-                            <th style="width: 15%;">OBSERVACIONES</th>
+                            <th style="width: 10%;">OBSERVACIONES</th>
                             <th style="width: 8%;">INGRESO</th>
                             <th style="width: 10%;">SALIDA</th>
                             <th style="width: 10%;">STOP</th>
                             </thead>
-                            <tbody></tbody>
+                            <tbody id="cuerpodet"></tbody>
                         </table>
                     </div>
                 </div>
@@ -249,9 +245,6 @@
                 <div class="card card-danger card-outline">
                     <div class="card-header">
                         <h5 class="m-0">RESUMEN</h5>
-                        <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                        </div>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -365,12 +358,6 @@
                 </div>
 
                 <div class="card card-danger card-outline">
-                    <div class="card-header">
-                        <h5 class="m-0">RESERVA</h5>
-                        <div class="card-tools">
-                            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-                        </div>
-                    </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-4">
@@ -911,7 +898,7 @@
 <script>
     $('#{{ $permiso[0]->men_sistema }}').addClass('menu-open');
     $('.{{ $permiso[0]->men_sistema }}').addClass('active');
-    $('.{{ $permiso[0]->sme_ruta }}').addClass('active');
+    $('.{{ $permiso[0]->sme_ruta }}').addClass('submenu');
     jQuery(document).ready(function($){
         
         mostrarformulario(false);

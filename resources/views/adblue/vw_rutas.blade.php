@@ -9,26 +9,21 @@
 </style>
 <br>
 <div class="card card-danger card-outline">
-    <div class="card-header">
-        <h4 class="m-0">REGISTRO DE RUTAS</h4>
-
-        <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-            <button type="button" class="btn btn-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
-        </div>
+    <div class="card-header align-self-center">
+        <h4 class="m-0"><i class="fa fa-map fa-2x" aria-hidden="true"></i> REGISTRO DE RUTAS</h4>
     </div>
     <div class="card-body" id="contenedors">
         <div class="col-lg-12">
             <center>
                 @if( $permiso[0]->btn_new == 1 )
-                    <button id="btn_nueva_ruta" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> CREAR RUTA</button>
+                    <button id="btn_nueva_ruta" type="button" class="btn btn-xl btn-outline-danger" readonly="readonly"><i class="fa fa-plus-square"></i> CREAR RUTA</button>
                 @else
-                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"></i> CREAR RUTA</button>
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-outline-danger" readonly="readonly"><i class="fa fa-plus-square"></i> CREAR RUTA</button>
                 @endif
                 @if( $permiso[0]->btn_edit == 1 )
-                    <button id="btn_modificar_ruta" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR RUTA</button>
+                    <button id="btn_modificar_ruta" type="button" class="btn btn-xl btn-outline-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR RUTA</button>
                 @else
-                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR RUTA</button>
+                    <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-outline-warning" readonly="readonly"><i class="fa fa-pencil"></i> MODIFICAR RUTA</button>
                 @endif
             </center>
         </div>
@@ -79,12 +74,12 @@
 <script>
     $('#{{ $permiso[0]->men_sistema }}').addClass('menu-open');
     $('.{{ $permiso[0]->men_sistema }}').addClass('active');
-    $('.{{ $permiso[0]->sme_ruta }}').addClass('active');
+    $('.{{ $permiso[0]->sme_ruta }}').addClass('submenu');
     jQuery(document).ready(function($){
         jQuery("#tblrutas").jqGrid({
             url: 'ruta/0?grid=rutas',
             datatype: 'json', mtype: 'GET',
-            height: '512px', autowidth: true,
+            height: '480px', autowidth: true,
             toolbarfilter: true,
             sortable:false,
             colNames: ['ID', 'DESCRIPCION','FECHA REGISTRO','ESTADO'],

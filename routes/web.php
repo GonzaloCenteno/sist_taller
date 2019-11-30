@@ -38,6 +38,7 @@ Route::group(['namespace' => 'adblue'], function()
     Route::resource('ruta_estacion', 'Ruta_Estacion_Controller');
     Route::resource('consumo', 'Consumos_Controller');
     Route::resource('control', 'Control_Controller');
+    Route::resource('vehiculos', 'Vehiculos_Controller');
     Route::get('control_diario','Control_Controller@abrir_rep_control_diario')->name('control_diario');
     Route::get('control_abastecimiento','Control_Controller@abrir_rep_control_abast')->name('control_abastecimiento');
     Route::get('control_abast_xplaca/{est_id}/{veh_id}','Control_Controller@abrir_rep_control_abast_xplaca')->name('control_abast_xplaca');
@@ -50,4 +51,11 @@ Route::group(['namespace' => 'adblue'], function()
 Route::group(['namespace' => 'grifo'], function() 
 {
     Route::resource('almacen_combustible', 'Almacen_Combustible_Controller');
+    Route::resource('vales_grifo', 'Grifo_Vales_Controller');
+    Route::resource('reportes_grifo', 'Grifo_Reportes_Controller');
+});
+
+Route::group(['namespace' => 'programacion'], function() 
+{
+    Route::resource('viajes', 'Viajes_Controller');
 });

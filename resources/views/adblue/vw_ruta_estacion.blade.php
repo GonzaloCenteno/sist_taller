@@ -9,24 +9,19 @@
 </style>
 <br>
 <div class="card card-danger card-outline">
-    <div class="card-header">
-        <h4 class="m-0">REGISTRO DE RUTA - ESTACIONES</h4>
-
-        <div class="card-tools">
-            <button type="button" class="btn btn-tool" data-widget="collapse"><i class="fa fa-minus"></i></button>
-            <button type="button" class="btn btn-tool" data-widget="remove"><i class="fa fa-remove"></i></button>
-        </div>
+    <div class="card-header align-self-center">
+        <h4 class="m-0"><i class="fa fa-arrows-alt fa-2x" aria-hidden="true"></i> REGISTRO DE RUTA - ESTACIONES</h4>
     </div>
     <div class="card-body">
         <div class="col-lg-12">
             <center>
                 @if( $permiso[0]->btn_new == 1 )
                     <div id="listadoButtons">
-                        <button id="btn_vw_rtestacion_Nuevo" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS REGISTROS</button>
+                        <button id="btn_vw_rtestacion_Nuevo" type="button" class="btn btn-xl btn-outline-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS REGISTROS</button>
                     </div>
                 @else
                     <div id="listadoButtons">
-                        <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS REGISTROS</button>
+                        <button onclick="sin_permiso();" type="button" class="btn btn-xl btn-outline-danger" readonly="readonly"><i class="fa fa-plus"></i> NUEVOS REGISTROS</button>
                     </div>
                 @endif
                 
@@ -42,8 +37,8 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <button id="btn_generar_estaciones" type="button" class="btn btn-xl btn-danger" readonly="readonly"><i class="fa fa-plus-square"> GENERAR ESTACIONES</i></button>
-                            <button id="btn_vw_rtestacion_Cancelar" type="button" class="btn btn-xl btn-default" readonly="readonly"><i class="fa fa-arrow-circle-left"></i> REGRESAR</button>
+                            <button id="btn_generar_estaciones" type="button" class="btn btn-xl btn-outline-danger" readonly="readonly"><i class="fa fa-plus-square"> GENERAR ESTACIONES</i></button>
+                            <button id="btn_vw_rtestacion_Cancelar" type="button" class="btn btn-xl btn-outline-primary" readonly="readonly"><i class="fa fa-arrow-circle-left"></i> REGRESAR</button>
                         </div>
                     </div>
                 </div> 
@@ -56,7 +51,7 @@
                 <div class="form-row">
                     <div class="col-lg-12 col-sm-12 col-md-12 col-xs-12">
                         <table class="table table-striped table-bordered table-condensed table-hover">
-                            <thead style="background-color:#A9D0F5">
+                            <thead style="background-color:#DC3546; color: #ffffff">
                             <th style="width: 10%;">BORRAR</th>
                             <th style="width: 70%;">ESTACION</th>
                             <th style="width: 20%;">CONSUMO</th>
@@ -159,7 +154,7 @@
 <script>
     $('#{{ $permiso[0]->men_sistema }}').addClass('menu-open');
     $('.{{ $permiso[0]->men_sistema }}').addClass('active');
-    $('.{{ $permiso[0]->sme_ruta }}').addClass('active');
+    $('.{{ $permiso[0]->sme_ruta }}').addClass('submenu');
         
     jQuery(document).ready(function($){
         
@@ -168,13 +163,13 @@
         jQuery("#tblrutaestacion").jqGrid({
             url: 'ruta_estacion/0?grid=rutas',
             datatype: 'json', mtype: 'GET',
-            height: '512px', autowidth: true,
+            height: '480px', autowidth: true,
             colNames: ['ID', 'DESCRIPCION','FECHA REGISTRO'],
             rowNum: 30, sortname: 'rut_id', sortorder: 'asc', viewrecords: true, caption: '<button id="btn_act_tblruta" type="button" class="btn btn-danger"><i class="fa fa-gear"></i> ACTUALIZAR <i class="fa fa-gear"></i></button> - LISTA DE RUTAS -', align: "center",
             colModel: [
                 {name: 'rut_id', index: 'rut_id', align: 'left',width: 10, hidden:true},
-                {name: 'rut_descripcion', index: 'rut_descripcion', align: 'left', width: 60},
-                {name: 'rut_fecregistro', index: 'rut_fecregistro', align: 'center', width: 25}
+                {name: 'rut_descripcion', index: 'rut_descripcion', align: 'left', width: 20},
+                {name: 'rut_fecregistro', index: 'rut_fecregistro', align: 'center', width: 15}
             ],
             pager: '#paginador_tblrutaestacion',
             rowList: [10, 20, 30, 40, 50],
